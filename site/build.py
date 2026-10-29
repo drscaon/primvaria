@@ -55,7 +55,7 @@ def main(argv=None) -> int:
     out = args.out
     shutil.rmtree(out, ignore_errors=True)
     (out / "img").mkdir(parents=True)
-    for f in ("index.html", "favicon.svg"):
+    for f in ("index.html", "favicon.svg", "social_preview.png"):
         shutil.copy(HERE / f, out / f)
     for repo, (name, anchor) in HEROES.items():
         cover(fetch(repo, name, args.local), anchor).save(

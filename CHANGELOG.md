@@ -13,6 +13,9 @@ pre-release versions.
   engine matrix, built from `site/` and deployed to GitHub Pages by the
   `pages.yml` workflow.
 - README: engine matrix, PyPI and website badges.
+- Logo: the mark (nine primitives, no two alike) and the wordmark, light and
+  dark, the website's favicon and the GitHub social preview, drawn by
+  `scripts/make_logo.py`.
 
 ### Changed
 

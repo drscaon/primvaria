@@ -1,4 +1,9 @@
-<h1 align="center">Primvaria</h1>
+<h1 align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/drscaon/primvaria/main/docs/images/logo-dark.svg">
+    <img alt="Primvaria" src="https://raw.githubusercontent.com/drscaon/primvaria/main/docs/images/logo.svg" width="420">
+  </picture>
+</h1>
 
 <p align="center"><strong>Physics-ready variability for Physical AI, in OpenUSD.</strong></p>
 
@@ -92,6 +97,16 @@ from granulaire import generate_scene, write_outputs
 
 write_outputs(generate_scene("beach_sand"), "output")
 ```
+
+## Logo
+
+`docs/images/`: the logo (`logo.svg`, `logo-dark.svg`), the mark alone
+(`mark.svg`, `mark-dark.svg`, `mark.png`) and the GitHub social preview
+(`social_preview.png`, to upload in Settings > General > Social preview).
+The mark is nine primitives, no two alike, the centre one in teal: the suite's
+promise in one image. The wordmark is Familjen Grotesk Bold (SIL Open Font
+License), drawn as outlines. Regenerate everything, the website's favicon
+included, with `python scripts/make_logo.py`.
 
 ## Website
 
