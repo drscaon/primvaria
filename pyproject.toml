@@ -1,0 +1,81 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "primvaria"
+version = "0.1.0b1"
+description = "Physics-ready variability for Physical AI, in OpenUSD: one install for the Granulaire, Maillage, Filaire and Quincaillerie asset generators, with a single command line."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.10"
+authors = [{ name = "Daniel Régis Sarmento Caon" }]
+keywords = [
+    "openusd",
+    "physical-ai",
+    "robot-learning",
+    "simulation",
+    "synthetic-data",
+    "procedural",
+    "isaac-sim",
+    "mujoco",
+    "blender",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Multimedia :: Graphics :: 3D Modeling",
+]
+# A plain `pip install primvaria` installs the whole suite.
+# Install a single generator on its own with `pip install granulaire` (etc.).
+dependencies = [
+    "granulaire>=0.2.0b2",
+    "maillage>=0.1.0b1",
+    "filaire>=0.1.0b1",
+    "quincaillerie>=0.1.0b2",
+]
+
+[project.optional-dependencies]
+# previews and renders (matplotlib, Pillow)
+render = ["granulaire[render]", "maillage[render]", "filaire[render]"]
+# MuJoCo checks of Filaire and Quincaillerie
+sim = ["filaire[sim]", "quincaillerie[sim]"]
+# MaterialX materials of Quincaillerie
+materialx = ["quincaillerie[materialx]"]
+# everything above (Blender as a Python module stays separate: maillage[blender], Python 3.13 only)
+all = ["primvaria[render,sim,materialx]"]
+dev = ["pytest>=7", "ruff>=0.5"]
+
+[project.urls]
+Homepage = "https://github.com/drscaon/primvaria"
+Issues = "https://github.com/drscaon/primvaria/issues"
+Changelog = "https://github.com/drscaon/primvaria/blob/main/CHANGELOG.md"
+Granulaire = "https://github.com/drscaon/granulaire"
+Maillage = "https://github.com/drscaon/maillage"
+Filaire = "https://github.com/drscaon/filaire"
+Quincaillerie = "https://github.com/drscaon/quincaillerie"
+
+[project.scripts]
+primvaria = "primvaria.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]

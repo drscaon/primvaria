@@ -1,0 +1,136 @@
+name: Release
+
+# Pushing a tag vX.Y.Z (or a pre-release tag such as v0.1.0b1) tests and builds
+# the package, publishes it on PyPI through Trusted Publishing (no API token),
+# then creates the GitHub release with the packages attached. Pre-release
+# versions (a, b, rc) are marked as pre-releases.
+#
+# Running the workflow by hand (Actions > Release > Run workflow) publishes to
+# TestPyPI instead, to rehearse a release.
+#
+# One-time setup, on pypi.org and test.pypi.org: Account > Publishing > add a
+# pending publisher: project "primvaria", owner "drscaon", repository
+# "primvaria", workflow "release.yml", environment "pypi" (on TestPyPI:
+# "testpypi"). Create both environments in the repository's Settings >
+# Environments; restrict "pypi" to tags "v*".
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Read the package version
+        id: version
+        run: |
+          VERSION=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if [ "$GITHUB_REF_TYPE" = "tag" ] && [ "v$VERSION" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::tag $GITHUB_REF_NAME does not match version $VERSION in pyproject.toml"
+            exit 1
+          fi
+
+      - name: Test
+        run: |
+          pip install \
+            "granulaire @ git+https://github.com/drscaon/granulaire" \
+            "maillage @ git+https://github.com/drscaon/maillage" \
+            "filaire @ git+https://github.com/drscaon/filaire" \
+            "quincaillerie @ git+https://github.com/drscaon/quincaillerie"
+          pip install -e ".[dev]"
+          pytest
+
+      - name: Build
+        run: |
+          pip install build twine
+          python -m build
+          twine check --strict dist/*
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: dist
+          path: dist/
+
+  testpypi:
+    if: github.event_name == 'workflow_dispatch'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/primvaria
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+
+  pypi:
+    if: github.ref_type == 'tag'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/primvaria
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1
+
+  github-release:
+    needs: [build, pypi]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist/
+      - name: Release notes from CHANGELOG.md
+        env:
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          python - <<'EOF'
+          import os, re
+          version = os.environ["VERSION"]
+          text = open("CHANGELOG.md", encoding="utf-8").read()
+          match = re.search(rf"^## \[{re.escape(version)}\][^\n]*\n(.*?)(?=^## \[|\Z)", text, re.S | re.M)
+          notes = match.group(1).strip() if match else f"Primvaria {version}"
+          open("release-notes.md", "w", encoding="utf-8").write(notes + "\n")
+          EOF
+      - name: Publish the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          PRERELEASE=""
+          if echo "$VERSION" | grep -Eq '(a|b|rc)[0-9]+$'; then PRERELEASE="--prerelease"; fi
+          if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" dist/* --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" dist/* $PRERELEASE \
+              --title "Primvaria $VERSION" --notes-file release-notes.md --verify-tag
+          fi
