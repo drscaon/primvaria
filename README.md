@@ -91,4 +91,4 @@ through Trusted Publishing.
 
 ## License
 
-MIT, like the four generators.
+[MIT](https://github.com/drscaon/primvaria/blob/main/LICENSE) © 2026 Daniel Régis Sarmento Caon
