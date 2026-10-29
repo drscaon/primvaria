@@ -7,6 +7,17 @@ pre-release versions.
 
 ## [Unreleased]
 
+### Added
+
+- Website, [primvaria.com](https://primvaria.com): the four generators and the
+  engine matrix, built from `site/` and deployed to GitHub Pages by the
+  `pages.yml` workflow.
+- README: engine matrix, PyPI and website badges.
+
+### Changed
+
+- The project's homepage on PyPI is primvaria.com.
+
 ## [0.1.0b1] - 2026-10-29
 
 ### Added

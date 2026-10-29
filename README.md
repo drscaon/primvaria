@@ -4,8 +4,10 @@
 
 <p align="center">
   <a href="https://github.com/drscaon/primvaria/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/drscaon/primvaria/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="https://pypi.org/project/primvaria/"><img alt="PyPI" src="https://img.shields.io/pypi/v/primvaria"></a>
   <img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10%2B-3776AB">
   <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-green">
+  <a href="https://primvaria.com"><img alt="Website" src="https://img.shields.io/badge/web-primvaria.com-0f6e74"></a>
 </p>
 
 Primvaria is a suite of procedural asset generators for the objects robots
@@ -29,13 +31,29 @@ Latin for "diverse things".
 
 | | Generator | Assets | Physics |
 |---|---|---|---|
-| ![Granulaire](https://raw.githubusercontent.com/drscaon/granulaire/main/docs/images/moisture_gallery.png) | [**Granulaire**](https://github.com/drscaon/granulaire) | sand, gravel, pebbles, seeds, fruit, pellets, packing peanuts; measured shapes, masses and moisture | rigid bodies; deformables for OmniPhysics (not tested yet) |
-| ![Maillage](https://raw.githubusercontent.com/drscaon/maillage/main/docs/images/blender_drape.jpg) | [**Maillage**](https://github.com/drscaon/maillage) | towels, napkins, tablecloths, sheets, scarves, flags; real sizes, fabrics and masses | cloth meshes; drape test in Blender |
-| ![Filaire](https://raw.githubusercontent.com/drscaon/filaire/main/docs/images/hero.jpg) | [**Filaire**](https://github.com/drscaon/filaire) | standard cables with male and female connectors and the receptacles they plug into | rigid-segment chains with joints; drop, sag and insertion tests in MuJoCo |
+| ![Granulaire](https://raw.githubusercontent.com/drscaon/granulaire/main/docs/images/moisture_gallery.png) | [**Granulaire**](https://github.com/drscaon/granulaire) | sand, gravel, pebbles, seeds, fruit, pellets, packing peanuts; measured shapes, masses and moisture | rigid bodies, pile test in Blender and MuJoCo; deformables for OmniPhysics |
+| ![Maillage](https://raw.githubusercontent.com/drscaon/maillage/main/docs/images/blender_drape.jpg) | [**Maillage**](https://github.com/drscaon/maillage) | towels, napkins, tablecloths, sheets, scarves, flags; real sizes, fabrics and masses | cloth meshes with engine-neutral stiffness; drape test in Blender and MuJoCo; OmniPhysics surface deformables |
+| ![Filaire](https://raw.githubusercontent.com/drscaon/filaire/main/docs/images/hero.jpg) | [**Filaire**](https://github.com/drscaon/filaire) | standard cables with male and female connectors and the receptacles they plug into | rigid-segment chains with joints; drop, sag and insertion tests in MuJoCo, drop in Blender |
 | ![Quincaillerie](https://raw.githubusercontent.com/drscaon/quincaillerie/main/docs/images/fasteners.jpg) | [**Quincaillerie**](https://github.com/drscaon/quincaillerie) | metric screws, nuts and washers with modelled threads; battery cells and their holders | rigid bodies, springs and clips; drop, screwing and insertion tests in MuJoCo and Blender |
 
 Each generator is its own package, released on its own schedule. Primvaria
 installs them together and gives them one command line.
+
+## Engine matrix
+
+Where each generator stands in each engine (also on
+[primvaria.com](https://primvaria.com/#engines)). Tests run in each project's
+CI on every preset, from the OpenUSD file alone.
+
+| | OpenUSD validators | Blender | MuJoCo | Isaac Sim · PhysX | OmniPhysics deformables |
+|---|---|---|---|---|---|
+| Granulaire | tested | tested: pile | tested: pile | not yet | exported, not run |
+| Maillage | tested | tested: drape | tested: flex drape | n/a (cloth) | exported, structure checked, not run |
+| Filaire | tested | tested: drop (add-on) | tested: drop, sag, coil, insertion | not yet | n/a |
+| Quincaillerie | tested | tested: drop, assemblies (add-on) | tested: drop, screwing, jam, insertion | not yet | n/a |
+
+Isaac Sim runs need an NVIDIA RTX GPU and have not been done yet: the files
+follow the standard `UsdPhysics` schemas and carry PhysX attributes.
 
 ## Installation
 
@@ -74,6 +92,14 @@ from granulaire import generate_scene, write_outputs
 
 write_outputs(generate_scene("beach_sand"), "output")
 ```
+
+## Website
+
+[primvaria.com](https://primvaria.com) is built from `site/` by the `pages.yml`
+workflow (GitHub Pages) on every change to `site/` and weekly, to pick up new
+hero images from the four repositories. Preview it locally with
+`python site/build.py --local ..` (sibling clones of the four repositories),
+then `python -m http.server -d _site`.
 
 ## Development
 

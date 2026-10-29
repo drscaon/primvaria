@@ -55,7 +55,8 @@ all = ["primvaria[render,sim,materialx]"]
 dev = ["pytest>=7", "ruff>=0.5"]
 
 [project.urls]
-Homepage = "https://github.com/drscaon/primvaria"
+Homepage = "https://primvaria.com"
+Source = "https://github.com/drscaon/primvaria"
 Issues = "https://github.com/drscaon/primvaria/issues"
 Changelog = "https://github.com/drscaon/primvaria/blob/main/CHANGELOG.md"
 Granulaire = "https://github.com/drscaon/granulaire"

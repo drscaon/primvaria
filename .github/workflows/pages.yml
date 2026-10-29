@@ -1,0 +1,50 @@
+name: Website
+
+# Builds site/ into _site/ (the page and the generators' hero images, fetched
+# from their repositories) and deploys it to GitHub Pages, served at
+# https://primvaria.com.
+#
+# One-time setup: Settings > Pages > Build and deployment > Source: GitHub
+# Actions; Custom domain: primvaria.com, then Enforce HTTPS.
+
+on:
+  push:
+    branches: [main]
+    paths: ["site/**", ".github/workflows/pages.yml"]
+  schedule:
+    - cron: "17 4 * * 1"  # weekly, to pick up new hero images
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - run: pip install pillow
+      - run: python site/build.py
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

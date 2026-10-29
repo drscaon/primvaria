@@ -23,3 +23,6 @@ output/
 .DS_Store
 .idea/
 .vscode/
+
+# Website build (python site/build.py)
+_site/
