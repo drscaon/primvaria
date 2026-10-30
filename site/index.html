@@ -3,9 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Primvaria · physics-ready variability for Physical AI</title>
-<meta name="description" content="Open-source procedural asset generators for robot learning: grains, cloth, cables and small mechanical parts, every instance different, exported to OpenUSD with UsdPhysics and checked in Blender and MuJoCo.">
-<meta property="og:title" content="Primvaria">
+<title>Primvaria · OpenUSD asset generators for robot simulation</title>
+<meta name="description" content="Open-source OpenUSD asset generators for robot simulation: grains, cloth, cables and hardware, every instance different, tested in Blender and MuJoCo.">
+<link rel="canonical" href="https://primvaria.com/">
+<meta name="robots" content="index, follow">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebSite", "@id": "https://primvaria.com/#website", "url": "https://primvaria.com/", "name": "Primvaria", "publisher": {"@id": "https://primvaria.com/#author"}}, {"@type": "Person", "@id": "https://primvaria.com/#author", "name": "Daniel Régis Sarmento Caon", "sameAs": ["https://github.com/drscaon"]}, {"@type": "SoftwareSourceCode", "@id": "https://primvaria.com/#primvaria", "name": "Primvaria", "alternateName": "Primvaria OpenUSD asset generators", "description": "Open-source OpenUSD asset generators for robot simulation and Physical AI: grains, cloth, cables and small mechanical parts, every instance different, with UsdPhysics, tested in Blender and MuJoCo.", "url": "https://primvaria.com/", "image": "https://primvaria.com/social_preview.png", "logo": "https://primvaria.com/logo.png", "codeRepository": "https://github.com/drscaon/primvaria", "programmingLanguage": "Python", "license": "https://opensource.org/licenses/MIT", "keywords": "OpenUSD, asset generator, procedural assets, robot simulation, Physical AI, synthetic data, Isaac Sim, MuJoCo, Blender, UsdPhysics", "author": {"@id": "https://primvaria.com/#author"}, "hasPart": [{"@id": "https://primvaria.com/#granulaire"}, {"@id": "https://primvaria.com/#maillage"}, {"@id": "https://primvaria.com/#filaire"}, {"@id": "https://primvaria.com/#quincaillerie"}]}, {"@type": "SoftwareSourceCode", "name": "Granulaire", "description": "Procedural granular assets for robot simulation: sand, gravel, pebbles, seeds, pellets and regolith with measured shapes and moisture states, exported to OpenUSD.", "codeRepository": "https://github.com/drscaon/granulaire", "url": "https://pypi.org/project/granulaire/", "programmingLanguage": "Python", "license": "https://opensource.org/licenses/MIT", "author": {"@id": "https://primvaria.com/#author"}, "isPartOf": {"@id": "https://primvaria.com/#primvaria"}, "@id": "https://primvaria.com/#granulaire"}, {"@type": "SoftwareSourceCode", "name": "Maillage", "description": "Procedural cloth assets for robot simulation: towels, napkins, tablecloths, sheets, scarves and flags in real sizes and fabrics, exported to OpenUSD, MuJoCo flex and NVIDIA OmniPhysics.", "codeRepository": "https://github.com/drscaon/maillage", "url": "https://pypi.org/project/maillage/", "programmingLanguage": "Python", "license": "https://opensource.org/licenses/MIT", "author": {"@id": "https://primvaria.com/#author"}, "isPartOf": {"@id": "https://primvaria.com/#primvaria"}, "@id": "https://primvaria.com/#maillage"}, {"@type": "SoftwareSourceCode", "name": "Filaire", "description": "Procedural cable assets for robot simulation: standard cables with male and female connectors and their receptacles, exported to OpenUSD with UsdPhysics joints.", "codeRepository": "https://github.com/drscaon/filaire", "url": "https://pypi.org/project/filaire/", "programmingLanguage": "Python", "license": "https://opensource.org/licenses/MIT", "author": {"@id": "https://primvaria.com/#author"}, "isPartOf": {"@id": "https://primvaria.com/#primvaria"}, "@id": "https://primvaria.com/#filaire"}, {"@type": "SoftwareSourceCode", "name": "Quincaillerie", "description": "Procedural hardware assets for robot simulation: threaded screws, nuts, washers, battery cells and holders with tolerances, defects and wear, exported to OpenUSD.", "codeRepository": "https://github.com/drscaon/quincaillerie", "url": "https://pypi.org/project/quincaillerie/", "programmingLanguage": "Python", "license": "https://opensource.org/licenses/MIT", "author": {"@id": "https://primvaria.com/#author"}, "isPartOf": {"@id": "https://primvaria.com/#primvaria"}, "@id": "https://primvaria.com/#quincaillerie"}]}</script>
+<meta property="og:title" content="Primvaria · OpenUSD asset generators for robot simulation">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Primvaria">
 <meta property="og:description" content="Physics-ready variability for Physical AI, in OpenUSD: grains, cloth, cables and hardware for robot learning.">
 <meta property="og:image" content="https://primvaria.com/social_preview.png">
 <meta property="og:image:width" content="1280">
@@ -13,6 +18,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta property="og:url" content="https://primvaria.com/">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -107,9 +113,9 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 
 <main id="top">
 <section class="hero"><div class="wrap">
-  <p class="eyebrow">primvar + varia · open source · MIT</p>
+  <p class="eyebrow">OpenUSD asset generators · open source · MIT</p>
   <h1>Physics-ready variability for Physical AI, in OpenUSD.</h1>
-  <p class="lede">Procedural asset generators for the objects robots struggle with most: grains, cloth, cables and small mechanical parts. No two instances are the same, every value is measured, and every preset is checked in real engines before it ships.</p>
+  <p class="lede">Open-source procedural OpenUSD asset generators for robot simulation, covering the objects robots struggle with most: grains, cloth, cables and small mechanical parts. No two instances are the same, every value is measured, and every preset is checked in real engines before it ships.</p>
   <div class="install">
     <div class="cmd"><span id="cmd">pip install primvaria</span><button type="button" id="copy">Copy</button></div>
     <a class="btn" href="https://github.com/drscaon/primvaria">Source on GitHub</a>
@@ -135,7 +141,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
       <img src="img/granulaire.jpg" alt="Grains of every Granulaire preset, dry to saturated" loading="lazy" width="1200" height="675">
       <div class="body">
         <div class="name"><h3>Granulaire</h3><span class="fr">granular · grainy</span></div>
-        <p>Sand, gravel, pebbles, seeds, fruit, pellets and regolith with measured shapes, sizes, masses and four moisture states.</p>
+        <p>Procedural granular assets: sand, gravel, pebbles, seeds, fruit, pellets and regolith with measured shapes, sizes, masses and four moisture states.</p>
         <span class="num">25 presets · 0.07 mm to 5 cm</span>
         <div class="links"><code>pip install granulaire</code><a href="https://github.com/drscaon/granulaire">GitHub</a><a href="https://pypi.org/project/granulaire/">PyPI</a></div>
       </div>
@@ -144,7 +150,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
       <img src="img/maillage.jpg" alt="One piece of each Maillage preset: towels, napkins, tablecloths, sheets, scarves and a flag" loading="lazy" width="1200" height="675">
       <div class="body">
         <div class="name"><h3>Maillage</h3><span class="fr">mesh · knit stitch</span></div>
-        <p>Towels, napkins, tablecloths, sheets, scarves and flags in real sizes and fabrics, meshed for cloth solvers, with engine-neutral stiffness.</p>
+        <p>Procedural cloth assets: towels, napkins, tablecloths, sheets, scarves and flags in real sizes and fabrics, meshed for cloth solvers, with engine-neutral stiffness.</p>
         <span class="num">12 presets · 11 fabrics</span>
         <div class="links"><code>pip install maillage</code><a href="https://github.com/drscaon/maillage">GitHub</a><a href="https://pypi.org/project/maillage/">PyPI</a></div>
       </div>
@@ -153,7 +159,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
       <img src="img/filaire.jpg" alt="Cables of eight Filaire presets with their connectors" loading="lazy" width="1200" height="675">
       <div class="body">
         <div class="name"><h3>Filaire</h3><span class="fr">wired · wireframe</span></div>
-        <p>Standard cables with real male and female connectors, the receptacles they plug into, and rigid-segment physics from the cable's stiffness.</p>
+        <p>Procedural cable assets: standard cables with real male and female connectors, the receptacles they plug into, and rigid-segment physics from the cable's stiffness.</p>
         <span class="num">14 presets · 17 connector families</span>
         <div class="links"><code>pip install filaire</code><a href="https://github.com/drscaon/filaire">GitHub</a><a href="https://pypi.org/project/filaire/">PyPI</a></div>
       </div>
@@ -162,7 +168,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
       <img src="img/quincaillerie.jpg" alt="Ten varied instances of a screw, nut and washer, and battery cells" loading="lazy" width="1200" height="675">
       <div class="body">
         <div class="name"><h3>Quincaillerie</h3><span class="fr">hardware · nuts and bolts</span></div>
-        <p>Threaded screws, nuts and washers, battery cells and their holders, where tolerances, defects and wear change how parts really behave.</p>
+        <p>Procedural hardware assets: threaded screws, nuts and washers, battery cells and their holders, where tolerances, defects and wear change how parts really behave.</p>
         <span class="num">M3–M12 · 41 catalogue assets</span>
         <div class="links"><code>pip install quincaillerie</code><a href="https://github.com/drscaon/quincaillerie">GitHub</a><a href="https://pypi.org/project/quincaillerie/">PyPI</a></div>
       </div>

@@ -23,6 +23,10 @@ pre-release versions.
 ### Changed
 
 - The project's homepage on PyPI is primvaria.com.
+- Website search metadata: a title and description naming what the project is
+  (OpenUSD asset generators for robot simulation), canonical URL, structured
+  data (schema.org) for the suite and the four generators, `robots.txt` and
+  `sitemap.xml`.
 
 ## [0.1.0b1] - 2026-10-29
 
