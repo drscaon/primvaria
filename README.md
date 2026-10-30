@@ -101,12 +101,14 @@ write_outputs(generate_scene("beach_sand"), "output")
 ## Logo
 
 `docs/images/`: the logo (`logo.svg`, `logo-dark.svg`), the mark alone
-(`mark.svg`, `mark-dark.svg`, `mark.png`) and the GitHub social preview
-(`social_preview.png`, to upload in Settings > General > Social preview).
+(`mark.svg`, `mark-dark.svg`, `mark.png`) and the social preview
+(`social_preview.png`, 1280 × 640, to upload in Settings > General > Social
+preview, also the website's link preview; `social_preview@2x.png`).
 The mark is nine primitives, no two alike, the centre one in teal: the suite's
 promise in one image. The wordmark is Familjen Grotesk Bold (SIL Open Font
-License), drawn as outlines. Regenerate everything, the website's favicon
-included, with `python scripts/make_logo.py`.
+License), drawn as outlines. Regenerate the logo and the website's favicon
+with `python scripts/make_logo.py`, and the social preview, built from the four
+generators' renders, with `python scripts/make_social_preview.py`.
 
 ## Website
 

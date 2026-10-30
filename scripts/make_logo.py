@@ -1,6 +1,6 @@
 """Draw the Primvaria logo: the mark (nine primitives, no two alike, the centre
 one in teal) and the wordmark in Familjen Grotesk Bold, as outlines, in light
-and dark versions, plus the website's favicon and the GitHub social preview.
+and dark versions, plus the website's favicon. The social preview: make_social_preview.py.
 
 Development tool:
 
@@ -113,34 +113,6 @@ def logo_svg(font: TTFont, c: dict) -> str:
     )
 
 
-def social_svg(font: TTFont) -> str:
-    """1280 × 640, GitHub's social preview size."""
-    c = LIGHT
-    d, (x0, y0, x1, y1) = word_paths(font, 132.0)
-    mark = 220.0
-    total = mark + 48 + (x1 - x0)
-    left = (1280 - total) / 2
-    tx, ty = left + mark + 48 - x0, 300 - (y0 + y1) / 2
-    sub, (s0, sy0, s1, sy1) = _line(font, "Physics-ready variability for Physical AI, in OpenUSD.", 40.0)
-    return (
-        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" width="1280" height="640">'
-        '<rect width="1280" height="640" fill="#F4F6F7"/>'
-        f'<g transform="translate({left:.1f} {300 - mark / 2:.1f}) scale({mark / 64:g})">{mark_body(c)}</g>'
-        f'<path fill="{c["teal"]}" transform="translate({tx:.2f} {ty:.2f})" d="{d}"/>'
-        f'<path fill="#566874" transform="translate({(1280 - (s1 - s0)) / 2 - s0:.2f} 500)" '
-        f'd="{sub}"/></svg>\n'
-    )
-
-
-def _line(font: TTFont, text: str, size: float):
-    global WORD
-    saved, WORD = WORD, text
-    try:
-        return word_paths(font, size)
-    finally:
-        WORD = saved
-
-
 def main() -> int:
     font = load_font()
     images = ROOT / "docs" / "images"
@@ -151,7 +123,6 @@ def main() -> int:
         images / "mark.svg": mark_svg(LIGHT),
         images / "mark-dark.svg": mark_svg(DARK),
         ROOT / "site" / "favicon.svg": mark_svg(LIGHT, 32, adaptive=True),
-        images / "social_preview.svg": social_svg(font),
     }
     for path, text in files.items():
         path.write_text(text, encoding="utf-8")
@@ -161,10 +132,8 @@ def main() -> int:
     except (ImportError, OSError):
         print("cairosvg not available: PNGs not written", file=sys.stderr)
         return 0
-    cairosvg.svg2png(url=str(images / "social_preview.svg"), write_to=str(images / "social_preview.png"))
     cairosvg.svg2png(url=str(images / "mark.svg"), write_to=str(images / "mark.png"), output_width=512)
-    (ROOT / "site" / "social_preview.png").write_bytes((images / "social_preview.png").read_bytes())
-    print("docs/images/social_preview.png, docs/images/mark.png, site/social_preview.png")
+    print("docs/images/mark.png")
     return 0
 
 

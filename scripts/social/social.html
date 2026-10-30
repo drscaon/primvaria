@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+@font-face{font-family:"FG";src:url("fonts/fg.ttf");font-weight:100 900}
+@font-face{font-family:"Plex";src:url("fonts/plex.ttf");font-weight:100 700}
+:root{--bg:#0e1519;--panel:#152026;--ink:#e8eaed;--muted:#a3b3bb;--teal:#4cc1c4;--line:#24333b}
+*{box-sizing:border-box;margin:0}
+html,body{width:1280px;height:640px;overflow:hidden}
+body{background:radial-gradient(120% 140% at 100% 0%,#17252c 0%,var(--bg) 60%);color:var(--ink);font-family:"Plex",sans-serif}
+.wrap{position:absolute;inset:48px;display:grid;grid-template-columns:400px 1fr;column-gap:48px}
+.left{display:flex;flex-direction:column}
+.brand{display:flex;align-items:center;gap:18px}
+.brand img{width:68px;height:68px}
+.brand span{font:700 56px/1 "FG";letter-spacing:-.02em;color:var(--teal)}
+h1{font:700 44px/1.08 "FG";letter-spacing:-.02em;margin-top:52px}
+.sub{font-size:20px;line-height:1.4;color:var(--muted);margin-top:16px}
+ul{list-style:none;padding:0;margin-top:30px;display:grid;gap:12px}
+li{font-size:18px;line-height:1.3;display:flex;gap:12px;align-items:baseline}
+li::before{content:"";flex:none;width:8px;height:8px;border-radius:2px;background:var(--teal);transform:translateY(-3px) rotate(12deg)}
+.foot{margin-top:auto;font:500 18px "Plex";color:var(--muted);display:flex;gap:14px}
+.foot b{color:var(--ink);font-weight:600}
+.right{display:grid;grid-template-rows:300px 1fr;row-gap:16px;min-width:0}
+.row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:16px}
+.tile{position:relative;border-radius:14px;overflow:hidden;background:var(--panel)}
+.tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.tag{position:absolute;left:12px;bottom:12px;display:flex;flex-direction:column;gap:1px;padding:7px 12px 8px;border-radius:10px;background:rgba(14,21,25,.86)}
+.tag b{font:700 15px/1.1 "FG";color:var(--teal);letter-spacing:.01em}
+.tag span{font:500 14px/1.2 "Plex";color:var(--ink)}
+.states{position:absolute;left:0;right:0;top:9px;display:grid;grid-template-columns:repeat(4,1fr);text-align:center;font:500 12px "Plex";color:#566874}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="left">
+    <div class="brand"><img src="mark.svg" alt=""><span>Primvaria</span></div>
+    <h1>Assets that differ,<br>like real ones do.</h1>
+    <p class="sub">Physics-ready variability for Physical AI,<br>in OpenUSD.</p>
+    <ul>
+      <li>Every instance different, every draw recorded</li>
+      <li>Mass, shape, stiffness measured on the output</li>
+      <li>Tested in Blender and MuJoCo on every preset</li>
+    </ul>
+    <div class="foot"><b>primvaria.com</b><span>·</span><span>pip install primvaria</span></div>
+  </div>
+  <div class="right">
+    <div class="tile"><img src="quin.jpg" alt=""><div class="tag"><b>Quincaillerie</b><span>Wear, corrosion and defects</span></div></div>
+    <div class="row">
+      <div class="tile" style="background:#fff"><img src="gran.png" alt=""><div class="states"><span>dry</span><span>damp</span><span>wet</span><span>saturated</span></div><div class="tag"><b>Granulaire</b><span>Dry to saturated</span></div></div>
+      <div class="tile"><img src="fil.jpg" alt=""><div class="tag"><b>Filaire</b><span>Plugs that mate</span></div></div>
+      <div class="tile"><img src="mail.jpg" alt=""><div class="tag"><b>Maillage</b><span>Real fabrics</span></div></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
