@@ -16,6 +16,9 @@ pre-release versions.
 - Logo: the mark (nine primitives, no two alike) and the wordmark, light and
   dark, the website's favicon and the GitHub social preview, drawn by
   `scripts/make_logo.py`.
+- Social preview built from the four generators' renders (one tile each,
+  named), by `scripts/make_social_preview.py`; also the website's link
+  preview.
 
 ### Changed
 
