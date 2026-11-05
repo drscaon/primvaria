@@ -54,6 +54,8 @@ nav a{color:var(--muted);text-decoration:none}
 nav a:hover{color:var(--ink)}
 section{padding-block:56px}
 .hero{padding-block:72px 40px}
+.demo video{display:block;width:100%;max-width:720px;height:auto;aspect-ratio:1/1;margin:0 auto;border-radius:12px;background:#0b0d10}
+.demo p{max-width:720px;margin:14px auto 0;color:var(--muted);text-align:center}
 .eyebrow{font:500 13px var(--f-mono);color:var(--accent);letter-spacing:.02em;margin:0 0 14px}
 h1{font:700 clamp(36px,6vw,64px)/1.02 var(--f-display);letter-spacing:-.025em;margin:0;max-width:15ch;text-wrap:balance}
 h2{font:700 clamp(26px,3.4vw,36px)/1.1 var(--f-display);letter-spacing:-.015em;margin:0 0 12px;text-wrap:balance}
@@ -122,6 +124,14 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
     <a class="btn" href="https://pypi.org/project/primvaria/">PyPI</a>
   </div>
   <div class="facts"><span>4 generators</span><span>OpenUSD + UsdPhysics</span><span>Blender · MuJoCo · Isaac Sim</span><span>runs on CPU</span></div>
+</div></section>
+
+<section id="demo" class="demo"><div class="wrap">
+  <h2>See it in one minute</h2>
+  <video controls muted playsinline loop preload="metadata" poster="demo_poster.jpg" width="1080" height="1080">
+    <source src="demo.mp4" type="video/mp4">
+  </video>
+  <p>Generated as OpenUSD, tested in MuJoCo, rendered in Blender. The same Unitree G1 and walking policy cross a railway ballast mound, then fall on rounded river pebbles.</p>
 </div></section>
 
 <section><div class="wrap">
