@@ -9,6 +9,10 @@ pre-release versions.
 
 ### Added
 
+- One-minute demo video on the website (`site/demo.mp4`, section "See it in
+  one minute") and a GIF of the terrain test at the top of the README: the
+  generators' variations and their tests, simulated in MuJoCo and rendered in
+  Blender.
 - Website, [primvaria.com](https://primvaria.com): the four generators and the
   engine matrix, built from `site/` and deployed to GitHub Pages by the
   `pages.yml` workflow.
