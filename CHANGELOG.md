@@ -26,6 +26,8 @@ pre-release versions.
 
 ### Changed
 
+- Filaire on the website and in the README: 19 presets and 23 connector families,
+  with the robot and drone leads (servo, battery, balance, jumper) and CAN bus.
 - The project's homepage on PyPI is primvaria.com.
 - Website search metadata: a title and description naming what the project is
   (OpenUSD asset generators for robot simulation), canonical URL, structured
