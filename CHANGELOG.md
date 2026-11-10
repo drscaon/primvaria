@@ -26,6 +26,8 @@ pre-release versions.
 
 ### Changed
 
+- Filaire: 20 presets and 24 connector families, with the BNC coaxial lead and its
+  bayonet lock.
 - Filaire on the website and in the README: 19 presets and 23 connector families,
   with the robot and drone leads (servo, battery, balance, jumper) and CAN bus.
 - The project's homepage on PyPI is primvaria.com.
