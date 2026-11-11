@@ -91,9 +91,9 @@ attribute:
 | `primvaria:seed` | int | seed of the run that drew the asset: with the asset's name and the same generator version, it reproduces it. `0` for an asset that is not drawn (Filaire's sockets, a Quincaillerie part written on its own) |
 
 Generator-specific attributes keep their own namespace (`granulaire:*`,
-`maillage:*`, `filaire:*`, `quincaillerie:*`); those that duplicate the
-attributes above (`filaire:seed`, `maillage:version`, …) stay until the next
-breaking release.
+`maillage:*`, `filaire:*`, `quincaillerie:*`) and never repeat the attributes
+above or the drawn values of section 6: a generator's own preset, seed,
+version or variation metadata is not written.
 
 `primvaria:variation:*` holds what was drawn for the asset (section 6).
 
