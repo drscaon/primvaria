@@ -26,6 +26,7 @@ pre-release versions.
 
 ### Changed
 
+- README: the ground and physics scene the four generators now share.
 - Python 3.11 or later (was 3.10): MuJoCo 4 requires it, and Python 3.10 reached
   its end of life in October 2026. CI tests 3.11 to 3.13.
 - `sim` extra: the MuJoCo checks of all four generators (Granulaire and Maillage have

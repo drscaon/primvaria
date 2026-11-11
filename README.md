@@ -65,6 +65,12 @@ CI on every preset, from the OpenUSD file alone.
 Isaac Sim runs need an NVIDIA RTX GPU and have not been done yet: the files
 follow the standard `UsdPhysics` schemas and carry PhysX attributes.
 
+All four write the same ground and physics scene, so their assets share one
+scene: `/World/PhysicsScene` with gravity 9.81 m/s² along −Z, and
+`/World/Ground`, a 2 cm box whose top face is z = 0, with the physics material
+`/World/GroundMaterial` (static friction 0.6, dynamic 0.5, restitution 0.1).
+Each generator checks every file it writes against this convention.
+
 ## Installation
 
 ```bash
