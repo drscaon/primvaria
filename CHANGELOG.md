@@ -26,6 +26,9 @@ pre-release versions.
 
 ### Changed
 
+- `sim` extra: the MuJoCo checks of all four generators (Granulaire and Maillage have
+  theirs now); new `blender` extra (Blender as a Python module, Python 3.13 only).
+- Engine matrix: Filaire's bayonet-lock test in MuJoCo.
 - Filaire: 20 presets and 24 connector families, with the BNC coaxial lead and its
   bayonet lock.
 - Filaire on the website and in the README: 19 presets and 23 connector families,

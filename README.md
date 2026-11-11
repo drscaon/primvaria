@@ -59,7 +59,7 @@ CI on every preset, from the OpenUSD file alone.
 |---|---|---|---|---|---|
 | Granulaire | tested | tested: pile | tested: pile | not yet | exported, not run |
 | Maillage | tested | tested: drape | tested: flex drape | n/a (cloth) | exported, structure checked, not run |
-| Filaire | tested | tested: drop (add-on) | tested: drop, sag, coil, insertion | not yet | n/a |
+| Filaire | tested | tested: drop (add-on) | tested: drop, sag, coil, insertion, bayonet lock | not yet | n/a |
 | Quincaillerie | tested | tested: drop, assemblies (add-on) | tested: drop, screwing, jam, insertion | not yet | n/a |
 
 Isaac Sim runs need an NVIDIA RTX GPU and have not been done yet: the files
@@ -70,18 +70,19 @@ follow the standard `UsdPhysics` schemas and carry PhysX attributes.
 ```bash
 pip install primvaria             # the four generators
 pip install "primvaria[all]"      # + renders, MuJoCo checks, MaterialX
+pip install "primvaria[blender]"  # + Blender as a Python module (Python 3.13 only)
 ```
 
 | Extra | Adds |
 |---|---|
 | `render` | previews and renders (matplotlib, Pillow) |
-| `sim` | the MuJoCo checks of Filaire and Quincaillerie |
+| `sim` | the MuJoCo checks of all four generators |
 | `materialx` | MaterialX materials of Quincaillerie |
 | `all` | all of the above |
+| `blender` | Blender as a Python module, for the Blender checks of all four (Python 3.13 only, as the `bpy` wheels exist for one Python version; not part of `all`) |
 
-Blender as a Python module is installed with `pip install "maillage[blender]"`
-(Python 3.13 only, as the `bpy` wheels exist for one Python version). Only one
-generator? Install it alone: `pip install granulaire`.
+The OpenUSD validators need `usd-core` 26.5 or later, which the generators
+require. Only one generator? Install it alone: `pip install granulaire`.
 
 ## Usage
 

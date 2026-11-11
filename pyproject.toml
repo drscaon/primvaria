@@ -46,12 +46,14 @@ dependencies = [
 [project.optional-dependencies]
 # previews and renders (matplotlib, Pillow)
 render = ["granulaire[render]", "maillage[render]", "filaire[render]"]
-# MuJoCo checks of Filaire and Quincaillerie
-sim = ["filaire[sim]", "quincaillerie[sim]"]
+# MuJoCo checks of the four generators
+sim = ["granulaire[sim]", "maillage[sim]", "filaire[sim]", "quincaillerie[sim]"]
 # MaterialX materials of Quincaillerie
 materialx = ["quincaillerie[materialx]"]
-# everything above (Blender as a Python module stays separate: maillage[blender], Python 3.13 only)
+# everything above
 all = ["primvaria[render,sim,materialx]"]
+# Blender as a Python module, for the Blender checks (Python 3.13 only; Quincaillerie's need bpy too)
+blender = ["granulaire[blender]", "maillage[blender]", "filaire[blender]"]
 dev = ["pytest>=7", "ruff>=0.5"]
 
 [project.urls]
