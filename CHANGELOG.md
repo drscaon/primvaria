@@ -7,6 +7,16 @@ pre-release versions.
 
 ## [Unreleased]
 
+### Added
+
+- `MISSION.md`: the mission, the three verbs (vary, measure, prove), the
+  audience, the entry gate every change passes and the non-goals.
+- `docs/contract.md`: version 0 of the OpenUSD contract shared by the four
+  generators (stage, ground and physics scene, asset identity and the
+  `primvaria:` namespace, variant sets, MateFrame, engine extras, pack files).
+- Pull request template with the mission checklist, the same in the five
+  repositories.
+
 ## [0.2.0b1] - 2026-11-13 (beta)
 
 Requires the generators' new releases (Granulaire 0.3.0b1, Maillage 0.2.0b1,

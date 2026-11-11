@@ -130,6 +130,15 @@ hero images from the four repositories. Preview it locally with
 `python site/build.py --local ..` (sibling clones of the four repositories),
 then `python -m http.server -d _site`.
 
+## Mission and contract
+
+[MISSION.md](https://github.com/drscaon/primvaria/blob/main/MISSION.md) states
+what the suite is for, the three verbs every change is checked against (vary,
+measure, prove) and what it does not do.
+[docs/contract.md](https://github.com/drscaon/primvaria/blob/main/docs/contract.md)
+is the OpenUSD contract the four generators share: stage conventions, the
+ground and physics scene, asset identity, variant sets and MateFrames.
+
 ## Development
 
 The project follows **GitHub Flow**, like the four generators: `main` is
