@@ -7,6 +7,18 @@ pre-release versions.
 
 ## [Unreleased]
 
+## [0.2.0b1] - 2026-11-13 (beta)
+
+Requires the generators' new releases (Granulaire 0.3.0b1, Maillage 0.2.0b1,
+Filaire 0.3.0b1, Quincaillerie 0.2.0b1), which share one ground and physics scene.
+
+### Breaking changes
+
+- Python 3.11 or later (was 3.10): MuJoCo 4 requires it, and Python 3.10 reached
+  its end of life in October 2026.
+- Minimum generator versions raised to the releases that share the ground and
+  physics scene and require Python 3.11, usd-core 26.5 and MuJoCo 4.
+
 ### Added
 
 - One-minute demo video on the website (`site/demo.mp4`, section "See it in
@@ -27,8 +39,6 @@ pre-release versions.
 ### Changed
 
 - README: the ground and physics scene the four generators now share.
-- Python 3.11 or later (was 3.10): MuJoCo 4 requires it, and Python 3.10 reached
-  its end of life in October 2026. CI tests 3.11 to 3.13.
 - `sim` extra: the MuJoCo checks of all four generators (Granulaire and Maillage have
   theirs now); new `blender` extra (Blender as a Python module, Python 3.13 only).
 - Engine matrix: Filaire's bayonet-lock test in MuJoCo.
