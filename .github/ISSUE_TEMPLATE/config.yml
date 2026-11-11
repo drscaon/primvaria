@@ -1,0 +1,14 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Request a grain preset (Granulaire)
+    url: https://github.com/drscaon/granulaire/issues/new/choose
+    about: Sand, gravel, seeds, pellets and other granular materials.
+  - name: Request a cloth preset (Maillage)
+    url: https://github.com/drscaon/maillage/issues/new/choose
+    about: Towels, sheets, flags and other flat textiles.
+  - name: Request a cable or connector (Filaire)
+    url: https://github.com/drscaon/filaire/issues/new/choose
+    about: Cables, connectors and their receptacles.
+  - name: Request a part (Quincaillerie)
+    url: https://github.com/drscaon/quincaillerie/issues/new/choose
+    about: Fasteners, battery cells and holders.

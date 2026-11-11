@@ -9,6 +9,8 @@ pre-release versions.
 
 ### Added
 
+- `CONTRIBUTING.md`, issue templates (bug report, links to the generators for preset requests),
+  `SECURITY.md` and `CITATION.cff`.
 - `MISSION.md`: the mission, the three verbs (vary, measure, prove), the
   audience, the entry gate every change passes and the non-goals.
 - `docs/contract.md`: version 0 of the OpenUSD contract shared by the four
