@@ -17,7 +17,7 @@ pre-release versions.
 - Pull request template with the mission checklist, the same in the five
   repositories.
 
-## [0.2.0b1] - 2026-11-13 (beta)
+## [0.2.0b1] - 2026-11-11 (beta)
 
 Requires the generators' new releases (Granulaire 0.3.0b1, Maillage 0.2.0b1,
 Filaire 0.3.0b1, Quincaillerie 0.2.0b1), which share one ground and physics scene.
