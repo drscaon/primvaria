@@ -95,15 +95,57 @@ Generator-specific attributes keep their own namespace (`granulaire:*`,
 attributes above (`filaire:seed`, `maillage:version`, …) stay until the next
 breaking release.
 
-**Planned**, reserved from now on:
+`primvaria:variation:*` holds what was drawn for the asset (section 6).
 
-- `primvaria:variation:*`: every value drawn for this instance, one random
-  stream per aspect, after Quincaillerie's variation model (tolerance, defect,
-  wear, physics);
-- `primvaria:measured:*`: every property measured on the generated asset
-  (mass, shape descriptors, stiffness).
+**Planned**, reserved from now on: `primvaria:measured:*`, every property
+measured on the generated asset (mass, shape descriptors, stiffness).
 
-## 6. Variant sets
+## 6. Variation model
+
+**v0.** The reference implementation is Quincaillerie's `variation.py`; the
+four generators follow the same rules.
+
+**Aspects.** A generator varies its assets along a fixed list of aspects,
+each of which can be switched off:
+
+| Generator | Aspects |
+|---|---|
+| Granulaire | `size`, `shape`, `roundness`, `mineralogy`, `orientation`, `moisture` |
+| Maillage | `size`, `cut`, `corners`, `fabric`, `color` |
+| Filaire | `length`, `layout`, `ends`, `color`, `stiffness`, `density` |
+| Quincaillerie | `tolerance`, `defect`, `wear`, `physics` |
+
+**Rules.**
+
+1. *Reproducible.* The same generator version, preset, seed and options give
+   the same assets.
+2. *Independent aspects.* Switching an aspect off leaves every value drawn
+   for the other aspects unchanged, so two runs with the same seed differ by
+   that aspect alone. A generator gets there with one random stream per
+   aspect, or by always drawing and then overriding.
+3. *Nominal when off.* An aspect that is switched off takes its nominal value
+   (the middle of its range, the first of its list), and that value is still
+   recorded.
+4. *Recorded.* Every drawn value is written on the asset root and in the
+   pack's table, under the same name.
+
+**Recording.**
+
+| Attribute | Type | Value |
+|---|---|---|
+| `primvaria:variation:aspects` | string[] | the aspects that were switched on for the run; empty for an asset that is not drawn |
+| `primvaria:variation:<name>` | bool, int, double, string, double[] or string[] | one drawn value |
+
+Names are lowercase `snake_case` with the unit as a suffix when the value has
+one (`diameter_m`, `clearance_mm`, `cut_skew_deg`, `youngs_modulus_pa`). The
+pack's table has the same values in columns named `variation:<name>`. In
+Granulaire the values are written on the prototype and inherited by the
+grains; a grain adds its own drawn `moisture` state.
+
+Each generator tests rules 1 to 3; the conformance check requires
+`primvaria:variation:aspects` on every asset root and checks the names.
+
+## 7. Variant sets
 
 In place, with the names used today:
 
@@ -123,7 +165,7 @@ In place, with the names used today:
 
 **Planned:** `state` for Maillage (`flat`, `draped`, `crumpled`, `folded`).
 
-## 7. MateFrame
+## 8. MateFrame
 
 In place in Filaire and Quincaillerie: anything that connects (plug and
 socket, screw and nut, cell and holder) carries an `Xform` named `MateFrame`,
@@ -139,7 +181,7 @@ clearance, keying) are generator-specific today (`filaire:role`,
 `filaire:insertionDepth`, …). **Planned:** common `primvaria:mate:*`
 attributes.
 
-## 8. Engines
+## 9. Engines
 
 The base of every file is plain OpenUSD: `UsdGeom`, `UsdShade` with
 `UsdPreviewSurface`, and the standard `UsdPhysics` schemas. It is what the
@@ -159,7 +201,7 @@ still valid and still passes the base checks.
 **Planned:** engine extras as overlay layers in all four generators, as
 Maillage does.
 
-## 9. Pack files
+## 10. Pack files
 
 Today each generator names its tables its own way:
 
@@ -171,18 +213,18 @@ Today each generator names its tables its own way:
 | Quincaillerie | `parts.csv` | `summary.json` |
 
 **Planned:** one schema for every pack, `manifest.json` and `instances.csv`,
-with common columns that mirror section 5 followed by the generator's own.
+with common columns that mirror sections 5 and 6 followed by the generator's own.
 
-## 10. Conformance
+## 11. Conformance
 
 | Check | Status |
 |---|---|
 | Every OpenUSD `UsdValidation` validator, on every file and every variant, in each generator's CI | in place |
 | The shared ground and physics scene (section 3), by `ground.py` | in place |
-| Sections 2, 4 and 5, by `python -m <generator>.conformance` on every preset in each generator's CI, and by `tests/test_contract.py` | v0 |
+| Sections 2, 4, 5 and the recording of section 6, by `python -m <generator>.conformance` on every preset in each generator's CI, and by `tests/test_contract.py` | v0 |
 | The files the generators share are byte-identical: `ground.py`, `contract.py`, `conformance.py` and `tests/test_contract.py`. `scripts/check_shared_files.py` in this repository fails when one differs, in CI and weekly | v0 |
 
-## 11. Versioning
+## 12. Versioning
 
 The contract has one integer version, written in `primvaria:contract`.
 A file states the version it follows; a generator release states it in its
