@@ -25,6 +25,9 @@ pre-release versions.
 
 ### Changed
 
+- `docs/contract.md`, new section 6, the variation model: aspects per
+  generator, the rules (reproducible, independent aspects, nominal when off,
+  recorded) and the `primvaria:variation:*` attributes.
 - `docs/contract.md`: `primvaria:seed` is the seed of the run (`0` for an asset
   that is not drawn), `primvaria:preset` the preset's key; conformance is
   checked by `python -m <generator>.conformance`.
