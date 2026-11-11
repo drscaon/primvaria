@@ -5,6 +5,8 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
+  schedule:
+    - cron: "17 5 * * 1"  # weekly: the shared-files guard also watches the generators' repositories
 
 permissions:
   contents: read
@@ -25,6 +27,16 @@ jobs:
       - run: pip install "ruff==0.16.8"
       - run: ruff check .
       - run: ruff format --check .
+
+  shared-files:
+    name: Files shared by the four generators are identical
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - run: python scripts/check_shared_files.py
 
   test:
     name: Tests (Python ${{ matrix.python-version }}, ${{ matrix.os }})

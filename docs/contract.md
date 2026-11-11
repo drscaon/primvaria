@@ -79,15 +79,16 @@ Every asset root also carries `assetInfo`:
 ## 5. Ground truth: the `primvaria:` namespace
 
 **v0.** Every asset root carries these attributes, with the same names and
-types in every generator:
+types in every generator, and no other prim carries a `primvaria:*`
+attribute:
 
 | Attribute | Type | Value |
 |---|---|---|
 | `primvaria:contract` | string | version of this document the file follows (`"0"`) |
 | `primvaria:generator` | token | `granulaire`, `maillage`, `filaire` or `quincaillerie` |
 | `primvaria:version` | string | version of the generator that wrote the file |
-| `primvaria:preset` | string | preset or catalogue entry the asset was drawn from |
-| `primvaria:seed` | int | seed that reproduces this asset with the same generator version |
+| `primvaria:preset` | string | key of the preset or catalogue entry the asset was drawn from (`beach_sand`, `ISO4017_M8x30`) |
+| `primvaria:seed` | int | seed of the run that drew the asset: with the asset's name and the same generator version, it reproduces it. `0` for an asset that is not drawn (Filaire's sockets, a Quincaillerie part written on its own) |
 
 Generator-specific attributes keep their own namespace (`granulaire:*`,
 `maillage:*`, `filaire:*`, `quincaillerie:*`); those that duplicate the
@@ -178,8 +179,8 @@ with common columns that mirror section 5 followed by the generator's own.
 |---|---|
 | Every OpenUSD `UsdValidation` validator, on every file and every variant, in each generator's CI | in place |
 | The shared ground and physics scene (section 3), by `ground.py` | in place |
-| Sections 2, 4 and 5, by `tests/test_contract.py`, the same file in the four generators, on every preset | v0 |
-| A job in this repository that fails when a shared file (`ground.py`, `tests/test_contract.py`) differs between generators | v0 |
+| Sections 2, 4 and 5, by `python -m <generator>.conformance` on every preset in each generator's CI, and by `tests/test_contract.py` | v0 |
+| The files the generators share are byte-identical: `ground.py`, `contract.py`, `conformance.py` and `tests/test_contract.py`. `scripts/check_shared_files.py` in this repository fails when one differs, in CI and weekly | v0 |
 
 ## 11. Versioning
 
