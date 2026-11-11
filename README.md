@@ -15,7 +15,7 @@
 <p align="center">
   <a href="https://github.com/drscaon/primvaria/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/drscaon/primvaria/actions/workflows/ci.yml/badge.svg"></a>
   <a href="https://pypi.org/project/primvaria/"><img alt="PyPI" src="https://img.shields.io/pypi/v/primvaria"></a>
-  <img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10%2B-3776AB">
+  <img alt="Python 3.11+" src="https://img.shields.io/badge/python-3.11%2B-3776AB">
   <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-green">
   <a href="https://primvaria.com"><img alt="Website" src="https://img.shields.io/badge/web-primvaria.com-0f6e74"></a>
 </p>
