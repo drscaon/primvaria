@@ -16,6 +16,16 @@ pre-release versions.
   `primvaria:` namespace, variant sets, MateFrame, engine extras, pack files).
 - Pull request template with the mission checklist, the same in the five
   repositories.
+- `scripts/check_shared_files.py` and its CI job (on every change and weekly):
+  fails when a file the four generators share (`ground.py`, `contract.py`,
+  `conformance.py`, `tests/test_contract.py`) differs between them.
+- Website footer: links to the mission and the OpenUSD contract.
+
+### Changed
+
+- `docs/contract.md`: `primvaria:seed` is the seed of the run (`0` for an asset
+  that is not drawn), `primvaria:preset` the preset's key; conformance is
+  checked by `python -m <generator>.conformance`.
 
 ## [0.2.0b1] - 2026-11-11 (beta)
 
