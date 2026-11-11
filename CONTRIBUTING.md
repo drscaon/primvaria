@@ -1,7 +1,7 @@
 # Contributing to Primvaria
 
-Thank you for your interest. Primvaria is the suite package of
-[Primvaria](https://primvaria.com), and every change is checked against the
+Thank you for your interest. Primvaria is the suite that installs the four generators of
+[primvaria.com](https://primvaria.com), and every change is checked against the
 suite's [mission](https://github.com/drscaon/primvaria/blob/main/MISSION.md):
 vary each instance, measure what was generated, prove it in real engines.
 
