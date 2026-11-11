@@ -4,12 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "primvaria"
-version = "0.1.0b1"
+version = "0.2.0b1"
 description = "Physics-ready variability for Physical AI, in OpenUSD: one install for the Granulaire, Maillage, Filaire and Quincaillerie asset generators, with a single command line."
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 authors = [{ name = "Daniel Régis Sarmento Caon" }]
 keywords = [
     "openusd",
@@ -27,7 +27,6 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "Intended Audience :: Developers",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
@@ -37,21 +36,23 @@ classifiers = [
 # A plain `pip install primvaria` installs the whole suite.
 # Install a single generator on its own with `pip install granulaire` (etc.).
 dependencies = [
-    "granulaire>=0.2.0b2",
-    "maillage>=0.1.0b1",
-    "filaire>=0.1.0b1",
-    "quincaillerie>=0.1.0b2",
+    "granulaire>=0.3.0b1",
+    "maillage>=0.2.0b1",
+    "filaire>=0.3.0b1",
+    "quincaillerie>=0.2.0b1",
 ]
 
 [project.optional-dependencies]
 # previews and renders (matplotlib, Pillow)
 render = ["granulaire[render]", "maillage[render]", "filaire[render]"]
-# MuJoCo checks of Filaire and Quincaillerie
-sim = ["filaire[sim]", "quincaillerie[sim]"]
+# MuJoCo checks of the four generators
+sim = ["granulaire[sim]", "maillage[sim]", "filaire[sim]", "quincaillerie[sim]"]
 # MaterialX materials of Quincaillerie
 materialx = ["quincaillerie[materialx]"]
-# everything above (Blender as a Python module stays separate: maillage[blender], Python 3.13 only)
+# everything above
 all = ["primvaria[render,sim,materialx]"]
+# Blender as a Python module, for the Blender checks (Python 3.13 only; Quincaillerie's need bpy too)
+blender = ["granulaire[blender]", "maillage[blender]", "filaire[blender]"]
 dev = ["pytest>=7", "ruff>=0.5"]
 
 [project.urls]
@@ -76,7 +77,7 @@ addopts = "-q"
 
 [tool.ruff]
 line-length = 110
-target-version = "py310"
+target-version = "py311"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "UP", "B"]
