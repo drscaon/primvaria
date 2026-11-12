@@ -25,7 +25,7 @@ on:
         required: true
         type: string
       smoke:
-        description: Shell commands run after the tests, on every platform (bash)
+        description: Plain commands, one per line, run after the tests on every platform (bash and PowerShell)
         required: true
         type: string
       wheel-smoke:
@@ -84,7 +84,7 @@ jobs:
       - name: Test
         run: pytest
       - name: Command-line smoke test
-        shell: bash
+        # the platform's default shell (PowerShell on Windows), as a user would run them
         run: ${{ inputs.smoke }}
 
   usd-floor:
