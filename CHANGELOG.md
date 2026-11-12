@@ -9,6 +9,11 @@ pre-release versions.
 
 ### Added
 
+- `.github/workflows/generator-checks.yml`, a reusable workflow with the checks
+  every generator runs the same way (lint and format, tests on every Python
+  and platform with a smoke test, oldest OpenUSD, package build): the four
+  generators call it, so the ruff version and the test matrix are written
+  once.
 - `docs/engines.json`, the one source of the engine matrix, and
   `scripts/sync_engines.py`, which renders it into the README and the website
   and fills the generators' counts on the site from the installed packages; a
