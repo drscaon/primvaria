@@ -97,8 +97,16 @@ version or variation metadata is not written.
 
 `primvaria:variation:*` holds what was drawn for the asset (section 6).
 
-**Planned**, reserved from now on: `primvaria:measured:*`, every property
-measured on the generated asset (mass, shape descriptors, stiffness).
+`primvaria:measured:<name>` holds what was measured on the asset once
+generated, with the value types and the naming of the drawn values
+(`snake_case`, the unit as a suffix):
+
+| Generator | Measured |
+|---|---|
+| Granulaire | `mass_kg`, `mass_<state>_kg`, `volume_m3`, `area_m2`, the three axes, `elongation`, `flatness`, `sphericity`, `convexity`, `angularity_deg` |
+| Maillage | `mass_kg`, `area_m2`, `perimeter_m`, `vertices`, `faces`, `edge_mean_mm`, `edge_cv`, `min_angle_deg`, `min_angle_p05_deg` |
+| Filaire | `cable_mass_kg`, `end_a_mass_kg`, `end_b_mass_kg`, bending, torsional and axial stiffness, `segments`, `segment_length_m` |
+| Quincaillerie | `mass_kg`, `colliders` |
 
 ## 6. Variation model
 
@@ -203,17 +211,33 @@ Maillage does.
 
 ## 10. Pack files
 
-Today each generator names its tables its own way:
+**v0.** Every pack has the same two files, written by the same module
+(`pack.py`) in the four generators.
 
-| Generator | Per-instance table | Summary |
-|---|---|---|
-| Granulaire | `instances.csv`, `prototype_metrics.csv` | `summary.json` |
-| Maillage | `pieces.csv` | `summary.json` |
-| Filaire | `cables.csv` | `summary.json` |
-| Quincaillerie | `parts.csv` | `summary.json` |
+`instances.csv` has one row per asset, read back from the OpenUSD files, so
+the table and the files cannot disagree. An asset is listed from the file
+that defines it; a scene or a layer that only references it does not list it
+again. Columns, in this order:
 
-**Planned:** one schema for every pack, `manifest.json` and `instances.csv`,
-with common columns that mirror sections 5 and 6 followed by the generator's own.
+| Columns | Content |
+|---|---|
+| `name`, `file`, `prim` | the asset root's name, its file (relative to the pack) and its path |
+| `generator`, `version`, `preset`, `seed` | the identity of section 5 |
+| `aspects` | the aspects that were switched on, separated by spaces |
+| `variation:<name>` | every drawn value (section 6) |
+| `measured:<name>` | every measured value (section 5) |
+| the generator's own | Granulaire: `prototype`, `x_m`, `y_m`, `z_m`; Filaire: `jacket`; Quincaillerie: `kind`, `size`, `format`, `length_mm`, `family` |
+
+Lists are separated by spaces, booleans are `true` and `false`, and a cell is
+empty where an asset has no such value.
+
+`manifest.json` says what the pack is: `contract`, `generator`, `version`,
+`pack` (the preset or the set), `seed`, `aspects`, `assets` (the number of
+rows), `table`, `files` (the pack's OpenUSD files) and `summary`, the
+generator's own statistics.
+
+A generator may write other files beside them (Granulaire's
+`prototype_metrics.csv`, textures, previews, engine exports).
 
 ## 11. Conformance
 
@@ -222,7 +246,8 @@ with common columns that mirror sections 5 and 6 followed by the generator's own
 | Every OpenUSD `UsdValidation` validator, on every file and every variant, in each generator's CI | in place |
 | The shared ground and physics scene (section 3), by `ground.py` | in place |
 | Sections 2, 4, 5 and the recording of section 6, by `python -m <generator>.conformance` on every preset in each generator's CI, and by `tests/test_contract.py` | v0 |
-| The files the generators share are byte-identical: `ground.py`, `contract.py`, `conformance.py` and `tests/test_contract.py`. `scripts/check_shared_files.py` in this repository fails when one differs, in CI and weekly | v0 |
+| Section 10: the same command checks every pack it finds, the table must say what the files say; `tests/test_pack.py` | v0 |
+| The files the generators share are byte-identical: `ground.py`, `contract.py`, `conformance.py`, `pack.py`, `tests/test_contract.py` and `tests/test_pack.py`. `scripts/check_shared_files.py` in this repository fails when one differs, in CI and weekly | v0 |
 
 ## 12. Versioning
 
