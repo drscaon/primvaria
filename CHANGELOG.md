@@ -9,6 +9,10 @@ pre-release versions.
 
 ### Added
 
+- `docs/engines.json`, the one source of the engine matrix, and
+  `scripts/sync_engines.py`, which renders it into the README and the website
+  and fills the generators' counts on the site from the installed packages; a
+  test fails when either is out of date.
 - `CONTRIBUTING.md`, issue templates (bug report, links to the generators for preset requests),
   `SECURITY.md` and `CITATION.cff`.
 - `MISSION.md`: the mission, the three verbs (vary, measure, prove), the
