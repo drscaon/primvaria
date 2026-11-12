@@ -25,6 +25,10 @@ pre-release versions.
 
 ### Changed
 
+- `docs/contract.md`: the measured values (`primvaria:measured:*`, section 5)
+  and the pack files (`instances.csv` and `manifest.json`, section 10) are part
+  of version 0; the shared-files guard also covers `pack.py` and
+  `tests/test_pack.py`.
 - `docs/contract.md`, new section 6, the variation model: aspects per
   generator, the rules (reproducible, independent aspects, nominal when off,
   recorded) and the `primvaria:variation:*` attributes.
