@@ -55,12 +55,14 @@ Where each generator stands in each engine (also on
 [primvaria.com](https://primvaria.com/#engines)). Tests run in each project's
 CI on every preset, from the OpenUSD file alone.
 
+<!-- engines:start -->
 | | OpenUSD validators | Blender | MuJoCo | Isaac Sim · PhysX | OmniPhysics deformables |
 |---|---|---|---|---|---|
 | Granulaire | tested | tested: pile | tested: pile | not yet | exported, not run |
 | Maillage | tested | tested: drape | tested: flex drape | n/a (cloth) | exported, structure checked, not run |
 | Filaire | tested | tested: drop (add-on) | tested: drop, sag, coil, insertion, bayonet lock | not yet | n/a |
 | Quincaillerie | tested | tested: drop, assemblies (add-on) | tested: drop, screwing, jam, insertion | not yet | n/a |
+<!-- engines:end -->
 
 Isaac Sim runs need an NVIDIA RTX GPU and have not been done yet: the files
 follow the standard `UsdPhysics` schemas and carry PhysX attributes.
@@ -146,6 +148,11 @@ protected, every change goes through a pull request from a short-lived branch
 (`feat/<name>`, `fix/<name>`, …), and CI must be green before merging.
 Enable the pre-push hook once per clone with
 `git config core.hooksPath .githooks`.
+
+The engine matrix is written once, in `docs/engines.json`. After changing it,
+or after a generator gains a preset, run `python scripts/sync_engines.py`: it
+rewrites the table above and the website's matrix and counts. A test fails
+when they are out of date.
 
 Releasing: on a `chore/release-X.Y.Z` branch, bump `version` in
 `pyproject.toml` and move the `Unreleased` entries of `CHANGELOG.md` under

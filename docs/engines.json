@@ -1,0 +1,44 @@
+{
+  "updated": "12 November 2026",
+  "engines": [
+    {"key": "validators", "title": "OpenUSD validators"},
+    {"key": "blender", "title": "Blender"},
+    {"key": "mujoco", "title": "MuJoCo"},
+    {"key": "isaac", "title": "Isaac Sim · PhysX"},
+    {"key": "omniphysics", "title": "OmniPhysics deformables"}
+  ],
+  "generators": {
+    "granulaire": {
+      "facts": "{presets} presets · 0.07 mm to 5 cm",
+      "validators": {"status": "tested", "readme": "tested", "site": "every preset and moisture state"},
+      "blender": {"status": "tested", "readme": "tested: pile", "site": "pile test, every preset"},
+      "mujoco": {"status": "tested", "readme": "tested: pile", "site": "pile test, every preset"},
+      "isaac": {"status": "not yet", "readme": "not yet", "site": "standard UsdPhysics rigid bodies"},
+      "omniphysics": {"status": "exported", "readme": "exported, not run", "site": "peanuts, tomatoes; not run"}
+    },
+    "maillage": {
+      "facts": "{presets} presets · {fabrics} fabrics",
+      "validators": {"status": "tested", "readme": "tested", "site": "every preset, OmniPhysics layer included"},
+      "blender": {"status": "tested", "readme": "tested: drape", "site": "drape test, every preset"},
+      "mujoco": {"status": "tested", "readme": "tested: flex drape", "site": "flex export, drape test, every preset"},
+      "isaac": {"status": "n/a", "readme": "n/a (cloth)", "site": "cloth: see OmniPhysics"},
+      "omniphysics": {"status": "exported", "readme": "exported, structure checked, not run", "site": "surface deformables, structure checked; not run"}
+    },
+    "filaire": {
+      "facts": "{presets} presets · {connectors} connector families",
+      "validators": {"status": "tested", "readme": "tested", "site": "every preset, with and without physics"},
+      "blender": {"status": "tested", "readme": "tested: drop (add-on)", "site": "drop through the add-on, every preset"},
+      "mujoco": {"status": "tested", "readme": "tested: drop, sag, coil, insertion, bayonet lock", "site": "drop, sag, coil, insertion, bayonet lock"},
+      "isaac": {"status": "not yet", "readme": "not yet", "site": "UsdPhysics joints, PhysX attributes"},
+      "omniphysics": {"status": "n/a", "readme": "n/a", "site": ""}
+    },
+    "quincaillerie": {
+      "facts": "M3–M12 · {assets} catalogue assets",
+      "validators": {"status": "tested", "readme": "tested", "site": "whole catalogue, varied instances"},
+      "blender": {"status": "tested", "readme": "tested: drop, assemblies (add-on)", "site": "drop and assemblies through the add-on"},
+      "mujoco": {"status": "tested", "readme": "tested: drop, screwing, jam, insertion", "site": "drop, screwing, jammed threads, insertion"},
+      "isaac": {"status": "not yet", "readme": "not yet", "site": "UsdPhysics, PhysX attributes"},
+      "omniphysics": {"status": "n/a", "readme": "n/a", "site": ""}
+    }
+  }
+}
