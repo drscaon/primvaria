@@ -39,6 +39,11 @@ pre-release versions.
 
 ### Changed
 
+- `docs/contract.md`, section 9: engine data is no longer in the files. It is
+  an engine layer beside each file (`<file>_physx`, `<file>_omniphysics`),
+  in the four generators; a file holds no schema or attribute of an engine
+  and is complete without its layers.
+
 - `docs/contract.md`: the measured values (`primvaria:measured:*`, section 5)
   and the pack files (`instances.csv` and `manifest.json`, section 10) are part
   of version 0; the shared-files guard also covers `pack.py` and
