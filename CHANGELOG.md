@@ -7,8 +7,6 @@ pre-release versions.
 
 ## [Unreleased]
 
-## [0.3.0b1] - 2026-11-13 (beta)
-
 ### Added
 
 - The website has one page per subject: a short home, the engine matrix, the
@@ -41,9 +39,6 @@ pre-release versions.
 
 ### Changed
 
-- Requires the releases of the generators that follow the contract's pack
-  files and variation model: `granulaire>=0.4.0b1`, `maillage>=0.3.0b1`,
-  `filaire>=0.4.0b1`, `quincaillerie>=0.3.0b1`.
 - `docs/contract.md`: the measured values (`primvaria:measured:*`, section 5)
   and the pack files (`instances.csv` and `manifest.json`, section 10) are part
   of version 0; the shared-files guard also covers `pack.py` and
