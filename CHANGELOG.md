@@ -9,6 +9,11 @@ pre-release versions.
 
 ### Added
 
+- The website has one page per subject: a short home, the engine matrix, the
+  contract and the mission, and for each generator its README and every page
+  of its `docs/` folder, rendered from the repositories' Markdown files
+  (`site/build.py`, `site/layout.html`, `site/style.css`, `site/pages/`). The
+  build fails on a broken internal link and writes the sitemap.
 - `.github/workflows/generator-checks.yml`, a reusable workflow with the checks
   every generator runs the same way (lint and format, tests on every Python
   and platform with a smoke test, oldest OpenUSD, package build): the four
