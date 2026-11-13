@@ -53,7 +53,7 @@ materialx = ["quincaillerie[materialx]"]
 all = ["primvaria[render,sim,materialx]"]
 # Blender as a Python module, for the Blender checks (Python 3.13 only; Quincaillerie's need bpy too)
 blender = ["granulaire[blender]", "maillage[blender]", "filaire[blender]"]
-dev = ["pytest>=7", "ruff>=0.5"]
+dev = ["pytest>=7", "ruff>=0.5", "markdown>=3.5", "pillow>=9"]  # the last two build the site
 
 [project.urls]
 Homepage = "https://primvaria.com"

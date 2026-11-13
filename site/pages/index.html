@@ -1,0 +1,92 @@
+<section class="hero"><div class="wrap">
+  <p class="eyebrow">OpenUSD asset generators · open source · MIT</p>
+  <h1>Physics-ready variability for Physical AI, in OpenUSD.</h1>
+  <p class="lede">Open-source procedural OpenUSD asset generators for robot simulation, covering the objects robots struggle with most: grains, cloth, cables and small mechanical parts. No two instances are the same, every value is measured, and every preset is checked in real engines before it ships.</p>
+  <div class="install">
+    <div class="cmd"><span id="cmd">pip install primvaria</span><button type="button" data-copy="cmd">Copy</button></div>
+    <a class="btn" href="https://github.com/drscaon/primvaria">Source on GitHub</a>
+    <a class="btn" href="https://pypi.org/project/primvaria/">PyPI</a>
+  </div>
+  <div class="facts"><span>4 generators</span><span>OpenUSD + UsdPhysics</span><span>Blender · MuJoCo · Isaac Sim</span><span>runs on CPU</span></div>
+</div></section>
+
+<section id="demo" class="demo"><div class="wrap">
+  <h2>See it in one minute</h2>
+  <video controls muted playsinline loop preload="metadata" poster="/demo_poster.jpg" width="1080" height="1080">
+    <source src="/demo.mp4" type="video/mp4">
+  </video>
+  <p>Generated as OpenUSD, tested in MuJoCo, rendered in Blender. The same Unitree G1 and walking policy cross a railway ballast mound, then fall on rounded river pebbles.</p>
+</div></section>
+
+<section><div class="wrap">
+  <h2>Three rules, in every generator</h2>
+  <div class="rules">
+    <div class="rule"><b>Vary</b><p>Distributions, not one mesh copied a hundred times: shape, size, tolerance, defects, wear and physics drawn per instance, each with its own seed, and written into the file as ground truth.</p></div>
+    <div class="rule"><b>Measure</b><p>What was generated is measured afterwards: mass, sphericity, drape, stiffness, fit. The numbers ship with the asset, so a training set can be filtered and stratified.</p></div>
+    <div class="rule"><b>Prove</b><p>Every preset passes OpenUSD's validators and physical tests in real engines, read back from the file. What has not been tested is said, in the <a href="/engines/">engine matrix</a>.</p></div>
+  </div>
+</div></section>
+
+<section id="generators"><div class="wrap">
+  <h2>The generators</h2>
+  <p class="lede" style="margin-top:0">Each is its own package, released on its own schedule. <code style="font:14px var(--f-mono)">pip install primvaria</code> installs all four and one command line.</p>
+  <div class="gens">
+    <article class="gen">
+      <img src="/img/granulaire.jpg" alt="Grains of every Granulaire preset, dry to saturated" loading="lazy" width="1200" height="675">
+      <div class="body">
+        <div class="name"><h3><a href="/granulaire/">Granulaire</a></h3><span class="fr">granular · grainy</span></div>
+        <p>Procedural granular assets: sand, gravel, pebbles, seeds, fruit, pellets and regolith with measured shapes, sizes, masses and four moisture states.</p>
+        <span class="num">25 presets · 0.07 mm to 5 cm</span>
+        <div class="links"><code>pip install granulaire</code><a href="/granulaire/">Documentation</a><a href="https://github.com/drscaon/granulaire">GitHub</a><a href="https://pypi.org/project/granulaire/">PyPI</a></div>
+      </div>
+    </article>
+    <article class="gen">
+      <img src="/img/maillage.jpg" alt="One piece of each Maillage preset: towels, napkins, tablecloths, sheets, scarves and a flag" loading="lazy" width="1200" height="675">
+      <div class="body">
+        <div class="name"><h3><a href="/maillage/">Maillage</a></h3><span class="fr">mesh · knit stitch</span></div>
+        <p>Procedural cloth assets: towels, napkins, tablecloths, sheets, scarves and flags in real sizes and fabrics, meshed for cloth solvers, with engine-neutral stiffness.</p>
+        <span class="num">12 presets · 11 fabrics</span>
+        <div class="links"><code>pip install maillage</code><a href="/maillage/">Documentation</a><a href="https://github.com/drscaon/maillage">GitHub</a><a href="https://pypi.org/project/maillage/">PyPI</a></div>
+      </div>
+    </article>
+    <article class="gen">
+      <img src="/img/filaire.jpg" alt="One cable of each of the 20 Filaire presets, from mains cords and USB to BNC coax and servo, battery and balance leads" loading="lazy" width="1200" height="675">
+      <div class="body">
+        <div class="name"><h3><a href="/filaire/">Filaire</a></h3><span class="fr">wired · wireframe</span></div>
+        <p>Procedural cable assets: standard cables with real male and female connectors, from mains, USB and Ethernet to bayonet-locking BNC coax and the servo, battery and balance leads of robots and drones, the receptacles they plug into, and rigid-segment physics from the cable's stiffness.</p>
+        <span class="num">20 presets · 24 connector families</span>
+        <div class="links"><code>pip install filaire</code><a href="/filaire/">Documentation</a><a href="https://github.com/drscaon/filaire">GitHub</a><a href="https://pypi.org/project/filaire/">PyPI</a></div>
+      </div>
+    </article>
+    <article class="gen">
+      <img src="/img/quincaillerie.jpg" alt="Ten varied instances of a screw, nut and washer, and battery cells" loading="lazy" width="1200" height="675">
+      <div class="body">
+        <div class="name"><h3><a href="/quincaillerie/">Quincaillerie</a></h3><span class="fr">hardware · nuts and bolts</span></div>
+        <p>Procedural hardware assets: threaded screws, nuts and washers, battery cells and their holders, where tolerances, defects and wear change how parts really behave.</p>
+        <span class="num">M3–M12 · 41 catalogue assets</span>
+        <div class="links"><code>pip install quincaillerie</code><a href="/quincaillerie/">Documentation</a><a href="https://github.com/drscaon/quincaillerie">GitHub</a><a href="https://pypi.org/project/quincaillerie/">PyPI</a></div>
+      </div>
+    </article>
+  </div>
+</div></section>
+
+<section id="engines"><div class="wrap">
+  <h2>Tested where it says, and nowhere else</h2>
+  <p class="lede" style="margin-top:0">Every preset is checked by OpenUSD's validators, in Blender and in MuJoCo, from the file alone. Isaac Sim has not been run yet. The <a href="/engines/">engine matrix</a> says where each generator stands in each engine, and the <a href="/contract/">OpenUSD contract</a> says what every file holds.</p>
+</div></section>
+
+<section id="install"><div class="wrap">
+  <h2>Install and generate</h2>
+  <div class="cols">
+    <div>
+      <pre>pip install primvaria           # the four generators
+pip install "primvaria[all]"    # + renders, MuJoCo checks, MaterialX</pre>
+      <p class="lede" style="font-size:15px;margin-top:14px">Python 3.11+, no GPU needed. One generator only? <code style="font:13px var(--f-mono)">pip install granulaire</code>, or any of the others.</p>
+    </div>
+    <pre>primvaria list
+primvaria granulaire generate --preset beach_sand
+primvaria maillage generate --preset tea_towel
+primvaria filaire generate --preset usb_c
+primvaria quincaillerie generate screw M10 --with nut,washer</pre>
+  </div>
+</div></section>

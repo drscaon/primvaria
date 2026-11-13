@@ -126,11 +126,26 @@ generators' renders, with `python scripts/make_social_preview.py`.
 
 ## Website
 
-[primvaria.com](https://primvaria.com) is built from `site/` by the `pages.yml`
-workflow (GitHub Pages) on every change to `site/` and weekly, to pick up new
-hero images from the four repositories. Preview it locally with
-`python site/build.py --local ..` (sibling clones of the four repositories),
-then `python -m http.server -d _site`.
+[primvaria.com](https://primvaria.com) has one page per subject, built from
+`site/` by the `pages.yml` workflow (GitHub Pages):
+
+| Page | Source |
+|---|---|
+| home, engine matrix | written by hand: `site/pages/` |
+| `/contract/`, `/mission/` | `docs/contract.md`, `MISSION.md` |
+| `/<generator>/` | the generator's `README.md` |
+| `/<generator>/<page>/` | each page of the generator's `docs/` that its README links to |
+
+The site is rebuilt on every change to those files here, and weekly to pick up
+what changed in the four generators. The build fails if a link inside the
+site leads nowhere. Preview it locally with sibling clones of the four
+repositories:
+
+```bash
+pip install -e ".[dev]"
+python site/build.py --local ..
+python -m http.server -d _site
+```
 
 ## Mission and contract
 
