@@ -108,6 +108,30 @@ generated, with the value types and the naming of the drawn values
 | Filaire | `cable_mass_kg`, `end_a_mass_kg`, `end_b_mass_kg`, bending, torsional and axial stiffness, `segments`, `segment_length_m` |
 | Quincaillerie | `mass_kg`, `colliders` |
 
+### Semantic labels
+
+Every asset root also says what it is with OpenUSD's own semantic labels,
+the multiple-apply schema `UsdSemantics.LabelsAPI`, which renderers turn
+into segmentation masks. They are not in the `primvaria:` namespace: any tool
+that knows OpenUSD reads them.
+
+| Attribute | Type | Value |
+|---|---|---|
+| `semantics:labels:class` | token[] | the classes of the asset, from the kind of object to the preset; at least one, each a single word |
+| `semantics:labels:instance` | token[] | one label, the name of the asset's prim |
+
+| Generator | Classes |
+|---|---|
+| Granulaire | `grain`, the preset (`crushed_gravel`) |
+| Maillage | `cloth`, the preset (`tea_towel`) |
+| Filaire | `cable`, the preset (`usb_c`); a socket: `socket`, its connector family (`rj45`) |
+| Quincaillerie | `screw`, `nut`, `washer`, `cell` or `holder`, then the catalogue entry (`ISO4017_M8x30`) |
+
+An asset that references another (a Granulaire grain and its prototype, a
+part placed in a Quincaillerie scene) takes its classes from it and states
+its own instance label. Labels are inherited down the hierarchy, so every
+mesh of an asset carries them.
+
 ## 6. Variation model
 
 **v0.** The reference implementation is Quincaillerie's `variation.py`; the
@@ -243,6 +267,7 @@ again. Columns, in this order:
 | `name`, `file`, `prim` | the asset root's name, its file (relative to the pack) and its path |
 | `generator`, `version`, `preset`, `seed` | the identity of section 5 |
 | `aspects` | the aspects that were switched on, separated by spaces |
+| `classes` | the asset's semantic classes (section 5), separated by spaces |
 | `variation:<name>` | every drawn value (section 6) |
 | `measured:<name>` | every measured value (section 5) |
 | the generator's own | Granulaire: `prototype`, `x_m`, `y_m`, `z_m`; Filaire: `jacket`; Quincaillerie: `kind`, `size`, `format`, `length_mm`, `family` |
@@ -252,8 +277,9 @@ empty where an asset has no such value.
 
 `manifest.json` says what the pack is: `contract`, `generator`, `version`,
 `pack` (the preset or the set), `seed`, `aspects`, `assets` (the number of
-rows), `table`, `files` (the pack's OpenUSD files) and `summary`, the
-generator's own statistics.
+rows), `classes` (the semantic classes of its assets, sorted), `table`,
+`files` (the pack's OpenUSD files) and `summary`, the generator's own
+statistics.
 
 A generator may write other files beside them (Granulaire's
 `prototype_metrics.csv`, textures, previews, engine exports).
