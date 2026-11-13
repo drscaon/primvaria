@@ -7,6 +7,8 @@ pre-release versions.
 
 ## [Unreleased]
 
+## [0.3.0b1] - 2026-11-13 (beta)
+
 ### Added
 
 - The website has one page per subject: a short home, the engine matrix, the
@@ -39,6 +41,9 @@ pre-release versions.
 
 ### Changed
 
+- Requires the releases of 13 November: Granulaire 0.4.0b1, Maillage 0.3.0b1,
+  Filaire 0.4.0b1 and Quincaillerie 0.3.0b1 (engine layers, semantic labels,
+  thread fit classes, example scripts).
 - README and website home: the summary of the contract names the semantic
   labels, the engine layers and the pack files.
 - `docs/contract.md`, section 5: every asset carries OpenUSD semantic labels
