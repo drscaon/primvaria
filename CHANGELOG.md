@@ -7,8 +7,15 @@ pre-release versions.
 
 ## [Unreleased]
 
+## [0.3.0b1] - 2026-11-13 (beta)
+
 ### Added
 
+- The website has one page per subject: a short home, the engine matrix, the
+  contract and the mission, and for each generator its README and every page
+  of its `docs/` folder, rendered from the repositories' Markdown files
+  (`site/build.py`, `site/layout.html`, `site/style.css`, `site/pages/`). The
+  build fails on a broken internal link and writes the sitemap.
 - `.github/workflows/generator-checks.yml`, a reusable workflow with the checks
   every generator runs the same way (lint and format, tests on every Python
   and platform with a smoke test, oldest OpenUSD, package build): the four
@@ -34,6 +41,9 @@ pre-release versions.
 
 ### Changed
 
+- Requires the releases of the generators that follow the contract's pack
+  files and variation model: `granulaire>=0.4.0b1`, `maillage>=0.3.0b1`,
+  `filaire>=0.4.0b1`, `quincaillerie>=0.3.0b1`.
 - `docs/contract.md`: the measured values (`primvaria:measured:*`, section 5)
   and the pack files (`instances.csv` and `manifest.json`, section 10) are part
   of version 0; the shared-files guard also covers `pack.py` and
