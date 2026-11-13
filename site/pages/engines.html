@@ -1,7 +1,7 @@
 <section class="hero page"><div class="wrap">
   <p class="eyebrow"><a href="/">Primvaria</a> · engines</p>
   <h1>Engine matrix</h1>
-  <p class="lede">Where each generator stands in each engine, on 12 November 2026. Tests run in each project's CI on every preset, from the OpenUSD file alone.</p>
+  <p class="lede">Where each generator stands in each engine, on 13 November 2026. Tests run in each project's CI on every preset, from the OpenUSD file alone.</p>
   <div class="scroll"><table>
     <thead><tr><th>Generator</th><th>OpenUSD validators</th><th>Blender</th><th>MuJoCo</th><th>Isaac Sim · PhysX</th><th>OmniPhysics deformables</th></tr></thead>
     <tbody>
@@ -11,7 +11,7 @@
         <td><span class="st ok">tested</span><small>pile test, every preset</small></td>
         <td><span class="st ok">tested</span><small>pile test, every preset</small></td>
         <td><span class="st warn">not yet</span><small>standard UsdPhysics rigid bodies</small></td>
-        <td><span class="st warn">exported</span><small>peanuts, tomatoes; not run</small></td></tr>
+        <td><span class="st warn">exported</span><small>peanuts, tomatoes: a layer over the file, structure checked; not run</small></td></tr>
       <tr><th scope="row">Maillage</th>
         <td><span class="st ok">tested</span><small>every preset, OmniPhysics layer included</small></td>
         <td><span class="st ok">tested</span><small>drape test, every preset</small></td>
@@ -22,19 +22,19 @@
         <td><span class="st ok">tested</span><small>every preset, with and without physics</small></td>
         <td><span class="st ok">tested</span><small>drop through the add-on, every preset</small></td>
         <td><span class="st ok">tested</span><small>drop, sag, coil, insertion, bayonet lock</small></td>
-        <td><span class="st warn">not yet</span><small>UsdPhysics joints, PhysX attributes</small></td>
+        <td><span class="st warn">not yet</span><small>UsdPhysics joints, PhysX layer over each file</small></td>
         <td><span class="st na">n/a</span></td></tr>
       <tr><th scope="row">Quincaillerie</th>
         <td><span class="st ok">tested</span><small>whole catalogue, varied instances</small></td>
         <td><span class="st ok">tested</span><small>drop and assemblies through the add-on</small></td>
         <td><span class="st ok">tested</span><small>drop, screwing, jammed threads, insertion</small></td>
-        <td><span class="st warn">not yet</span><small>UsdPhysics, PhysX attributes</small></td>
+        <td><span class="st warn">not yet</span><small>UsdPhysics, PhysX layer over each file</small></td>
         <td><span class="st na">n/a</span></td></tr>
       <!-- engines:end -->
     </tbody>
   </table></div>
   <div class="notes">
-    <p><b>Not yet in Isaac Sim.</b> The files follow the standard UsdPhysics schemas and carry PhysX attributes, but no run in Isaac Sim has been done: it needs an NVIDIA RTX GPU. That run is the next milestone.</p>
+    <p><b>Not yet in Isaac Sim.</b> The files follow the standard UsdPhysics schemas, with the PhysX settings and the OmniPhysics deformables in a layer over each file, but no run in Isaac Sim has been done: it needs an NVIDIA RTX GPU. That run is the next milestone.</p>
     <p><b>Fine grains at any scale.</b> Sand and regolith are simulated with lengths and gravity scaled by the same factor, which leaves the motion unchanged and keeps engines away from their absolute tolerances. Each README says how.</p>
   </div>
 </div></section>

@@ -1,5 +1,5 @@
 {
-  "updated": "12 November 2026",
+  "updated": "13 November 2026",
   "engines": [
     {"key": "validators", "title": "OpenUSD validators"},
     {"key": "blender", "title": "Blender"},
@@ -14,7 +14,7 @@
       "blender": {"status": "tested", "readme": "tested: pile", "site": "pile test, every preset"},
       "mujoco": {"status": "tested", "readme": "tested: pile", "site": "pile test, every preset"},
       "isaac": {"status": "not yet", "readme": "not yet", "site": "standard UsdPhysics rigid bodies"},
-      "omniphysics": {"status": "exported", "readme": "exported, not run", "site": "peanuts, tomatoes; not run"}
+      "omniphysics": {"status": "exported", "readme": "exported, not run", "site": "peanuts, tomatoes: a layer over the file, structure checked; not run"}
     },
     "maillage": {
       "facts": "{presets} presets · {fabrics} fabrics",
@@ -29,7 +29,7 @@
       "validators": {"status": "tested", "readme": "tested", "site": "every preset, with and without physics"},
       "blender": {"status": "tested", "readme": "tested: drop (add-on)", "site": "drop through the add-on, every preset"},
       "mujoco": {"status": "tested", "readme": "tested: drop, sag, coil, insertion, bayonet lock", "site": "drop, sag, coil, insertion, bayonet lock"},
-      "isaac": {"status": "not yet", "readme": "not yet", "site": "UsdPhysics joints, PhysX attributes"},
+      "isaac": {"status": "not yet", "readme": "not yet", "site": "UsdPhysics joints, PhysX layer over each file"},
       "omniphysics": {"status": "n/a", "readme": "n/a", "site": ""}
     },
     "quincaillerie": {
@@ -37,7 +37,7 @@
       "validators": {"status": "tested", "readme": "tested", "site": "whole catalogue, varied instances"},
       "blender": {"status": "tested", "readme": "tested: drop, assemblies (add-on)", "site": "drop and assemblies through the add-on"},
       "mujoco": {"status": "tested", "readme": "tested: drop, screwing, jam, insertion", "site": "drop, screwing, jammed threads, insertion"},
-      "isaac": {"status": "not yet", "readme": "not yet", "site": "UsdPhysics, PhysX attributes"},
+      "isaac": {"status": "not yet", "readme": "not yet", "site": "UsdPhysics, PhysX layer over each file"},
       "omniphysics": {"status": "n/a", "readme": "n/a", "site": ""}
     }
   }

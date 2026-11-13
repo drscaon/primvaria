@@ -28,8 +28,9 @@ as ground truth), **measured outputs** (mass, shape, stiffness are measured on
 what was generated, not trusted from the inputs) and **honest limits** (each
 asset is checked in real engines, and what was not tested is said).
 
-Every output is **OpenUSD** with standard `UsdPhysics` schemas, plus PhysX
-attributes for **NVIDIA Omniverse and Isaac Sim**: one file format for
+Every output is **OpenUSD** with standard `UsdPhysics` schemas and nothing
+specific to an engine; what only **NVIDIA Omniverse and Isaac Sim** read
+(PhysX settings, OmniPhysics deformables) is a layer over each file: one file format for
 Blender, usdview, Omniverse and the other OpenUSD-aware tools, read back into
 MuJoCo for the checks. Each generator's README says in which engines its
 assets have been tested so far. Everything can run on CPU.
@@ -65,7 +66,8 @@ CI on every preset, from the OpenUSD file alone.
 <!-- engines:end -->
 
 Isaac Sim runs need an NVIDIA RTX GPU and have not been done yet: the files
-follow the standard `UsdPhysics` schemas and carry PhysX attributes.
+follow the standard `UsdPhysics` schemas, with the PhysX settings and the
+OmniPhysics deformables in a layer over each file.
 
 All four write the same ground and physics scene, so their assets share one
 scene: `/World/PhysicsScene` with gravity 9.81 m/s² along −Z, and

@@ -191,23 +191,42 @@ attributes.
 
 ## 9. Engines
 
-The base of every file is plain OpenUSD: `UsdGeom`, `UsdShade` with
-`UsdPreviewSurface`, and the standard `UsdPhysics` schemas. It is what the
-OpenUSD validators, Blender and the MuJoCo checks read.
+Every file is plain OpenUSD: `UsdGeom`, `UsdShade` with `UsdPreviewSurface`,
+and the standard `UsdPhysics` schemas. It is what the OpenUSD validators,
+Blender and the MuJoCo checks read, and it is complete on its own.
 
-Engine-specific data is an extra over that base:
+What only one engine reads is not in the file. It is an **engine layer**
+beside it:
 
-| Extra | Where it is today |
-|---|---|
-| PhysX attributes (`physxCollision:*`, `physxRigidBody:*`) | inline, in Filaire and Quincaillerie |
-| OmniPhysics deformables | Maillage: a separate layer over the main file (`*_omniphysics.usda`); Granulaire: inline, API schemas applied by name |
-| MaterialX | Quincaillerie's material library, beside `UsdPreviewSurface` |
+- named `<file stem>_<engine>.usda` (or `.usdc` when it holds large meshes);
+- its only sublayer is the file, so opening the layer gives the file plus the
+  engine's data, and the file alone never depends on it;
+- it adds opinions to what the file defines. It defines prims of its own only
+  where the engine needs geometry the file does not have (a simulation mesh,
+  an engine material);
+- an opinion on something that exists in one variant only is written inside
+  that variant.
 
-**v0** rule: removing every engine-specific attribute leaves an asset that is
-still valid and still passes the base checks.
+| Layer | Holds | Written by |
+|---|---|---|
+| `*_physx` | PhysX solver iterations and contact offsets (`PhysxRigidBodyAPI`, `PhysxCollisionAPI`) | Filaire and Quincaillerie, for every file with physics; a scene's layer references the layers of its parts |
+| `*_omniphysics` | OmniPhysics deformable bodies: schemas, simulation mesh, deformable material | Maillage (surface deformables, every piece) and Granulaire (volume deformables, packing peanuts and cherry tomatoes: rigid bodies in the file) |
 
-**Planned:** engine extras as overlay layers in all four generators, as
-Maillage does.
+MaterialX is not an engine layer: Quincaillerie's material library offers it
+beside `UsdPreviewSurface`, in the same file.
+
+**v0** rules:
+
+- a file holds no schema or attribute of an engine (`Physx*`, `OmniPhysics*`,
+  `physx*:`, `omniphysics:`);
+- a file is valid and passes its generator's checks without its layers;
+- a generator says in its own namespace what an engine must know and cannot
+  guess (for example `quincaillerie:contactOffset`, the distance from which a
+  threaded part needs contacts), and the engine layer copies it.
+
+Each generator checks the structure of its layers (`python -m
+<generator>.physx`, `python -m <generator>.omniphysics`). No layer has been
+simulated: both engines need Isaac Sim and an NVIDIA RTX GPU.
 
 ## 10. Pack files
 
