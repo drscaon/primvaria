@@ -39,6 +39,9 @@ pre-release versions.
 
 ### Changed
 
+- `docs/contract.md`, section 5: every asset carries OpenUSD semantic labels
+  (`semantics:labels:class`, `semantics:labels:instance`); `instances.csv`
+  gains a `classes` column and `manifest.json` lists the classes of the pack.
 - `docs/contract.md`, section 9: engine data is no longer in the files. It is
   an engine layer beside each file (`<file>_physx`, `<file>_omniphysics`),
   in the four generators; a file holds no schema or attribute of an engine
