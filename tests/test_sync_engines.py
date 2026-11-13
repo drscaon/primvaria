@@ -24,7 +24,7 @@ def test_every_generator_has_every_engine():
 
 def test_counts_come_from_the_installed_generators():
     numbers = sync.counts()
-    page = sync.render(DATA, numbers)[sync.PAGE]
+    page = sync.render(DATA, numbers)[sync.HOME]
     for name, cells in DATA["generators"].items():
         assert all(n > 0 for n in numbers[name].values())
         assert cells["facts"].format(**numbers[name]) in page
