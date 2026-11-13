@@ -156,7 +156,10 @@ what the suite is for, the three verbs every change is checked against (vary,
 measure, prove) and what it does not do.
 [docs/contract.md](https://github.com/drscaon/primvaria/blob/main/docs/contract.md)
 is the OpenUSD contract the four generators share: stage conventions, the
-ground and physics scene, asset identity, variant sets and MateFrames.
+ground and physics scene, asset identity, semantic labels (the classes
+renderers turn into segmentation masks), variant sets, MateFrames, the engine
+layers that keep PhysX and OmniPhysics data out of the files, and the pack
+files.
 
 ## Development
 

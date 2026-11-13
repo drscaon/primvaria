@@ -39,6 +39,8 @@ pre-release versions.
 
 ### Changed
 
+- README and website home: the summary of the contract names the semantic
+  labels, the engine layers and the pack files.
 - `docs/contract.md`, section 5: every asset carries OpenUSD semantic labels
   (`semantics:labels:class`, `semantics:labels:instance`); `instances.csv`
   gains a `classes` column and `manifest.json` lists the classes of the pack.
