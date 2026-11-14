@@ -53,6 +53,7 @@ def main() -> None:
         "import_s": round(time.time() - start, 1),
         "bodies": builder.body_count,
         "joints": builder.joint_count,
+        "joint_dofs": builder.joint_dof_count,
         "shapes": builder.shape_count,
         "cloths": len(found.get("path_cloth_map", {})),
         "particles": builder.particle_count,

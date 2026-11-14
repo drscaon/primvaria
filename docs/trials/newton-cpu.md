@@ -12,16 +12,16 @@ This is a trial, not a check: nothing here runs in CI and no generator changed.
 
 | Question | Answer |
 |---|---|
-| Do the files open unchanged? | Rigid files: yes, with exact masses. They simulate correctly only once the contact gap is set, which the PhysX layer already does. Cloth: no, the layer uses other schema names than Newton reads. |
+| Do the files open unchanged? | Grains and fasteners: yes, with exact masses; they simulate correctly once the contact gap is set, which the PhysX layer already does. Cables: the file opens, but Newton locks every cable joint, so the cable is a rigid bar (finding 2). Cloth: not read (finding 3). |
 | How long on CPU? | Seconds to about a minute per scene (table below), slower than MuJoCo but usable in CI. |
-| How far from MuJoCo? | Same masses and same outcome (everything at rest on the ground, nothing through it). Residual speeds at rest are higher in XPBD. No preset was compared value by value. |
+| How far from MuJoCo? | Grains and fasteners: same masses and same outcome (at rest on the ground, nothing through it), with higher residual speeds in XPBD. Cables and cloth: no comparison is possible yet. No preset was compared value by value. |
 
 ## What was run
 
 | Generator | File | Newton sees | Mass, Newton / pack | Simulated | Wall time | Result |
 |---|---|---|---|---|---|---|
 | Granulaire | `granulaire_crushed_gravel.usdc`, 60 grains | 60 bodies, 121 shapes | 0.073164 / 0.073164 kg | 6 s | 24 s | at rest, none below the ground |
-| Filaire | `filaire_usb_c_physx.usda` | 1014 bodies, 1014 joints, 2453 shapes | 0.266560 / 0.266561 kg | 2 s | 65 s | at rest on the ground |
+| Filaire | `filaire_usb_c_physx.usda` | 1014 bodies, 1014 joints with **0 degrees of freedom**, 2453 shapes | 0.266560 / 0.266561 kg | 2 s | 65 s | rests on the ground, but as rigid bars: not a cable test |
 | Quincaillerie | `scene_physx.usda`, M10 screw, nut, washer and their assembly | 6 bodies, 2075 shapes | 0.081724 / 0.081724 kg | 1 s | 40 s | at rest, assembly in place |
 | Maillage | `maillage_tea_towel_omniphysics.usda`, 12 pieces | no cloth (see below) | not read | not run | | import only |
 
@@ -57,7 +57,32 @@ The files are not at fault: OpenUSD has no standard attribute for a contact
 gap. But it means "opens in Newton" is true and "simulates in Newton as it
 is" is not, unless the gap is given.
 
-### 2. The cloth layer uses names Newton does not read
+### 2. Newton locks Filaire's cable joints
+
+A Filaire cable is a chain of rigid segments. Each joint is a generic
+`PhysicsJoint` whose three translations are locked (`LimitAPI`, low above
+high) and whose three rotations are free and carry the bending and torsion
+stiffness in a `DriveAPI`. In UsdPhysics an axis of a generic joint with no
+limit is free.
+
+Newton's importer builds the degrees of freedom of such a joint from its
+limits only: an axis with no `LimitAPI` gets none. The 996 cable joints of the
+USB-C file come out with 0 degrees of freedom, and the stiffness is not read.
+The cable is then a set of rigid bars. It rests on the ground, which says
+nothing about a cable.
+
+Checked by adding, in memory, a wide rotation limit (±170°) to every cable
+joint and nothing else: Newton then gives each joint 3 rotational degrees of
+freedom and reads the stiffness exactly (0.0583 and 0.0835 N·m/rad for
+0.0010176 and 0.0014567 N·m/deg in the file), and the cables stay stable for
+1 s. So the limit is in Newton's reading of free axes, not in the values the
+file holds. No sag, coil or insertion was run.
+
+Separately, Isaac Sim's own Newton backend did not support cables or
+deformables as of Isaac Sim 6.0.1 (NVIDIA's answer on its forum); that is
+about Newton's rod model, which Filaire does not use.
+
+### 3. The cloth layer uses names Newton does not read
 
 Maillage's layer applies `OmniPhysicsDeformableBodyAPI` and
 `OmniPhysicsSurfaceDeformableSimAPI`, with `omniphysics:` attributes. Newton
@@ -72,35 +97,39 @@ about three details: `restBendAnglesDefault` is `flatDefault` in the layer
 material, and the shear stiffness is not used. No drape was simulated: on two
 cores, 18 728 particles were out of this trial's budget.
 
-### 3. Newton needs its own environment
+### 4. Newton needs its own environment
 
 `newton[sim]` installs MuJoCo 3.x, which replaces the MuJoCo 4.0.1 the
 generators are checked with. `newton[importers]` alone is enough for this
 trial, but it pins `usd-core` 26.8, below the 26.11 used here. A Newton check
 therefore runs in a separate job with its own environment.
 
-### 4. What matched without any work
+### 5. What matched without any work
 
-Bodies, joints, colliders, the ground, friction and the masses were all read
-from plain `UsdPhysics`. The masses agree with `instances.csv` to the last
-digit in the three rigid generators, which is an independent confirmation
-that the files say what the pack says.
+Bodies, colliders, the ground, friction and the masses were all read from
+plain `UsdPhysics`. The masses agree with `instances.csv` to the last digit in
+the three rigid generators, which is an independent confirmation that the
+files say what the pack says. Joints are the exception (finding 2).
 
 ## Not done
 
-- No drape, hang, plug or threading test: only settling at rest.
+- No drape, sag, coil, plug or threading test: only settling at rest.
+- Nothing about cable behaviour: with the joints locked there is no cable.
+- Friction and thread contact were not examined: settling shows stability,
+  not that contact behaves as in MuJoCo.
 - No value-by-value comparison with MuJoCo.
 - One preset per generator, one seed.
 - The VBD solver was not tried.
 
 ## Options
 
-1. **Add Newton as a third engine**, in its own CI job: import and mass
-   agreement for every preset (cheap), settling for one preset per generator.
-   The engine matrix gets a Newton column that says "opens, masses agree,
-   settles (XPBD, CPU)".
+1. **Add Newton as a third engine**, in its own CI job, for what it reads
+   today: import and mass agreement for every preset of the four generators,
+   settling for grains and fasteners. The matrix says, per generator, what
+   Newton reads and what it does not, and that the two gaps (free joint axes,
+   cloth schema names) are on Newton's side of the file.
 2. **Add a Newton engine layer** to the contract (`<file>_newton.usda`) that
-   authors the contact gap, and for Maillage the proposal's schema names, so
-   that the files simulate in Newton with no option. This is a feature and a
-   contract change.
+   authors the contact gap, wide limits on the cables' rotation axes, and for
+   Maillage the proposal's schema names, so that the files simulate in Newton
+   with no option. This is a feature and a contract change.
 3. **Stop here**: the matrix says "Newton 1.8.0: tried on CPU, see the trial".
