@@ -7,6 +7,11 @@ pre-release versions.
 
 ## [Unreleased]
 
+### Added
+
+- `docs/trials/newton-cpu.md` and `scripts/newton_trial.py`: a trial of Newton 1.8.0 on CPU as a
+  second engine, one preset per generator (PRV-30). A report, not a check.
+
 ## [0.3.0b1] - 2026-11-13 (beta)
 
 ### Added
