@@ -25,6 +25,7 @@ SHARED = (
     "src/{name}/pack.py",
     "tests/test_contract.py",
     "tests/test_pack.py",
+    "tests/test_golden.py",
 )
 RAW = "https://raw.githubusercontent.com/drscaon/{name}/{ref}/{path}"
 

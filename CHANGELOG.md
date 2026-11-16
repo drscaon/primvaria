@@ -16,6 +16,9 @@ pre-release versions.
 
 ### Changed
 
+- The drift guard checks `tests/test_golden.py`, the reproducibility test the
+  four generators share (PRV-32); the contract's section 11 and the stability
+  page say so.
 - The contract is version 1, candidate: every version 0 rule is in force and
   frozen; files keep writing `primvaria:contract = "0"` until 1.0. Section 12
   now says what is and is not a breaking change, how a name is deprecated,
