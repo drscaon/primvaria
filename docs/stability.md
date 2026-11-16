@@ -34,7 +34,7 @@ one is checked in CI, except the last two, which are read by a person.
 
 | # | Criterion | Backlog item |
 |---|---|---|
-| 1 | Reproducibility tests: stored reference values of several presets are compared on Linux, macOS and Windows and on every supported Python | PRV-32 |
+| 1 | Reproducibility tests: stored reference values of several presets are compared on Linux, macOS and Windows and on every supported Python. **Met** since 16 November for Python 3.11 to 3.13 (`tests/test_golden.py`); newer Pythons are not tested yet | PRV-32 |
 | 2 | What is drawn follows what the preset declares, by a statistical test per generator | PRV-34 |
 | 3 | The four generators agree on their shared behaviour: command line, pack columns, documentation pages | PRV-35 |
 | 4 | Every contract rule is checked by a test, including those section 11 lists as not checked | PRV-35 |

@@ -299,8 +299,9 @@ A generator may write other files beside them (Granulaire's
 | The shared ground and physics scene (section 3), by `ground.py` | in place |
 | Sections 2, 4, 5, 9 and the recording of section 6, by `python -m <generator>.conformance` on every preset in each generator's CI, and by `tests/test_contract.py` | in place |
 | Section 10: the same command checks every pack it finds, the table must say what the files say; `tests/test_pack.py` | in place |
-| The files the generators share are byte-identical: `ground.py`, `contract.py`, `conformance.py`, `pack.py`, `tests/test_contract.py` and `tests/test_pack.py`. `scripts/check_shared_files.py` in this repository fails when one differs, in CI and weekly | in place |
-| Section 6, rules 1 to 3, by each generator's own variation tests | in place |
+| The files the generators share are byte-identical: `ground.py`, `contract.py`, `conformance.py`, `pack.py`, `tests/test_contract.py`, `tests/test_pack.py` and `tests/test_golden.py`. `scripts/check_shared_files.py` in this repository fails when one differs, in CI and weekly | in place |
+| Section 6, rule 1 (same version, preset, seed and options, same values) on every Python and platform of the CI, by `tests/test_golden.py` against stored references | in place |
+| Section 6, rules 2 and 3, by each generator's own variation tests | in place |
 | Section 7's rules for a new variant set (names, default selection) and section 8's MateFrame placement: followed by the existing variant sets and parts, but checked by no shared test | not checked |
 
 ## 12. Versioning
