@@ -9,8 +9,18 @@ pre-release versions.
 
 ### Added
 
+- `docs/stability.md`, a page of the website: what the suite promises in beta,
+  what 1.0 will promise, and the exit criteria for 1.0 (PRV-31).
 - `docs/trials/newton-cpu.md` and `scripts/newton_trial.py`: a trial of Newton 1.8.0 on CPU as a
   second engine, one preset per generator (PRV-30). A report, not a check.
+
+### Changed
+
+- The contract is version 1, candidate: every version 0 rule is in force and
+  frozen; files keep writing `primvaria:contract = "0"` until 1.0. Section 12
+  now says what is and is not a breaking change, how a name is deprecated,
+  and how changed values are declared. Section 11 lists the two rules no
+  shared test checks yet (PRV-31).
 
 ## [0.3.0b1] - 2026-11-13 (beta)
 

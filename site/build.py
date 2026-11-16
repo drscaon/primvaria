@@ -64,6 +64,11 @@ OWN = {
         "OpenUSD contract",
         "What every Primvaria file holds: stage, model hierarchy, identity, variation, measurements.",
     ),
+    "docs/stability.md": (
+        "stability",
+        "Stability and 1.0",
+        "What the suite promises today, what 1.0 will promise, and what must hold before it.",
+    ),
     "MISSION.md": (
         "mission",
         "Mission",

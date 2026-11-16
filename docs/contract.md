@@ -1,16 +1,23 @@
 # Primvaria OpenUSD contract
 
-**Version 0** (draft). This document says what every file written by a
+**Version 1, candidate.** This document says what every file written by a
 Primvaria generator has in common, so that an asset from one generator
 composes with an asset from any other and behaves the same in every engine.
 
+Version 1 is version 0 with every rule in force and frozen: all four
+generators follow every rule below. Their CI checks most of them; section 11
+lists the few that no shared test checks yet. It
+stays a candidate until the suite's 1.0 release, at which point the files
+write `primvaria:contract = "1"` instead of `"0"`; that is the only change
+between the candidate and version 1. What has to hold before then is in
+[docs/stability.md](stability.md); how the contract changes after that is in
+section 12.
+
 Each rule is marked:
 
-- **in place**: all four generators already do it, and their tests check it;
-- **v0**: new with this version, to be implemented in the four generators and
-  enforced by the shared conformance test (`tests/test_contract.py`);
-- **planned**: named here so the direction is fixed, specified in a later
-  version.
+- **in place**: all four generators do it, and their tests check it;
+- **not in v1**: named here so the direction is fixed, but not part of
+  version 1; it enters a later version through section 12.
 
 A change to the file format changes this document first, in a pull request to
 this repository. See [MISSION.md](../MISSION.md).
@@ -50,7 +57,7 @@ An asset rests on z = 0. A standalone asset file (Quincaillerie's
 
 ## 4. Model hierarchy and asset identity
 
-**v0.** Every asset root is a model, so that tools can find, list and
+**In place.** Every asset root is a model, so that tools can find, list and
 instance assets without knowing the generator.
 
 | Prim | `kind` |
@@ -78,7 +85,7 @@ Every asset root also carries `assetInfo`:
 
 ## 5. Ground truth: the `primvaria:` namespace
 
-**v0.** Every asset root carries these attributes, with the same names and
+**In place.** Every asset root carries these attributes, with the same names and
 types in every generator, and no other prim carries a `primvaria:*`
 attribute:
 
@@ -134,7 +141,7 @@ mesh of an asset carries them.
 
 ## 6. Variation model
 
-**v0.** The reference implementation is Quincaillerie's `variation.py`; the
+**In place.** The reference implementation is Quincaillerie's `variation.py`; the
 four generators follow the same rules.
 
 **Aspects.** A generator varies its assets along a fixed list of aspects,
@@ -187,7 +194,7 @@ In place, with the names used today:
 | `finish` | Quincaillerie | one per library finish, plus `as_generated`, the instance's worn look |
 | `end_a`, `end_b` | Filaire | one variant per end the cable can carry |
 
-**v0** rules for any new variant set:
+**In place**, rules for any new variant set:
 
 - names are lowercase `snake_case`;
 - a name means the same thing in every generator: `finish` is always a
@@ -195,7 +202,7 @@ In place, with the names used today:
 - a default selection is always authored;
 - a variant never changes the asset's identity (section 5), only its state.
 
-**Planned:** `state` for Maillage (`flat`, `draped`, `crumpled`, `folded`).
+**Not in v1:** `state` for Maillage (`flat`, `draped`, `crumpled`, `folded`).
 
 ## 8. MateFrame
 
@@ -210,7 +217,7 @@ or `MateFrame_<feature>` when a part has several (`MateFrame_thread`,
 
 The attributes that describe the mate (role, gender, insertion depth,
 clearance, keying) are generator-specific today (`filaire:role`,
-`filaire:insertionDepth`, …). **Planned:** common `primvaria:mate:*`
+`filaire:insertionDepth`, …). **Not in v1:** common `primvaria:mate:*`
 attributes.
 
 ## 9. Engines
@@ -239,7 +246,7 @@ beside it:
 MaterialX is not an engine layer: Quincaillerie's material library offers it
 beside `UsdPreviewSurface`, in the same file.
 
-**v0** rules:
+**In place**, rules:
 
 - a file holds no schema or attribute of an engine (`Physx*`, `OmniPhysics*`,
   `physx*:`, `omniphysics:`);
@@ -254,7 +261,7 @@ simulated: both engines need Isaac Sim and an NVIDIA RTX GPU.
 
 ## 10. Pack files
 
-**v0.** Every pack has the same two files, written by the same module
+**In place.** Every pack has the same two files, written by the same module
 (`pack.py`) in the four generators.
 
 `instances.csv` has one row per asset, read back from the OpenUSD files, so
@@ -290,13 +297,45 @@ A generator may write other files beside them (Granulaire's
 |---|---|
 | Every OpenUSD `UsdValidation` validator, on every file and every variant, in each generator's CI | in place |
 | The shared ground and physics scene (section 3), by `ground.py` | in place |
-| Sections 2, 4, 5 and the recording of section 6, by `python -m <generator>.conformance` on every preset in each generator's CI, and by `tests/test_contract.py` | v0 |
-| Section 10: the same command checks every pack it finds, the table must say what the files say; `tests/test_pack.py` | v0 |
-| The files the generators share are byte-identical: `ground.py`, `contract.py`, `conformance.py`, `pack.py`, `tests/test_contract.py` and `tests/test_pack.py`. `scripts/check_shared_files.py` in this repository fails when one differs, in CI and weekly | v0 |
+| Sections 2, 4, 5, 9 and the recording of section 6, by `python -m <generator>.conformance` on every preset in each generator's CI, and by `tests/test_contract.py` | in place |
+| Section 10: the same command checks every pack it finds, the table must say what the files say; `tests/test_pack.py` | in place |
+| The files the generators share are byte-identical: `ground.py`, `contract.py`, `conformance.py`, `pack.py`, `tests/test_contract.py` and `tests/test_pack.py`. `scripts/check_shared_files.py` in this repository fails when one differs, in CI and weekly | in place |
+| Section 6, rules 1 to 3, by each generator's own variation tests | in place |
+| Section 7's rules for a new variant set (names, default selection) and section 8's MateFrame placement: followed by the existing variant sets and parts, but checked by no shared test | not checked |
 
 ## 12. Versioning
 
-The contract has one integer version, written in `primvaria:contract`.
-A file states the version it follows; a generator release states it in its
-changelog. Adding an attribute or a variant set is a minor change recorded
-here; renaming or removing one raises the version.
+The contract has one integer version, written in `primvaria:contract`. A file
+states the version it follows; a generator release states it in its
+changelog.
+
+**What raises the version** (a breaking change): anything that can make a
+file that conformed stop conforming, or make a reader that worked stop
+working:
+
+- renaming or removing an attribute, a variant set, a variant, a prim name
+  that this document fixes, or a pack column;
+- changing an attribute's type, unit or meaning;
+- making an optional rule required, or a rule stricter;
+- moving data between the file and an engine layer (section 9).
+
+**What does not raise it** (recorded here and in the changelogs):
+
+- a new optional attribute, variant set or engine layer;
+- a new variant in an existing set, when the default selection stays the same;
+- a new pack column after the existing ones;
+- a clarification that changes no file.
+
+**Deprecation.** A renamed attribute or column is written under both names
+for at least one release of each generator, marked *deprecated* in this
+document and in the changelogs, and the old name is removed only with the
+next version of the contract. A removed rule is marked *deprecated* the same
+way before it goes.
+
+**Values.** The contract fixes what a file holds, not the values a generator
+draws. Those follow the generator's own version (section 6, rule 1): the
+same generator version, preset, seed and options give the same file. Before
+1.0, a release that changes the drawn or measured values of an existing
+preset and seed lists them in its changelog under *Changed values*. From 1.0
+on, such a change is a breaking change of that generator and raises its major
+version; see [docs/stability.md](stability.md).
