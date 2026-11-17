@@ -38,6 +38,8 @@ jobs:
           python-version: "3.12"
       - run: python scripts/check_shared_files.py
       - run: python scripts/check_consistency.py
+        env:
+          GITHUB_TOKEN: ${{ github.token }}  # the API's limit for anonymous calls is shared by runners
 
   test:
     name: Tests (Python ${{ matrix.python-version }}, ${{ matrix.os }})
