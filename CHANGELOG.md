@@ -9,6 +9,14 @@ pre-release versions.
 
 ### Added
 
+- `scripts/check_consistency.py` (in CI, on the generators' main branches) and
+  `tests/test_consistency.py`: the four generators must have the same
+  documentation pages, README documentation table, example scripts and
+  changelog section, the same subcommands and `generate` options
+  (`--seed`, `--out`, `--no-vary`, `--nominal`, `--count`, `--preset`), exit
+  with 2 on an error, and write packs whose tables start with the same
+  columns and whose manifests have the same keys. A difference fails unless
+  it is listed as intended, with its reason (PRV-35).
 - `docs/stability.md`, a page of the website: what the suite promises in beta,
   what 1.0 will promise, and the exit criteria for 1.0 (PRV-31).
 - `docs/trials/newton-cpu.md` and `scripts/newton_trial.py`: a trial of Newton 1.8.0 on CPU as a
@@ -16,6 +24,8 @@ pre-release versions.
 
 ### Changed
 
+- The stability page marks exit criteria 2 (distributions) and 3 (the
+  generators agree) as met.
 - The drift guard checks `tests/test_golden.py`, the reproducibility test the
   four generators share (PRV-32); the contract's section 11 and the stability
   page say so.
