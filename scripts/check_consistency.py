@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import sys
 import urllib.error
@@ -43,7 +44,11 @@ class Repo:
             root = local / name
             self.paths = {p.relative_to(root).as_posix() for p in root.rglob("*") if ".git" not in p.parts}
         else:
-            with urllib.request.urlopen(TREE.format(name=name, ref=ref), timeout=30) as r:
+            # authenticated when a token is given (CI): GitHub limits anonymous API calls per address
+            request = urllib.request.Request(TREE.format(name=name, ref=ref))
+            if os.environ.get("GITHUB_TOKEN"):
+                request.add_header("Authorization", f"Bearer {os.environ['GITHUB_TOKEN']}")
+            with urllib.request.urlopen(request, timeout=30) as r:
                 self.paths = {e["path"] for e in json.load(r)["tree"] if e["type"] == "blob"}
 
     def text(self, path: str) -> str | None:

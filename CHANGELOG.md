@@ -35,6 +35,12 @@ pre-release versions.
   and how changed values are declared. Section 11 lists the two rules no
   shared test checks yet (PRV-31).
 
+### Fixed
+
+- `scripts/check_consistency.py` authenticates its GitHub API calls with the
+  CI's token: anonymous calls hit the rate limit shared by the runners and
+  failed the job on main.
+
 ## [0.3.0b1] - 2026-11-13 (beta)
 
 ### Added
