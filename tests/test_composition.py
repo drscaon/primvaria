@@ -86,6 +86,44 @@ def test_the_composed_stage_conforms_and_validates(composed):
     assert validate(composed.GetRootLayer().realPath) == []
 
 
+def _lowest(root) -> float:
+    """The lowest point of an asset's geometry, exactly (a bounding box of a tilted capsule or of
+    a mesh's extent reaches lower than the shape does)."""
+    cache, low = UsdGeom.XformCache(), np.inf
+    for prim in Usd.PrimRange(root):
+        M = np.asarray(cache.GetLocalToWorldTransform(prim))
+        scale = np.linalg.norm(M[:3, :3], axis=1)
+        if prim.IsA(UsdGeom.Mesh):
+            P = np.asarray(UsdGeom.Mesh(prim).GetPointsAttr().Get(), float)
+            z = (P @ M[:3, :3] + M[3, :3])[:, 2].min()
+        elif prim.IsA(UsdGeom.Cube):
+            s = UsdGeom.Cube(prim).GetSizeAttr().Get() / 2
+            corners = np.array([[x, y, w] for x in (-s, s) for y in (-s, s) for w in (-s, s)])
+            z = (corners @ M[:3, :3] + M[3, :3])[:, 2].min()
+        elif prim.IsA(UsdGeom.Capsule) or prim.IsA(UsdGeom.Cylinder):
+            shape = UsdGeom.Capsule(prim) if prim.IsA(UsdGeom.Capsule) else UsdGeom.Cylinder(prim)
+            r, h = shape.GetRadiusAttr().Get(), shape.GetHeightAttr().Get()
+            a = {"X": 0, "Y": 1, "Z": 2}[shape.GetAxisAttr().Get()]
+            axis = M[a, :3] / scale[a]
+            reach = np.sqrt(max(0.0, 1 - axis[2] ** 2))  # a disc's edge, or a capsule's sphere
+            r_down = r * (1.0 if prim.IsA(UsdGeom.Capsule) else reach) * scale[(a + 1) % 3]
+            z = M[3, 2] - abs(M[a, 2]) * h / 2 - r_down
+        else:
+            continue
+        low = min(low, z)
+    return low
+
+
+def test_every_asset_starts_on_the_ground_not_in_it(composed):
+    """Contract, section 3: an asset rests on z = 0. Placed at z = 0, none starts inside the ground
+    (a Granulaire pile or a cloth is laid a little above it); a standalone part rests on it exactly."""
+    for root in contract.asset_roots(composed):
+        low = _lowest(root)
+        assert low > -1e-6, (root.GetPath(), low)
+        if root.GetAttribute("primvaria:generator").Get() in ("quincaillerie", "filaire"):
+            assert low < 1e-6, (root.GetPath(), low)
+
+
 def test_one_physics_scene_and_one_ground(composed):
     """No asset brings a scene or a floor of its own: they are the composing stage's."""
     prims = list(composed.Traverse())

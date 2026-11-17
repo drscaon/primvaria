@@ -16,6 +16,8 @@ pre-release versions.
   file's `/World/Looks`): contract section 4 now says an asset is whole on
   its own, the generators' shared check enforces it, and the three
   generators moved their materials inside their assets.
+  It also found Quincaillerie's screws and cells 1.6 to 17 mm below z = 0,
+  against section 3; that generator now puts every part's underside at z = 0.
 - Every rule of the contract is now checked by a test (PRV-35, exit
   criterion 4 of `docs/stability.md`). Sections 7 and 8, the last two, by
   the generators' shared conformance check and by a new
