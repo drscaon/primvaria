@@ -9,6 +9,15 @@ pre-release versions.
 
 ### Added
 
+- Every rule of the contract is now checked by a test (PRV-35, exit
+  criterion 4 of `docs/stability.md`). Sections 7 and 8, the last two, by
+  the generators' shared conformance check and by a new
+  `tests/test_mate_frames.py` in Filaire and Quincaillerie. Section 7 now
+  says that its table is the list of variant sets per generator, and what
+  identifies an asset across its variants; section 8, where the mating plane
+  is and how deep the part that goes in reaches past it. Quincaillerie's
+  drive, terminal and seat frames moved to follow it (a breaking change of
+  that generator).
 - `scripts/check_consistency.py` (in CI, on the generators' main branches) and
   `tests/test_consistency.py`: the four generators must have the same
   documentation pages, README documentation table, example scripts and

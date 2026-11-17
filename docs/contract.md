@@ -191,16 +191,20 @@ In place, with the names used today:
 | Variant set | Generator | Variants |
 |---|---|---|
 | `moisture` | Granulaire | `dry`, `damp`, `wet`, `saturated` |
-| `finish` | Quincaillerie | one per library finish, plus `as_generated`, the instance's worn look |
+| `finish` | Quincaillerie | one per library finish, plus `as_generated`, the instance's worn look; on a holder, one per plastic colour |
 | `end_a`, `end_b` | Filaire | one variant per end the cable can carry |
 
 **In place**, rules for any new variant set:
 
-- names are lowercase `snake_case`;
+- names are lowercase `snake_case`, the set's and its variants';
 - a name means the same thing in every generator: `finish` is always a
-  surface state, `moisture` always a water content;
+  surface state, `moisture` always a water content. The table above is the
+  list: a generator writes only the sets it gives that generator, so a new
+  set, or one a second generator takes up, is added here first;
 - a default selection is always authored;
-- a variant never changes the asset's identity (section 5), only its state.
+- a variant never changes the asset's identity (section 5): its
+  `assetInfo`, its `primvaria:*` identity attributes and its semantic labels
+  are the same whichever variant is selected; only its state changes.
 
 **Not in v1:** `state` for Maillage (`flat`, `draped`, `crumpled`, `folded`).
 
@@ -211,8 +215,12 @@ socket, screw and nut, cell and holder) carries an `Xform` named `MateFrame`,
 or `MateFrame_<feature>` when a part has several (`MateFrame_thread`,
 `MateFrame_drive`).
 
-- Its origin is on the mating plane.
-- **+Z is the insertion or screwing direction.**
+- Its origin is on the mating plane, where the two parts meet: a
+  receptacle's front face, a nut's face against the screw head, the mouth
+  of a socket over a hex, the face a terminal presses on, a holder's bed.
+- **+Z is the insertion or screwing direction**: the part that goes in
+  moves along +Z, and when mated reaches its insertion depth past the plane
+  (none for a part that rests or presses on a face).
 - Two parts mate when their MateFrames coincide, within the clearance.
 
 The attributes that describe the mate (role, gender, insertion depth,
@@ -302,7 +310,8 @@ A generator may write other files beside them (Granulaire's
 | The files the generators share are byte-identical: `ground.py`, `contract.py`, `conformance.py`, `pack.py`, `tests/test_contract.py`, `tests/test_pack.py` and `tests/test_golden.py`. `scripts/check_shared_files.py` in this repository fails when one differs, in CI and weekly | in place |
 | Section 6, rule 1 (same version, preset, seed and options, same values) on every Python and platform of the CI, by `tests/test_golden.py` against stored references | in place |
 | Section 6, rules 2 and 3, by each generator's own variation tests | in place |
-| Section 7's rules for a new variant set (names, default selection) and section 8's MateFrame placement: followed by the existing variant sets and parts, but checked by no shared test | not checked |
+| Section 7 (names, the list of sets per generator, a default selection, no variant changing the identity, each variant selected in turn) and section 8's naming (an `Xform` named `MateFrame` or `MateFrame_<feature>`, inside an asset, in every variant; no `primvaria:mate:*`), by the same command and `tests/test_contract.py` | in place |
+| Section 8's placement (origin on the mating plane, +Z the insertion direction, parts mated when their frames coincide), measured on the parts' own geometry by `tests/test_mate_frames.py` in Filaire (every connector) and Quincaillerie (thread, drive, terminals, seat) | in place |
 
 ## 12. Versioning
 
