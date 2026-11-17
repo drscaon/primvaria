@@ -47,7 +47,8 @@ class Repo:
             # authenticated when a token is given (CI): GitHub limits anonymous API calls per address
             request = urllib.request.Request(TREE.format(name=name, ref=ref))
             if os.environ.get("GITHUB_TOKEN"):
-                request.add_header("Authorization", f"Bearer {os.environ['GITHUB_TOKEN']}")
+                # not sent on along a redirect: urllib forwards ordinary headers to any host
+                request.add_unredirected_header("Authorization", f"Bearer {os.environ['GITHUB_TOKEN']}")
             with urllib.request.urlopen(request, timeout=30) as r:
                 self.paths = {e["path"] for e in json.load(r)["tree"] if e["type"] == "blob"}
 
