@@ -23,18 +23,13 @@ from pathlib import Path
 
 GENERATORS = ("granulaire", "maillage", "filaire", "quincaillerie")
 # every generator has these pages, and links each from its README's documentation table
-PAGES = ("usage", "openusd", "physics", "variation", "limits", "development")
+PAGES = ("usage", "openusd", "physics", "variation", "sources", "limits", "development")
 # example scripts every generator has, by the start of their name
 EXAMPLES = ("01_first_pack", "02_one_aspect_at_a_time", "03_read_the_usd_file", "04_")
 # differences that are meant: (generator, what) -> why
 INTENDED = {
     ("filaire", "docs/connectors.md"): "the connector families, a table only Filaire has",
     ("quincaillerie", "docs/jam-rate.md"): "the defect rate to jam rate experiment (QUI-05)",
-    # PRV-33, one generator at a time: once the four have it, sources joins PAGES and this goes
-    ("quincaillerie", "docs/sources.md"): "the sources of the physical values: the first generator with them",
-    ("filaire", "docs/sources.md"): "the sources of the physical values: the second generator with them",
-    ("maillage", "docs/sources.md"): "the sources of the physical values: the third generator with them",
-    ("granulaire", "docs/sources.md"): "the sources of the physical values: the fourth generator with them",
 }
 RAW = "https://raw.githubusercontent.com/drscaon/{name}/{ref}/{path}"
 TREE = "https://api.github.com/repos/drscaon/{name}/git/trees/{ref}?recursive=1"
