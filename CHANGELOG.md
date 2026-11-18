@@ -9,6 +9,12 @@ pre-release versions.
 
 ### Added
 
+- `primvaria compose OUT INPUT...` (PRV-14): one command builds a scene from
+  the generators' outputs on the shared ground and physics scene, each asset
+  referenced from its own file with a relative path, in a scope per
+  generator; names made unique (instance labels follow); engine layers left
+  out; the scene checked against the contract. `tests/test_composition.py`
+  now runs on the stage this command writes.
 - `tests/test_composition.py` (PRV-40): assets of the four generators, each
   referenced alone from the file its generator wrote, in one stage on the
   shared ground. It found that a Granulaire grain, a Maillage piece and a

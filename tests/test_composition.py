@@ -1,9 +1,9 @@
 """Assets of the four generators in one stage, as the contract promises (PRV-40).
 
 A grain, a cloth piece, a cable and a screw with its nut, each referenced alone from the file its
-generator wrote, are placed side by side on the shared ground. The composed stage must conform
-to the contract and pass the OpenUSD validators; each asset keeps its own materials (render and
-physics) and its labels; and the rigid ones settle in MuJoCo with their own friction.
+generator wrote, are placed side by side on the shared ground by `primvaria compose` (PRV-14). The
+composed stage must conform to the contract and pass the OpenUSD validators; each asset keeps its own
+materials (render and physics) and its labels; and the rigid ones settle in MuJoCo with their own friction.
 
 What MuJoCo is not given here: the cable and the cloth. Each generator's own MuJoCo checks build
 those (a chain of jointed segments, a flex); no converter reads both from one stage yet.
@@ -13,7 +13,7 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-from pxr import Gf, Kind, Usd, UsdGeom, UsdPhysics, UsdSemantics, UsdShade
+from pxr import Kind, Usd, UsdGeom, UsdPhysics, UsdSemantics, UsdShade
 
 granulaire = pytest.importorskip("granulaire")
 maillage = pytest.importorskip("maillage")
@@ -23,12 +23,14 @@ quincaillerie = pytest.importorskip("quincaillerie")
 from granulaire import contract, ground  # noqa: E402  (the same files in the four generators)
 from granulaire.validate import validate  # noqa: E402
 
+from primvaria.compose import compose  # noqa: E402
+
 GENERATORS = ("granulaire", "maillage", "filaire", "quincaillerie")
 
 
 @pytest.fixture(scope="module")
 def sources(tmp_path_factory):
-    """(scope, file, asset prim path or None for the file's default prim, x position) per asset."""
+    """The files the four generators wrote: a grain, a cloth piece, a cable, a screw and its nut."""
     out = tmp_path_factory.mktemp("composition")
     g = granulaire.write_outputs(granulaire.generate_scene("crushed_gravel", shapes=2, copies=1), out / "g")
     m = maillage.write_outputs(maillage.generate_scene("tea_towel", count=1, vertices=300), out / "m")
@@ -38,40 +40,20 @@ def sources(tmp_path_factory):
     )
     assets = Path(q.out_dir) / "assets"
     return [
-        ("Grains", next(g.glob("granulaire_*.usdc")), "/World/Grains/g_0000", -0.6),
-        ("Cloths", next(m.glob("maillage_*.usdc")), "/World/Cloths/tea_towel_000", -0.1),
-        ("Cables", next(f.glob("filaire_*.usdc")), "/World/Cables/usb_c_000", 0.5),
-        ("Parts", next(assets.glob("ISO4017_*_000.usdc")), None, 1.0),
-        ("Parts", next(assets.glob("ISO4032_*_000.usdc")), None, 1.1),
+        next(g.glob("granulaire_*.usdc")),
+        next(m.glob("maillage_*.usdc")),
+        next(f.glob("filaire_*.usdc")),
+        next(assets.glob("ISO4017_*_000.usdc")),
+        next(assets.glob("ISO4032_*_000.usdc")),
     ]
 
 
 @pytest.fixture(scope="module")
 def composed(sources, tmp_path_factory):
-    """One stage: the shared ground and physics scene, and each asset referenced on its own,
-    under a placing Xform (a group model) so that its own pose is kept."""
+    """The stage `primvaria compose` writes (PRV-14): the shared ground and physics scene, and each
+    asset referenced on its own under a placing Xform (a group model), its own pose kept."""
     path = tmp_path_factory.mktemp("stage") / "composed.usda"
-    stage = Usd.Stage.CreateNew(str(path))
-    UsdGeom.SetStageMetersPerUnit(stage, 1.0)
-    UsdGeom.SetStageUpAxis(stage, UsdGeom.Tokens.z)
-    UsdPhysics.SetStageKilogramsPerUnit(stage, 1.0)
-    world = UsdGeom.Xform.Define(stage, "/World").GetPrim()
-    stage.SetDefaultPrim(world)
-    contract.set_group(world, assembly=True)
-    ground.physics_scene(stage)
-    for i, (scope, file, prim_path, x) in enumerate(sources):
-        contract.set_group(UsdGeom.Scope.Define(stage, f"/World/{scope}").GetPrim())
-        place = UsdGeom.Xform.Define(stage, f"/World/{scope}/place_{i}")
-        place.AddTranslateOp().Set(Gf.Vec3d(x, 0, 0))
-        contract.set_group(place.GetPrim())
-        name = Path(prim_path).name if prim_path else file.stem  # the asset's name: its instance label
-        asset = stage.DefinePrim(f"/World/{scope}/place_{i}/{name}")
-        if prim_path:
-            asset.GetReferences().AddReference(str(file), prim_path)
-        else:
-            asset.GetReferences().AddReference(str(file))
-    ground.ground(stage, (-1.0, -0.5), (1.4, 0.5))
-    stage.GetRootLayer().Save()
+    stage, _ = compose(path, sources, limit=1)
     return stage
 
 

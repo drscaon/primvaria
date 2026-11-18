@@ -102,7 +102,20 @@ primvaria granulaire generate --preset beach_sand
 primvaria maillage generate --preset tea_towel
 primvaria filaire generate --preset usb_c --length 2
 primvaria quincaillerie generate screw M10 --with nut,washer --count 10
+primvaria compose scene.usda output/ quincaillerie_output/   # one scene from their outputs
 ```
+
+`primvaria compose OUT INPUT...` builds one scene from what the generators
+wrote: each input is an asset file or a folder searched for them. Every asset
+is referenced from its own file (paths relative to the scene, so the scene
+moves with the outputs), set on its own spot of the shared ground, under one
+physics scene, in a scope per generator (`/World/Grains`, `Cloths`, `Cables`,
+`Parts`). Assets named alike take their preset's name, and their instance
+label follows. Engine layers (`*_physx`, `*_omniphysics`) are not carried:
+open the asset's own files for those. `--limit N` takes at most N assets per
+file, `--gap` and `--width` set the spacing and row width in metres. The
+command then checks the scene against the contract and exits 1 if it does not
+conform (`--no-check` skips it).
 
 `primvaria <generator> ...` runs that generator's own command line: it is the
 same as typing `granulaire ...`, `maillage ...`, which keep working. From
