@@ -32,6 +32,9 @@ INTENDED = {
     ("quincaillerie", "docs/jam-rate.md"): "the defect rate to jam rate experiment (QUI-05)",
     # PRV-33, one generator at a time: once the four have it, sources joins PAGES and this goes
     ("quincaillerie", "docs/sources.md"): "the sources of the physical values: the first generator with them",
+    ("filaire", "docs/sources.md"): "the sources of the physical values: the second generator with them",
+    ("maillage", "docs/sources.md"): "the sources of the physical values: the third generator with them",
+    ("granulaire", "docs/sources.md"): "the sources of the physical values: the fourth generator with them",
 }
 RAW = "https://raw.githubusercontent.com/drscaon/{name}/{ref}/{path}"
 TREE = "https://api.github.com/repos/drscaon/{name}/git/trees/{ref}?recursive=1"
