@@ -42,6 +42,8 @@ pre-release versions.
 
 ### Changed
 
+- The consistency guard requires `docs/sources.md` in every generator, linked
+  from its README's documentation table, now that the four have it (PRV-33).
 - The stability page marks exit criteria 2 (distributions) and 3 (the
   generators agree) as met.
 - The drift guard checks `tests/test_golden.py`, the reproducibility test the
