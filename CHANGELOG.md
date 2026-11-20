@@ -7,6 +7,11 @@ pre-release versions.
 
 ## [Unreleased]
 
+### Changed
+
+- Site: the Quincaillerie page no longer shows the plate under its header; it repeated the
+  fasteners image that opens the README just after it.
+
 ## [0.4.0b1] - 2026-11-20 (beta)
 
 Requires the generators' new releases: Granulaire 0.5.0b1, Maillage 0.4.0b1,
