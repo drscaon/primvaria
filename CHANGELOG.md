@@ -48,6 +48,8 @@ pre-release versions.
 
 ### Changed
 
+- Website: each generator's picture on the home page links to its page, as its title
+  does; hovering the picture highlights the title.
 - The sitemap dates each page by the last commit of the file its content
   comes from, instead of the day of the build, which told search engines
   that every page changed on every deploy. A page whose history cannot be
