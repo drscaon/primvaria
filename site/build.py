@@ -22,12 +22,14 @@ Needs Pillow and Markdown. The build fails if a link inside the site leads nowhe
 from __future__ import annotations
 
 import argparse
-import datetime
 import html
 import io
+import json
+import os
 import posixpath
 import re
 import shutil
+import subprocess
 import urllib.request
 from pathlib import Path
 
@@ -91,6 +93,31 @@ class Source:
             return (self.local / repo / path).read_text(encoding="utf-8")
         with urllib.request.urlopen(f"{RAW}/{repo}/main/{path}", timeout=60) as r:
             return r.read().decode("utf-8")
+
+    def modified(self, repo: str, path: str) -> str | None:
+        """Date (YYYY-MM-DD) of the last commit that changed the file, or None when it cannot be
+        known: a shallow clone, or no answer from GitHub. A sitemap date must be the content's."""
+        root = ROOT if repo == "primvaria" else (self.local / repo if self.local is not None else None)
+        if root is not None:
+            git = ["git", "-C", str(root)]
+            shallow = subprocess.run(
+                git + ["rev-parse", "--is-shallow-repository"], capture_output=True, text=True
+            )
+            if shallow.returncode or shallow.stdout.strip() != "false":
+                return None
+            log = subprocess.run(
+                git + ["log", "-1", "--format=%cs", "--", path], capture_output=True, text=True
+            )
+            return log.stdout.strip() or None
+        headers = {"Accept": "application/vnd.github+json"}
+        if os.environ.get("GITHUB_TOKEN"):
+            headers["Authorization"] = f"Bearer {os.environ['GITHUB_TOKEN']}"
+        url = f"https://api.github.com/repos/drscaon/{repo}/commits?path={path}&per_page=1"
+        try:
+            with urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=60) as r:
+                return json.load(r)[0]["commit"]["committer"]["date"][:10]
+        except Exception:  # noqa: BLE001  (rate limit, network): leave the date out
+            return None
 
     def image(self, repo: str, name: str) -> Image.Image:
         if self.local is not None:
@@ -242,8 +269,9 @@ def cards(home: str) -> dict[str, str]:
     return out
 
 
-def build(out: Path, source: Source, today: str) -> dict[str, str]:
-    """Write the site to ``out``; returns {path on the site: HTML}."""
+def build(out: Path, source: Source) -> dict[str, str]:
+    """Write the site to ``out``; returns {path on the site: HTML}. The sitemap dates each page by
+    the last commit of the files its content comes from."""
     layout = (HERE / "layout.html").read_text(encoding="utf-8")
     jsonld = (HERE / "jsonld.json").read_text(encoding="utf-8").strip()
     home = (HERE / "pages" / "index.html").read_text(encoding="utf-8")
@@ -251,6 +279,10 @@ def build(out: Path, source: Source, today: str) -> dict[str, str]:
     pages_of = {repo: doc_links(readmes[repo], repo) for repo in HEROES}
     docs = {repo: {p for p, _ in pages_of[repo]} for repo in HEROES}
     site: dict[str, str] = {}
+    made_of: dict[str, list[tuple[str, str]]] = {
+        "/": [("primvaria", "site/pages/index.html")],
+        "/engines/": [("primvaria", "site/pages/engines.html")],
+    }
 
     site["/"] = wrap(
         layout,
@@ -278,6 +310,7 @@ def build(out: Path, source: Source, today: str) -> dict[str, str]:
             + prose(render(body, "primvaria", path, docs))
         )
         site[f"/{name}/"] = wrap(layout, jsonld, f"/{name}/", f"{title} · Primvaria", description, content)
+        made_of[f"/{name}/"] = [("primvaria", path)]
 
     lede = cards(home)
     for repo in HEROES:
@@ -302,6 +335,7 @@ def build(out: Path, source: Source, today: str) -> dict[str, str]:
         site[f"/{repo}/"] = wrap(
             layout, jsonld, f"/{repo}/", f"{name} · Primvaria", description, top + "\n" + prose(body)
         )
+        made_of[f"/{repo}/"] = [(repo, "README.md")]
         for path, label in pages_of[repo]:
             where = f"/{repo}/{Path(path).stem}/"
             title, text = title_and_body(source.text(repo, path))
@@ -319,6 +353,7 @@ def build(out: Path, source: Source, today: str) -> dict[str, str]:
                 f"{name}: {(title or label).lower()}.",
                 top + "\n" + prose(render(text, repo, path, docs)),
             )
+            made_of[where] = [(repo, path)]
 
     shutil.rmtree(out, ignore_errors=True)
     (out / "img").mkdir(parents=True)
@@ -330,8 +365,15 @@ def build(out: Path, source: Source, today: str) -> dict[str, str]:
         target = out / where.strip("/") / "index.html"
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(page, encoding="utf-8")
+    dates = {}
+    for where in site:
+        known = [d for d in (source.modified(r, p) for r, p in made_of[where]) if d]
+        dates[where] = max(known) if known else None
     urls = "\n".join(
-        f"  <url><loc>{SITE}{where}</loc><lastmod>{today}</lastmod></url>" for where in sorted(site)
+        f"  <url><loc>{SITE}{where}</loc>"
+        + (f"<lastmod>{dates[where]}</lastmod>" if dates[where] else "")
+        + "</url>"
+        for where in sorted(site)
     )
     (out / "sitemap.xml").write_text(
         '<?xml version="1.0" encoding="UTF-8"?>\n'
@@ -366,7 +408,7 @@ def main(argv=None) -> int:
     ap.add_argument("--local", type=Path, default=None, help="folder holding clones of the four generators")
     ap.add_argument("--out", type=Path, default=ROOT / "_site")
     args = ap.parse_args(argv)
-    site = build(args.out, Source(args.local), datetime.date.today().isoformat())
+    site = build(args.out, Source(args.local))
     problems = broken_links(args.out, site)
     for p in problems:
         print(p)

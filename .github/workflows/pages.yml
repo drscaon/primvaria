@@ -29,11 +29,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0  # full history: the sitemap dates each page by its source's last commit
+      - name: Clone the four generators (history, no file contents until read)
+        run: |
+          for r in granulaire maillage filaire quincaillerie; do
+            git clone --quiet --filter=blob:none "https://github.com/drscaon/$r" "../gen/$r"
+          done
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - run: pip install pillow markdown
-      - run: python site/build.py
+      - run: python site/build.py --local ../gen
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:
