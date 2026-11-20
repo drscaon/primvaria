@@ -48,6 +48,11 @@ pre-release versions.
 
 ### Changed
 
+- The sitemap dates each page by the last commit of the file its content
+  comes from, instead of the day of the build, which told search engines
+  that every page changed on every deploy. A page whose history cannot be
+  read gets no date. The website workflow clones the four generators with
+  their history and builds from them.
 - The consistency guard requires `docs/sources.md` in every generator, linked
   from its README's documentation table, now that the four have it (PRV-33).
 - The stability page marks exit criteria 2 (distributions) and 3 (the

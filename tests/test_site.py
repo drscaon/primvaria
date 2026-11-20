@@ -55,7 +55,7 @@ def built(tmp_path_factory):
             "# Limits and roadmap\n\n## Known limits\n\nSome.\n", encoding="utf-8"
         )
     out = tmp_path_factory.mktemp("site")
-    site = site_build.build(out, site_build.Source(local), "2026-11-13")
+    site = site_build.build(out, site_build.Source(local))
     return out, site
 
 
@@ -70,6 +70,31 @@ def test_one_page_per_subject(built):
     assert all((out / "img" / f"{repo}.jpg").is_file() for repo in site_build.HEROES)
     sitemap = (out / "sitemap.xml").read_text(encoding="utf-8")
     assert all(f"<loc>https://primvaria.com{where}</loc>" in sitemap for where in site)
+
+
+def test_sitemap_dates_are_the_content_s(built, tmp_path):
+    """A page's lastmod is the last commit of its own source, not the day of the build; a source
+    whose history is unknown (here the made-up generators, not git repositories) gets no date."""
+    import subprocess
+
+    out, _ = built
+    sitemap = (out / "sitemap.xml").read_text(encoding="utf-8")
+    entries = dict(
+        re.findall(r"<loc>https://primvaria.com([^<]*)</loc>(?:<lastmod>([^<]*)</lastmod>)?", sitemap)
+    )
+    assert entries["/granulaire/"] == ""  # no history to read
+    shallow = subprocess.run(
+        ["git", "-C", str(ROOT), "rev-parse", "--is-shallow-repository"], capture_output=True, text=True
+    ).stdout.strip()
+    if shallow != "false":
+        assert entries["/mission/"] == ""
+        return
+    expected = subprocess.run(
+        ["git", "-C", str(ROOT), "log", "-1", "--format=%cs", "--", "MISSION.md"],
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    assert entries["/mission/"] == expected
 
 
 def test_no_link_inside_the_site_is_broken(built):
