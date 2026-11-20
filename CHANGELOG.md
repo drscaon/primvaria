@@ -7,6 +7,17 @@ pre-release versions.
 
 ## [Unreleased]
 
+## [0.4.0b1] - 2026-11-20 (beta)
+
+Requires the generators' new releases: Granulaire 0.5.0b1, Maillage 0.4.0b1,
+Filaire 0.5.0b1 and Quincaillerie 0.4.0b1.
+
+### Breaking changes
+
+- Minimum generator versions raised to `granulaire>=0.5.0b1`,
+  `maillage>=0.4.0b1`, `filaire>=0.5.0b1` and `quincaillerie>=0.4.0b1`: each
+  has breaking changes of its own, listed first in its changelog.
+
 ### Added
 
 - Website indexing of images and video (PRV-41): `sitemap.xml` lists each page's
