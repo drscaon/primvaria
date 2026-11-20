@@ -60,6 +60,8 @@ HEROES = {
     "filaire": ("hero.jpg", 0.5),
     "quincaillerie": ("variation.jpg", 0.5),
 }
+# generator pages that show no plate under the header: their README opens with a close enough image
+NO_PLATE = {"quincaillerie"}
 # Markdown files of this repository that are pages of the site
 OWN = {
     "docs/contract.md": (
@@ -405,6 +407,8 @@ def build(out: Path, source: Source) -> dict[str, str]:
   </div>"""
         alt = html.escape(card_alt[repo], quote=True)
         plate = f'\n  <img class="plate" src="/img/{repo}.jpg" alt="{alt}" width="{WIDTH}" height="{HEIGHT}">'
+        if repo in NO_PLATE:
+            plate = ""
         top = header(
             '<a href="/">Primvaria</a> · generator',
             name,

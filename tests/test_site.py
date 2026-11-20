@@ -194,3 +194,10 @@ def test_home_page_describes_its_video(built):
     if shallow == "false":
         assert re.fullmatch(r"\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d[+-]\d\d:\d\d", video["uploadDate"])
     assert all('"VideoObject"' not in page for where, page in site.items() if where != "/")
+
+
+def test_quincaillerie_page_has_no_plate(built):
+    out, _ = built
+    page = (out / "quincaillerie" / "index.html").read_text(encoding="utf-8")
+    assert 'class="plate"' not in page
+    assert 'class="plate"' in (out / "filaire" / "index.html").read_text(encoding="utf-8")
