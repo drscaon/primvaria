@@ -29,6 +29,7 @@ import os
 import posixpath
 import re
 import shutil
+import struct
 import subprocess
 import urllib.request
 from pathlib import Path
@@ -94,9 +95,10 @@ class Source:
         with urllib.request.urlopen(f"{RAW}/{repo}/main/{path}", timeout=60) as r:
             return r.read().decode("utf-8")
 
-    def modified(self, repo: str, path: str) -> str | None:
-        """Date (YYYY-MM-DD) of the last commit that changed the file, or None when it cannot be
-        known: a shallow clone, or no answer from GitHub. A sitemap date must be the content's."""
+    def modified(self, repo: str, path: str, moment: bool = False) -> str | None:
+        """Date (YYYY-MM-DD) of the last commit that changed the file, or with ``moment`` its date
+        and time (ISO 8601, with the offset), or None when it cannot be known: a shallow clone, or
+        no answer from GitHub. A sitemap date must be the content's."""
         root = ROOT if repo == "primvaria" else (self.local / repo if self.local is not None else None)
         if root is not None:
             git = ["git", "-C", str(root)]
@@ -106,7 +108,9 @@ class Source:
             if shallow.returncode or shallow.stdout.strip() != "false":
                 return None
             log = subprocess.run(
-                git + ["log", "-1", "--format=%cs", "--", path], capture_output=True, text=True
+                git + ["log", "-1", f"--format={'%cI' if moment else '%cs'}", "--", path],
+                capture_output=True,
+                text=True,
             )
             return log.stdout.strip() or None
         headers = {"Accept": "application/vnd.github+json"}
@@ -115,7 +119,8 @@ class Source:
         url = f"https://api.github.com/repos/drscaon/{repo}/commits?path={path}&per_page=1"
         try:
             with urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=60) as r:
-                return json.load(r)[0]["commit"]["committer"]["date"][:10]
+                date = json.load(r)[0]["commit"]["committer"]["date"]
+                return date if moment else date[:10]
         except Exception:  # noqa: BLE001  (rate limit, network): leave the date out
             return None
 
@@ -224,6 +229,70 @@ def doc_links(readme: str, repo: str) -> list[tuple[str, str]]:
 
 
 # ---------------------------------------------------------------- pages
+def mp4_seconds(path: Path) -> float:
+    """Duration of an MP4 file, from its movie header (moov/mvhd), with no outside tool."""
+    data = path.read_bytes()
+
+    def boxes(start, end):
+        i = start
+        while i + 8 <= end:
+            size, kind = struct.unpack(">I4s", data[i : i + 8])
+            head = 8
+            if size == 1:
+                size, head = struct.unpack(">Q", data[i + 8 : i + 16])[0], 16
+            elif size == 0:
+                size = end - i
+            yield kind, i + head, i + size
+            i += size
+
+    for kind, a, b in boxes(0, len(data)):
+        if kind == b"moov":
+            for k, c, _ in boxes(a, b):
+                if k == b"mvhd":
+                    if data[c] == 1:  # version 1: 64-bit times
+                        scale, duration = struct.unpack(">IQ", data[c + 20 : c + 32])
+                    else:
+                        scale, duration = struct.unpack(">II", data[c + 12 : c + 20])
+                    return duration / scale
+    raise ValueError(f"{path}: no movie header")
+
+
+def page_images(page: str) -> list[tuple[str, str]]:
+    """(absolute address, alt text) of each image in a page's content (the header's logo left out)."""
+    main = page.split("</header>", 1)[-1]
+    out = []
+    for tag in re.findall(r"<img\b[^>]*>", main):
+        src = re.search(r'\bsrc="([^"]+)"', tag)
+        alt = re.search(r'\balt="([^"]*)"', tag)
+        if src:
+            url = html.unescape(src.group(1))
+            out.append(
+                (SITE + url if url.startswith("/") else url, html.unescape(alt.group(1)) if alt else "")
+            )
+    return out
+
+
+def demo_video(home: str, uploaded: str | None) -> dict:
+    """The home page's video as schema.org VideoObject: its name and description are the demo
+    section's heading and paragraph, its duration is the file's."""
+    section = re.search(r'<section id="demo".*?</section>', home, re.S).group(0)
+    name = re.sub(r"<[^>]+>", "", re.search(r"<h2>(.*?)</h2>", section, re.S).group(1)).strip()
+    text = re.sub(r"<[^>]+>", "", re.search(r"<p>(.*?)</p>", section, re.S).group(1))
+    seconds = round(mp4_seconds(HERE / "demo.mp4"))
+    return {
+        "@context": "https://schema.org",
+        "@type": "VideoObject",
+        "name": f"Primvaria: {name.lower()}",
+        "description": " ".join(text.split()),
+        "thumbnailUrl": f"{SITE}/demo_poster.jpg",
+        "contentUrl": f"{SITE}/demo.mp4",
+        "embedUrl": f"{SITE}/#demo",
+        "uploadDate": uploaded,
+        "duration": f"PT{seconds // 60}M{seconds % 60}S",
+        "publisher": {"@id": f"{SITE}/#author"},
+    }
+
+
 def wrap(layout: str, jsonld: str, where: str, title: str, description: str, content: str) -> str:
     page = layout
     for key, value in {
@@ -284,6 +353,9 @@ def build(out: Path, source: Source) -> dict[str, str]:
         "/engines/": [("primvaria", "site/pages/engines.html")],
     }
 
+    video = demo_video(home, source.modified("primvaria", "site/demo.mp4", moment=True))
+    if not video["uploadDate"]:
+        del video["uploadDate"]
     site["/"] = wrap(
         layout,
         jsonld,
@@ -292,6 +364,10 @@ def build(out: Path, source: Source) -> dict[str, str]:
         "Open-source OpenUSD asset generators for robot simulation: grains, cloth, cables and hardware, "
         "every instance different, tested in Blender and MuJoCo.",
         home,
+    ).replace(
+        "</head>",
+        f'<script type="application/ld+json">{json.dumps(video, ensure_ascii=False)}</script>\n</head>',
+        1,
     )
     site["/engines/"] = wrap(
         layout,
@@ -313,6 +389,10 @@ def build(out: Path, source: Source) -> dict[str, str]:
         made_of[f"/{name}/"] = [("primvaria", path)]
 
     lede = cards(home)
+    card_alt = {
+        repo: html.unescape(re.search(rf'<img src="/img/{repo}\.jpg" alt="([^"]+)"', home).group(1))
+        for repo in HEROES
+    }
     for repo in HEROES:
         name = repo.capitalize()
         install = f"""
@@ -323,7 +403,8 @@ def build(out: Path, source: Source) -> dict[str, str]:
     <a class="btn" href="{GITHUB}/{repo}">Source on GitHub</a>
     <a class="btn" href="https://pypi.org/project/{repo}/">PyPI</a>
   </div>"""
-        plate = f'\n  <img class="plate" src="/img/{repo}.jpg" alt="" width="{WIDTH}" height="{HEIGHT}">'
+        alt = html.escape(card_alt[repo], quote=True)
+        plate = f'\n  <img class="plate" src="/img/{repo}.jpg" alt="{alt}" width="{WIDTH}" height="{HEIGHT}">'
         top = header(
             '<a href="/">Primvaria</a> · generator',
             name,
@@ -369,15 +450,48 @@ def build(out: Path, source: Source) -> dict[str, str]:
     for where in site:
         known = [d for d in (source.modified(r, p) for r, p in made_of[where]) if d]
         dates[where] = max(known) if known else None
+
+    def x(text: str) -> str:
+        return html.escape(text, quote=False)
+
+    def media(where: str) -> str:
+        """The page's images, and the home page's video, as sitemap extensions."""
+        seen, parts = set(), []
+        for url, _ in page_images(site[where]):
+            if url not in seen:
+                seen.add(url)
+                parts.append(f"<image:image><image:loc>{x(url)}</image:loc></image:image>")
+        if where == "/":
+            v = video
+            parts.append(
+                "<video:video>"
+                f"<video:thumbnail_loc>{x(v['thumbnailUrl'])}</video:thumbnail_loc>"
+                f"<video:title>{x(v['name'])}</video:title>"
+                f"<video:description>{x(v['description'])}</video:description>"
+                f"<video:content_loc>{x(v['contentUrl'])}</video:content_loc>"
+                f"<video:duration>{round(mp4_seconds(HERE / 'demo.mp4'))}</video:duration>"
+                + (
+                    f"<video:publication_date>{v['uploadDate']}</video:publication_date>"
+                    if "uploadDate" in v
+                    else ""
+                )
+                + "</video:video>"
+            )
+        return "".join(parts)
+
     urls = "\n".join(
         f"  <url><loc>{SITE}{where}</loc>"
         + (f"<lastmod>{dates[where]}</lastmod>" if dates[where] else "")
+        + media(where)
         + "</url>"
         for where in sorted(site)
     )
     (out / "sitemap.xml").write_text(
         '<?xml version="1.0" encoding="UTF-8"?>\n'
-        f'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{urls}\n</urlset>\n',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"'
+        ' xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"'
+        ' xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">\n'
+        f"{urls}\n</urlset>\n",
         encoding="utf-8",
     )
     return site

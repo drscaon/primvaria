@@ -139,3 +139,58 @@ def test_sub_navigation_follows_the_documentation_table(built):
     nav = re.search(r'<nav class="subnav".*?</nav>', site["/maillage/limits/"], re.S).group(0)
     assert re.findall(r">([^<]+)</a>", nav) == ["Overview", "Usage in depth", "Limits and roadmap"]
     assert 'href="/maillage/limits/" aria-current="page"' in nav
+
+
+def test_every_content_image_has_alt_text(built):
+    """Search engines and screen readers read an image by its alt text: every image in a page's
+    content has one (the header's logo, beside the name it shows, is decorative)."""
+    _, site = built
+    for where, page in site.items():
+        for url, alt in site_build.page_images(page):
+            assert alt.strip(), f"{where}: {url} has no alt text"
+
+
+def test_sitemap_lists_each_page_s_images_and_the_video(built):
+    import xml.etree.ElementTree as ET
+
+    out, site = built
+    ns = {
+        "s": "http://www.sitemaps.org/schemas/sitemap/0.9",
+        "image": "http://www.google.com/schemas/sitemap-image/1.1",
+        "video": "http://www.google.com/schemas/sitemap-video/1.1",
+    }
+    root = ET.parse(out / "sitemap.xml").getroot()
+    for url in root.findall("s:url", ns):
+        where = url.find("s:loc", ns).text.removeprefix("https://primvaria.com")
+        listed = [i.find("image:loc", ns).text for i in url.findall("image:image", ns)]
+        assert listed == list(dict.fromkeys(u for u, _ in site_build.page_images(site[where]))), where
+        videos = url.findall("video:video", ns)
+        assert len(videos) == (1 if where == "/" else 0), where
+    (video,) = root.find("s:url", ns).findall("video:video", ns)
+    seconds = round(site_build.mp4_seconds(ROOT / "site" / "demo.mp4"))
+    assert int(video.find("video:duration", ns).text) == seconds > 0
+    for tag in ("thumbnail_loc", "title", "description", "content_loc"):
+        assert video.find(f"video:{tag}", ns).text.strip(), tag
+
+
+def test_home_page_describes_its_video(built):
+    """The home page carries a schema.org VideoObject with what Google requires (name, description,
+    thumbnail, upload date) and the duration of the file itself."""
+    import json
+    import subprocess
+
+    _, site = built
+    blocks = [
+        json.loads(b) for b in re.findall(r'<script type="application/ld\+json">(.*?)</script>', site["/"])
+    ]
+    (video,) = [b for b in blocks if b.get("@type") == "VideoObject"]
+    for key in ("name", "description", "thumbnailUrl", "contentUrl"):
+        assert video[key], key
+    seconds = round(site_build.mp4_seconds(ROOT / "site" / "demo.mp4"))
+    assert video["duration"] == f"PT{seconds // 60}M{seconds % 60}S"
+    shallow = subprocess.run(
+        ["git", "-C", str(ROOT), "rev-parse", "--is-shallow-repository"], capture_output=True, text=True
+    ).stdout.strip()
+    if shallow == "false":
+        assert re.fullmatch(r"\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d[+-]\d\d:\d\d", video["uploadDate"])
+    assert all('"VideoObject"' not in page for where, page in site.items() if where != "/")

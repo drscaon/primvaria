@@ -9,6 +9,13 @@ pre-release versions.
 
 ### Added
 
+- Website indexing of images and video (PRV-41): `sitemap.xml` lists each page's
+  images (Google's image extension) and the home page's demo video (video
+  extension: thumbnail, title, description, file, duration, publication date);
+  the home page carries a schema.org `VideoObject` with the same facts, its
+  duration read from the MP4 file and its upload date from the file's last
+  commit; the picture at the top of each generator page has alt text (it had
+  none). Tests check all three.
 - `primvaria compose OUT INPUT...` (PRV-14): one command builds a scene from
   the generators' outputs on the shared ground and physics scene, each asset
   referenced from its own file with a relative path, in a scope per
