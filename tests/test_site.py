@@ -150,7 +150,7 @@ def test_every_content_image_has_alt_text(built):
             assert alt.strip(), f"{where}: {url} has no alt text"
 
 
-def test_sitemap_lists_each_page_s_images_and_the_video(built):
+def test_sitemap_lists_each_page_s_images_and_the_videos(built):
     import xml.etree.ElementTree as ET
 
     out, site = built
@@ -165,16 +165,19 @@ def test_sitemap_lists_each_page_s_images_and_the_video(built):
         listed = [i.find("image:loc", ns).text for i in url.findall("image:image", ns)]
         assert listed == list(dict.fromkeys(u for u, _ in site_build.page_images(site[where]))), where
         videos = url.findall("video:video", ns)
-        assert len(videos) == (1 if where == "/" else 0), where
-    (video,) = root.find("s:url", ns).findall("video:video", ns)
-    seconds = round(site_build.mp4_seconds(ROOT / "site" / "demo.mp4"))
-    assert int(video.find("video:duration", ns).text) == seconds > 0
-    for tag in ("thumbnail_loc", "title", "description", "content_loc"):
-        assert video.find(f"video:{tag}", ns).text.strip(), tag
+        assert len(videos) == (len(site_build.VIDEOS) if where == "/" else 0), where
+    videos = root.find("s:url", ns).findall("video:video", ns)
+    for video, (file, poster) in zip(videos, site_build.VIDEOS.values(), strict=True):
+        seconds = round(site_build.mp4_seconds(ROOT / "site" / file))
+        assert int(video.find("video:duration", ns).text) == seconds > 0
+        assert video.find("video:content_loc", ns).text.endswith("/" + file)
+        assert video.find("video:thumbnail_loc", ns).text.endswith("/" + poster)
+        for tag in ("thumbnail_loc", "title", "description", "content_loc"):
+            assert video.find(f"video:{tag}", ns).text.strip(), tag
 
 
-def test_home_page_describes_its_video(built):
-    """The home page carries a schema.org VideoObject with what Google requires (name, description,
+def test_home_page_describes_its_videos(built):
+    """The home page carries a schema.org VideoObject per video with what Google requires (name, description,
     thumbnail, upload date) and the duration of the file itself."""
     import json
     import subprocess
@@ -183,15 +186,17 @@ def test_home_page_describes_its_video(built):
     blocks = [
         json.loads(b) for b in re.findall(r'<script type="application/ld\+json">(.*?)</script>', site["/"])
     ]
-    (video,) = [b for b in blocks if b.get("@type") == "VideoObject"]
-    for key in ("name", "description", "thumbnailUrl", "contentUrl"):
-        assert video[key], key
-    seconds = round(site_build.mp4_seconds(ROOT / "site" / "demo.mp4"))
-    assert video["duration"] == f"PT{seconds // 60}M{seconds % 60}S"
+    videos = [b for b in blocks if b.get("@type") == "VideoObject"]
+    assert len({v["name"] for v in videos}) == len(videos) == len(site_build.VIDEOS)
+    for video, (file, _) in zip(videos, site_build.VIDEOS.values(), strict=True):
+        for key in ("name", "description", "thumbnailUrl", "contentUrl"):
+            assert video[key], key
+        seconds = round(site_build.mp4_seconds(ROOT / "site" / file))
+        assert video["duration"] == f"PT{seconds // 60}M{seconds % 60}S"
     shallow = subprocess.run(
         ["git", "-C", str(ROOT), "rev-parse", "--is-shallow-repository"], capture_output=True, text=True
     ).stdout.strip()
-    if shallow == "false":
+    for video in videos if shallow == "false" else []:
         assert re.fullmatch(r"\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d[+-]\d\d:\d\d", video["uploadDate"])
     assert all('"VideoObject"' not in page for where, page in site.items() if where != "/")
 

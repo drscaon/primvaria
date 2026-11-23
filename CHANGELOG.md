@@ -7,6 +7,11 @@ pre-release versions.
 
 ## [Unreleased]
 
+### Added
+
+- Site and README: a second video on the home page, the four generators on one workbench
+  (`#bench`), with its own schema.org VideoObject and sitemap entry.
+
 ### Changed
 
 - Site: the Quincaillerie page no longer shows the plate under its header; it repeated the

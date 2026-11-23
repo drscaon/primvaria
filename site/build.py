@@ -50,6 +50,8 @@ STATIC = (
     "robots.txt",
     "demo.mp4",
     "demo_poster.jpg",
+    "bench.mp4",
+    "bench_poster.jpg",
     "style.css",
 )
 
@@ -274,21 +276,26 @@ def page_images(page: str) -> list[tuple[str, str]]:
     return out
 
 
-def demo_video(home: str, uploaded: str | None) -> dict:
-    """The home page's video as schema.org VideoObject: its name and description are the demo
-    section's heading and paragraph, its duration is the file's."""
-    section = re.search(r'<section id="demo".*?</section>', home, re.S).group(0)
+# the home page's videos: id of their section, file and poster under site/
+VIDEOS = {"demo": ("demo.mp4", "demo_poster.jpg"), "bench": ("bench.mp4", "bench_poster.jpg")}
+
+
+def demo_video(home: str, uploaded: str | None, section_id: str = "demo") -> dict:
+    """A home page video as schema.org VideoObject: its name and description are its section's
+    heading and paragraph, its duration is the file's."""
+    file, poster = VIDEOS[section_id]
+    section = re.search(rf'<section id="{section_id}".*?</section>', home, re.S).group(0)
     name = re.sub(r"<[^>]+>", "", re.search(r"<h2>(.*?)</h2>", section, re.S).group(1)).strip()
     text = re.sub(r"<[^>]+>", "", re.search(r"<p>(.*?)</p>", section, re.S).group(1))
-    seconds = round(mp4_seconds(HERE / "demo.mp4"))
+    seconds = round(mp4_seconds(HERE / file))
     return {
         "@context": "https://schema.org",
         "@type": "VideoObject",
         "name": f"Primvaria: {name.lower()}",
         "description": " ".join(text.split()),
-        "thumbnailUrl": f"{SITE}/demo_poster.jpg",
-        "contentUrl": f"{SITE}/demo.mp4",
-        "embedUrl": f"{SITE}/#demo",
+        "thumbnailUrl": f"{SITE}/{poster}",
+        "contentUrl": f"{SITE}/{file}",
+        "embedUrl": f"{SITE}/#{section_id}",
         "uploadDate": uploaded,
         "duration": f"PT{seconds // 60}M{seconds % 60}S",
         "publisher": {"@id": f"{SITE}/#author"},
@@ -355,9 +362,12 @@ def build(out: Path, source: Source) -> dict[str, str]:
         "/engines/": [("primvaria", "site/pages/engines.html")],
     }
 
-    video = demo_video(home, source.modified("primvaria", "site/demo.mp4", moment=True))
-    if not video["uploadDate"]:
-        del video["uploadDate"]
+    videos = []
+    for section_id, (file, _) in VIDEOS.items():
+        video = demo_video(home, source.modified("primvaria", f"site/{file}", moment=True), section_id)
+        if not video["uploadDate"]:
+            del video["uploadDate"]
+        videos.append(video)
     site["/"] = wrap(
         layout,
         jsonld,
@@ -368,7 +378,11 @@ def build(out: Path, source: Source) -> dict[str, str]:
         home,
     ).replace(
         "</head>",
-        f'<script type="application/ld+json">{json.dumps(video, ensure_ascii=False)}</script>\n</head>',
+        "".join(
+            f'<script type="application/ld+json">{json.dumps(v, ensure_ascii=False)}</script>\n'
+            for v in videos
+        )
+        + "</head>",
         1,
     )
     site["/engines/"] = wrap(
@@ -459,21 +473,21 @@ def build(out: Path, source: Source) -> dict[str, str]:
         return html.escape(text, quote=False)
 
     def media(where: str) -> str:
-        """The page's images, and the home page's video, as sitemap extensions."""
+        """The page's images, and the home page's videos, as sitemap extensions."""
         seen, parts = set(), []
         for url, _ in page_images(site[where]):
             if url not in seen:
                 seen.add(url)
                 parts.append(f"<image:image><image:loc>{x(url)}</image:loc></image:image>")
-        if where == "/":
-            v = video
+        for v in videos if where == "/" else []:
+            seconds = round(mp4_seconds(HERE / v["contentUrl"].rsplit("/", 1)[1]))
             parts.append(
                 "<video:video>"
                 f"<video:thumbnail_loc>{x(v['thumbnailUrl'])}</video:thumbnail_loc>"
                 f"<video:title>{x(v['name'])}</video:title>"
                 f"<video:description>{x(v['description'])}</video:description>"
                 f"<video:content_loc>{x(v['contentUrl'])}</video:content_loc>"
-                f"<video:duration>{round(mp4_seconds(HERE / 'demo.mp4'))}</video:duration>"
+                f"<video:duration>{seconds}</video:duration>"
                 + (
                     f"<video:publication_date>{v['uploadDate']}</video:publication_date>"
                     if "uploadDate" in v
