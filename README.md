@@ -117,6 +117,9 @@ file, `--gap` and `--width` set the spacing and row width in metres. The
 command then checks the scene against the contract and exits 1 if it does not
 conform (`--no-check` skips it).
 
+[![Pebbles, screws, cells, cables, sockets and cloth from the four generators on one workbench](docs/images/bench.jpg)](https://primvaria.com/#bench)
+<sub>Assets of the four generators in one stage, laid out and dropped with physics in Blender. [Watch the video](https://primvaria.com/#bench).</sub>
+
 `primvaria <generator> ...` runs that generator's own command line: it is the
 same as typing `granulaire ...`, `maillage ...`, which keep working. From
 Python, import the generators directly:
