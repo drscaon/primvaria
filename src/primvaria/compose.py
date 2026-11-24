@@ -17,8 +17,13 @@ and y, so the assets stand in rows without touching. Two assets with the same na
 grains of two Granulaire packs are both g_0000) get the preset in front of their name, and the
 instance label follows the name, as the contract requires.
 
-What a composed stage does not carry: the engine layers (_physx, _omniphysics, _newton) of the files it
-references. They are written for the files' own prim paths; the composed stage is pure UsdPhysics.
+The composed stage itself is pure UsdPhysics. Beside it, one engine layer per engine some of its
+assets have a layer for (contract, section 9): ``<stage>_newton.usda``, ``<stage>_physx.usda``,
+``<stage>_omniphysics.usda``. Each has the stage as its only sublayer and, on each placed asset
+that has a layer for that engine, a stronger reference to the asset's root in that layer: the
+asset's engine settings follow it into the scene, at its new path. Open the layer of the engine
+you use instead of the stage. What an engine layer sets outside the asset roots (a file's own
+physics scene or ground) is not carried: the composed stage has its own.
 """
 
 from __future__ import annotations
@@ -35,6 +40,9 @@ SCOPES = {"granulaire": "Grains", "maillage": "Cloths", "filaire": "Cables", "qu
 SKIP = ("materials",)  # folders of a generator's output that hold no assets
 
 
+ENGINES = contract.ENGINES  # the engine layers of the contract, section 9
+
+
 @dataclass
 class Asset:
     file: Path  # the file that defines it
@@ -44,6 +52,7 @@ class Asset:
     preset: str
     lo: tuple  # its footprint in its file (x, y min and max), its own pose included
     hi: tuple
+    path: str = ""  # its path in the composed stage, once placed
 
 
 def _own_roots(stage) -> list:
@@ -125,9 +134,13 @@ def layout(assets: list[Asset], gap: float = 0.05, width: float = 2.0) -> list[t
     return offsets
 
 
-def compose(out, inputs, limit: int | None = None, gap: float = 0.05, width: float = 2.0):
-    """Write ``out`` (.usda or .usdc): the assets of ``inputs`` on the shared ground. Returns the
-    stage and the assets placed."""
+def compose(out, inputs, limit: int | None = None, gap: float = 0.05, width: float = 2.0, engines=ENGINES):
+    """Write ``out`` (.usda or .usdc): the assets of ``inputs`` on the shared ground, and beside it
+    the engine layers asked for (``engines``, among ENGINES) that some asset has. Returns the stage
+    and the assets placed."""
+    unknown = set(engines) - set(ENGINES)
+    if unknown:
+        raise ValueError(f"unknown engine {sorted(unknown)[0]!r}; expected some of {', '.join(ENGINES)}")
     out = Path(out)
     if out.suffix not in (".usda", ".usdc", ".usd"):
         raise ValueError(f"{out}: the composed stage is an OpenUSD file (.usda, .usdc or .usd)")
@@ -154,6 +167,7 @@ def compose(out, inputs, limit: int | None = None, gap: float = 0.05, width: flo
         place.AddTranslateOp().Set(Gf.Vec3d(dx, dy, 0.0))
         contract.set_group(place.GetPrim())
         prim = stage.DefinePrim(place.GetPath().AppendChild(a.name))
+        a.path = str(prim.GetPath())
         ref = os.path.relpath(a.file, out.resolve().parent).replace(os.sep, "/")
         prim.GetReferences().AddReference(ref if ref.startswith(".") else f"./{ref}", Sdf.Path(a.prim))
         if a.name != Path(a.prim).name:  # renamed: its instance label is its new name (contract)
@@ -163,7 +177,43 @@ def compose(out, inputs, limit: int | None = None, gap: float = 0.05, width: flo
             hi[k] = max(hi[k], a.hi[k] + (dx, dy)[k])
     ground.ground(stage, tuple(lo), tuple(hi))
     stage.GetRootLayer().Save()
+    for engine in ENGINES:
+        layer_path(out, engine).unlink(missing_ok=True)
+        if engine in engines:
+            engine_layer(out, assets, engine)
     return stage, assets
+
+
+def layer_path(file, engine: str) -> Path:
+    """A file's layer for an engine, beside it (contract, section 9)."""
+    file = Path(file)
+    return file.with_name(f"{file.stem}_{engine}.usda")
+
+
+def engine_layer(out, assets: list[Asset], engine: str) -> Path | None:
+    """Write ``<out>_<engine>.usda`` over the composed stage: each placed asset that has a layer for
+    the engine references its root there too, ahead of the file. None if no asset has one."""
+    out = Path(out)
+    layered = [a for a in assets if layer_path(a.file, engine).exists()]
+    if not layered:
+        return None
+    path = layer_path(out, engine)
+    layer = Sdf.Layer.CreateNew(str(path))
+    layer.subLayerPaths.append(f"./{out.name}")
+    stage = Usd.Stage.Open(layer)
+    UsdGeom.SetStageMetersPerUnit(stage, 1.0)
+    UsdGeom.SetStageUpAxis(stage, UsdGeom.Tokens.z)
+    UsdPhysics.SetStageKilogramsPerUnit(stage, 1.0)
+    stage.SetDefaultPrim(stage.GetPrimAtPath("/World"))
+    for a in layered:
+        ref = os.path.relpath(layer_path(a.file, engine), path.resolve().parent).replace(os.sep, "/")
+        stage.OverridePrim(a.path).GetReferences().AddReference(
+            ref if ref.startswith(".") else f"./{ref}",
+            Sdf.Path(a.prim),
+            position=Usd.ListPositionFrontOfPrependList,
+        )
+    layer.Save()
+    return path
 
 
 def check(stage) -> list[str]:
