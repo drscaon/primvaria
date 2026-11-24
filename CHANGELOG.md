@@ -9,6 +9,9 @@ pre-release versions.
 
 ### Fixed
 
+- Site and README: the bench video's caption says the scene was made with Blender scripts
+  outside Primvaria, and that `primvaria compose` only sets the assets side by side; the README
+  says how compose places them (in rows, in input order, shifted along x and y only).
 - Site: the engine matrix's header row is written from `docs/engines.json` with the rows; it
   was hand-written, so the Newton column had shifted every title after MuJoCo and left the
   last column without one.

@@ -116,7 +116,8 @@ primvaria compose scene.usda output/ quincaillerie_output/   # one scene from th
 `primvaria compose OUT INPUT...` builds one scene from what the generators
 wrote: each input is an asset file or a folder searched for them. Every asset
 is referenced from its own file (paths relative to the scene, so the scene
-moves with the outputs), set on its own spot of the shared ground, under one
+moves with the outputs), set on its own spot of the shared ground (in rows,
+in the order of the inputs, only shifted along x and y), under one
 physics scene, in a scope per generator (`/World/Grains`, `Cloths`, `Cables`,
 `Parts`). Assets named alike take their preset's name, and their instance
 label follows. Engine layers (`*_physx`, `*_omniphysics`, `*_newton`) are not carried:
@@ -126,7 +127,7 @@ command then checks the scene against the contract and exits 1 if it does not
 conform (`--no-check` skips it).
 
 [![Pebbles, screws, cells, cables, sockets and cloth from the four generators on one workbench](docs/images/bench.jpg)](https://primvaria.com/#bench)
-<sub>Assets of the four generators in one stage, laid out and dropped with physics in Blender. [Watch the video](https://primvaria.com/#bench).</sub>
+<sub>Assets of the four generators, laid out on a bench by Blender scripts made for this video, not part of Primvaria: `compose` only sets them side by side. [Watch the video](https://primvaria.com/#bench).</sub>
 
 `primvaria <generator> ...` runs that generator's own command line: it is the
 same as typing `granulaire ...`, `maillage ...`, which keep working. From
