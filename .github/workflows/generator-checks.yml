@@ -38,25 +38,7 @@ on:
         required: false
         type: string
         default: ""
-      macos:
-    name: Tests (Python 3.12, macos-latest)
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
-        with:
-          python-version: "3.12"
-          cache: pip
-          cache-dependency-path: pyproject.toml
-      - name: Install
-        run: pip install -e ".[dev]"
-      - name: Test
-        run: pytest
-      - name: Command-line smoke test
-        run: ${{ inputs.smoke }}
-
-  usd-floor:
+      usd-floor:
         description: The lowest usd-core version the package accepts
         required: false
         type: string
@@ -106,6 +88,24 @@ jobs:
         run: pytest
       - name: Command-line smoke test
         # the platform's default shell (PowerShell on Windows), as a user would run them
+        run: ${{ inputs.smoke }}
+
+  macos:
+    name: Tests (Python 3.12, macos-latest)
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install
+        run: pip install -e ".[dev]"
+      - name: Test
+        run: pytest
+      - name: Command-line smoke test
         run: ${{ inputs.smoke }}
 
   usd-floor:
