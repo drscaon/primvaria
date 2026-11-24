@@ -67,8 +67,8 @@ jobs:
         run: >
           pip install
           "granulaire @ git+https://github.com/drscaon/granulaire"
-          "maillage @ git+https://github.com/drscaon/maillage"
-          "filaire @ git+https://github.com/drscaon/filaire"
+          "maillage[sim] @ git+https://github.com/drscaon/maillage"
+          "filaire[sim] @ git+https://github.com/drscaon/filaire"
           "quincaillerie @ git+https://github.com/drscaon/quincaillerie"
       - name: Install
         run: pip install -e ".[dev]"
@@ -95,8 +95,8 @@ jobs:
         run: >
           pip install
           "granulaire @ git+https://github.com/drscaon/granulaire"
-          "maillage @ git+https://github.com/drscaon/maillage"
-          "filaire @ git+https://github.com/drscaon/filaire"
+          "maillage[sim] @ git+https://github.com/drscaon/maillage"
+          "filaire[sim] @ git+https://github.com/drscaon/filaire"
           "quincaillerie @ git+https://github.com/drscaon/quincaillerie"
           -e .
       - name: Write a pack of every preset
