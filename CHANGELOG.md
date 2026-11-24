@@ -18,6 +18,11 @@ pre-release versions.
 
 ### Added
 
+- `primvaria compose` writes engine layers beside the composed stage (`scene_newton.usda`,
+  `scene_physx.usda`, `scene_omniphysics.usda`, for the engines its assets have layers for):
+  each placed asset references its own engine layer, so a composed scene opens in Newton or
+  Isaac Sim with every asset's settings. `--engines` chooses them, as in the generators. The
+  stage itself is unchanged. The Newton check opens a composed scene too.
 - Site and README: a second video on the home page, the four generators on one workbench
   (`#bench`), with its own schema.org VideoObject and sitemap entry.
 - Newton on CPU in the engine matrix (PRV-30): `scripts/newton_check.py` and a CI job open

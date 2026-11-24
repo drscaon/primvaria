@@ -120,8 +120,11 @@ moves with the outputs), set on its own spot of the shared ground (in rows,
 in the order of the inputs, only shifted along x and y), under one
 physics scene, in a scope per generator (`/World/Grains`, `Cloths`, `Cables`,
 `Parts`). Assets named alike take their preset's name, and their instance
-label follows. Engine layers (`*_physx`, `*_omniphysics`, `*_newton`) are not carried:
-open the asset's own files for those. `--limit N` takes at most N assets per
+label follows. The scene itself is plain UsdPhysics; beside it, compose writes
+one engine layer per engine the assets have layers for (`scene_newton.usda`,
+`scene_physx.usda`, `scene_omniphysics.usda`), which brings each asset's own
+engine settings to its place in the scene: open the one of your engine
+instead of the scene. `--engines` chooses them, as in the generators. `--limit N` takes at most N assets per
 file, `--gap` and `--width` set the spacing and row width in metres. The
 command then checks the scene against the contract and exits 1 if it does not
 conform (`--no-check` skips it).

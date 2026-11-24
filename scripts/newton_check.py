@@ -25,7 +25,10 @@ sets nothing in their place. It checks:
   cable does not move). Not "at rest": under XPBD the joint drives' damping has almost no
   effect, so a hung cable keeps swinging;
 - cloth: every piece is raised 5 cm and, after 1 s, every particle is finite, at rest and not
-  below the ground.
+  below the ground;
+- a composed scene (`primvaria compose`, one pack of each generator, opened from its own Newton
+  layer, which brings each asset's): its mass is the stage's, its cloth is read, and after 1 s
+  every pose and particle is finite and nothing is below the ground.
 
 Two comparisons are measured and reported, not failed on (they say how far Newton is, not
 whether a file is right):
@@ -55,7 +58,7 @@ import warnings
 from pathlib import Path
 
 DT = 1e-3
-SECONDS = {"rigid": 2.0, "cable": 1.0, "cloth": 1.0}
+SECONDS = {"rigid": 2.0, "cable": 1.0, "cloth": 1.0, "scene": 1.0}
 AT_REST = 0.05  # m/s
 MASS = 1e-5  # relative
 BENT = 0.005  # m: a hung cable's lowest point below its support
@@ -124,9 +127,30 @@ def generate(out: Path) -> None:
             "generator": "quincaillerie", "preset": r["name"].removesuffix("_000"), "kind": "rigid",
             "file": layer(folder / r["file"]), "mass_kg": float(r["measured:mass_kg"]), "ground": False,
         })  # fmt: skip
+    files.append(composed(out))
     (out / "files.json").write_text(json.dumps(files, indent=1), encoding="utf-8")
     print(f"{len(files)} files listed in {out / 'files.json'}")
     (out / "compare.json").write_text(json.dumps(compare_inputs(out), indent=1), encoding="utf-8")
+
+
+def composed(out: Path) -> dict:
+    """One pack of each generator composed into one stage, with the stage's mass."""
+    from pxr import UsdPhysics
+
+    from primvaria.compose import compose, layer_path
+
+    scene = out / "composed" / "scene.usda"
+    picks = [out / "granulaire" / "crushed_gravel", out / "maillage" / "napkin", out / "filaire" / "usb_c",
+             out / "quincaillerie" / "catalog" / "assets"]  # fmt: skip
+    stage, assets = compose(scene, picks, limit=3)
+    mass = 0.0
+    for prim in stage.Traverse():
+        if prim.HasAPI(UsdPhysics.RigidBodyAPI) and prim.HasAPI(UsdPhysics.MassAPI):
+            mass += UsdPhysics.MassAPI(prim).GetMassAttr().Get() or 0.0
+        if prim.HasAttribute("maillage:mass"):
+            mass += prim.GetAttribute("maillage:mass").Get()
+    return {"generator": "compose", "preset": f"{len(assets)} assets of the four generators", "kind": "scene",
+            "file": str(layer_path(scene, "newton")), "mass_kg": mass}  # fmt: skip
 
 
 def compare_inputs(out: Path) -> dict:
@@ -216,7 +240,7 @@ def check(item: dict) -> dict:
     }
     if abs(mass - item["mass_kg"]) > MASS * item["mass_kg"]:
         r["failed"].append(f"mass {mass:.6g} kg, pack {item['mass_kg']:.6g} kg")
-    if kind == "cloth" and not r["cloths"]:
+    if kind in ("cloth", "scene") and not r["cloths"]:
         r["failed"].append("no cloth read")
     builder = newton.ModelBuilder()  # the content in a world of its own (gravity is per world)
     if item.get("ground", True) is False:
@@ -258,6 +282,18 @@ def check(item: dict) -> dict:
     poses, speeds = state.body_q.numpy(), state.body_qd.numpy()
     if not (np.isfinite(poses).all() and np.isfinite(speeds).all()):
         r["failed"].append("non-finite pose or speed")
+    if kind == "scene":
+        q = state.particle_q.numpy()
+        if not np.isfinite(q).all():
+            r["failed"].append("non-finite particle")
+        lowest = min(float(np.nanmin(_centres(model, state)[:, 2])), float(np.nanmin(q[:, 2])))
+        if lowest < -1e-3:
+            r["failed"].append(f"something {lowest:.4g} m below the ground")
+        r["read"] = (
+            f"{part.body_count} bodies, {r['cloths']} cloth, {part.joint_dof_count} degrees of freedom; "
+            f"finite, above the ground after {seconds}"
+        )
+        return r
     r["fastest_m_s"] = float(np.nanmax(np.linalg.norm(speeds[:, :3], axis=1)))
     if kind == "cable":
         r["bent_m"] = support - float(np.nanmin(poses[:, 2]))

@@ -270,6 +270,11 @@ beside `UsdPreviewSurface`, in the same file.
   guess (for example `quincaillerie:contactOffset`, the distance from which a
   threaded part needs contacts), and the engine layer copies it.
 
+A composed stage (`primvaria compose`) follows the same rule: it is plain
+UsdPhysics, and beside it one layer per engine its assets have layers for,
+`<stage>_<engine>.usda`, whose only sublayer is the stage and which references,
+on each placed asset, the asset's root in its own engine layer.
+
 Each generator checks the structure of its layers (`python -m
 <generator>.physx`, `python -m <generator>.omniphysics`, `python -m
 <generator>.newton`), and `generate --engines` chooses which it writes

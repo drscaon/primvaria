@@ -44,6 +44,10 @@ def _list() -> int:
 def _compose(args: list[str]) -> int:
     import argparse
 
+    from granulaire.contract import engine_list
+
+    from .compose import ENGINES, check, compose, layer_path
+
     ap = argparse.ArgumentParser(
         prog="primvaria compose",
         description="Write one OpenUSD stage that references the assets of generator outputs, side by "
@@ -54,14 +58,23 @@ def _compose(args: list[str]) -> int:
     ap.add_argument("--limit", type=int, help="at most this many assets from each file")
     ap.add_argument("--gap", type=float, default=0.05, help="space between assets, m (default: 0.05)")
     ap.add_argument("--width", type=float, default=2.0, help="width of a row of assets, m (default: 2)")
+    ap.add_argument(
+        "--engines",
+        default=",".join(ENGINES),
+        metavar="LIST",
+        help="engine layers written beside the stage, from the assets' own, comma-separated, or none "
+        f"(default: {','.join(ENGINES)})",
+    )
     ap.add_argument("--no-check", action="store_true", help="do not check the stage against the contract")
     a = ap.parse_args(args)
+    try:
+        engines = engine_list(a.engines)
+    except ValueError as e:
+        ap.error(str(e))
     if a.limit is not None and a.limit < 1:
         ap.error("--limit must be at least 1")
-    from .compose import check, compose
-
     try:
-        stage, assets = compose(a.out, a.inputs, limit=a.limit, gap=a.gap, width=a.width)
+        stage, assets = compose(a.out, a.inputs, limit=a.limit, gap=a.gap, width=a.width, engines=engines)
     except (FileNotFoundError, ValueError) as e:
         print(f"error: {e}", file=sys.stderr)
         return 2
@@ -70,6 +83,9 @@ def _compose(args: list[str]) -> int:
         by_generator[asset.generator] = by_generator.get(asset.generator, 0) + 1
     counts = ", ".join(f"{n} {g}" for g, n in by_generator.items())
     print(f"{a.out}: {len(assets)} assets ({counts})")
+    for engine in engines:
+        if layer_path(a.out, engine).exists():
+            print(f"  {layer_path(a.out, engine)}: the {engine} layer")
     if a.no_check:
         return 0
     problems = check(stage)

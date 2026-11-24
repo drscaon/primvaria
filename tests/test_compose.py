@@ -97,3 +97,48 @@ def test_command_line(outputs, tmp_path, capsys):
     assert main(["compose", str(tmp_path / "x.txt"), str(outputs["gravel"])]) == 2
     with pytest.raises(SystemExit):
         main(["compose", str(out), str(outputs["gravel"]), "--limit", "0"])
+
+
+def test_each_engine_layer_brings_the_assets_own_layers(outputs, tmp_path):
+    """Beside the stage, one layer per engine: the stage below it, and on each placed asset a
+    reference to the asset's root in its own engine layer, so its settings follow it."""
+    from pxr import Sdf, UsdPhysics
+
+    from primvaria.compose import layer_path
+
+    out = tmp_path / "scene.usda"
+    stage, assets = compose(out, [outputs["gravel"], outputs["cables"], outputs["parts"]])
+    assert contract.engine_data(stage) == []  # the stage itself stays pure UsdPhysics
+    for engine in ("newton", "physx"):
+        path = layer_path(out, engine)
+        assert list(Sdf.Layer.FindOrOpen(str(path)).subLayerPaths) == ["./scene.usda"]
+        layered = Usd.Stage.Open(str(path))
+        assert contract.engine_data(layered)  # the assets' engine settings are there
+        for a in assets:
+            spec = layered.GetRootLayer().GetPrimAtPath(a.path)
+            refs = [r.assetPath for r in spec.referenceList.prependedItems] if spec else []
+            own = layer_path(a.file, engine)
+            if own.exists():
+                assert any(r.endswith(own.name) for r in refs), (a.name, engine)
+            else:
+                assert not refs, (a.name, engine)
+    newton = Usd.Stage.Open(str(layer_path(out, "newton")))
+    gaps = [p for p in Usd.PrimRange.AllPrims(newton.GetPseudoRoot()) if p.HasAttribute("newton:contactGap")]
+    assert gaps  # grains, cable segments and parts carry their contact gaps at their new paths
+    cable = next(a for a in assets if a.generator == "filaire" and "usb_c_" in a.name)
+    joints = [p for p in Usd.PrimRange(newton.GetPrimAtPath(cable.path)) if p.GetTypeName() == "PhysicsJoint"]
+    assert joints and all(j.HasAPI(UsdPhysics.LimitAPI, "rotY") for j in joints)
+    assert not layer_path(out, "omniphysics").exists()  # none of these assets has one
+
+
+def test_engines_none_writes_no_layer_and_removes_old_ones(outputs, tmp_path):
+    from primvaria.compose import layer_path
+
+    out = tmp_path / "scene.usda"
+    compose(out, [outputs["gravel"]])
+    assert layer_path(out, "newton").exists()
+    assert main(["compose", str(out), str(outputs["gravel"]), "--engines", "none"]) == 0
+    assert not any(layer_path(out, e).exists() for e in ("physx", "omniphysics", "newton"))
+    with pytest.raises(SystemExit) as refused:
+        main(["compose", str(out), str(outputs["gravel"]), "--engines", "bullet"])
+    assert refused.value.code == 2
