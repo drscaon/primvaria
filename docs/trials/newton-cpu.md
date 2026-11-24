@@ -213,3 +213,22 @@ pedestal the napkin stretches until it reaches the floor; VBD, Newton's cloth
 solver, holds it, and it drapes more than in MuJoCo. Which of the two drapes
 like the real fabric is not known: neither is calibrated against a measured
 drape coefficient.
+
+### Why the cable was soft (24 November 2026)
+
+Under XPBD the drives had no effect at all: the same sag with their stiffness
+times 0 or times 1000. A chain built in Newton itself with the same masses
+does the same, and holds once the segments' inertia is a thousand times larger:
+XPBD cannot hold a drive against a segment of about 1e-10 kg m². Filaire's
+MuJoCo model already meets this with a joint armature; the Newton layer now
+adds the same armature to each segment's inertia (XPBD has no joint armature),
+mass unchanged (filaire#46). The cable then holds its shape and comes to rest,
+but its bend depends on the iteration count, because Newton's XPBD starts each
+iteration's multipliers from zero (`lambda_in = 0` in its joint kernel):
+
+| XPBD iterations | 5 | 20 | 50 | beam theory |
+|---|---|---|---|---|
+| tip drop | 13.4 mm | 5.1 mm | 3.4 mm | 13.8 mm |
+
+A file cannot set the iteration count, so a cable's stiffness in Newton's XPBD
+is the solver's choice as much as the file's.
