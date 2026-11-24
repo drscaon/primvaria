@@ -9,6 +9,10 @@ pre-release versions.
 
 ## [0.5.0b1] - 2026-11-24 (beta)
 
+Requires the generators' new releases: Granulaire 0.6.0b1, Maillage 0.5.0b1,
+Filaire 0.6.0b1 and Quincaillerie 0.5.0b1. No breaking change: what is new adds
+files (engine layers, the Newton layer of every generator) and changes none.
+
 ### Added
 
 - `primvaria compose` writes engine layers beside the composed stage (`scene_newton.usda`,
