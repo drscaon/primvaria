@@ -128,6 +128,43 @@ class Source:
         except Exception:  # noqa: BLE001  (rate limit, network): leave the date out
             return None
 
+    def release(self, repo: str) -> dict | None:
+        """The latest release of a repository and how far its main branch is past it:
+        {"version", "date", "ahead"}, or None when it cannot be known (a shallow clone, no tag,
+        no answer from GitHub)."""
+        root = ROOT if repo == "primvaria" else (self.local / repo if self.local is not None else None)
+        if root is not None:
+            git = ["git", "-C", str(root)]
+
+            def out(*args: str) -> str:
+                r = subprocess.run(git + list(args), capture_output=True, text=True)
+                return r.stdout.strip() if r.returncode == 0 else ""
+
+            if out("rev-parse", "--is-shallow-repository") != "false":
+                return None
+            tag = out("describe", "--tags", "--abbrev=0", "--match", "v*", "HEAD")
+            if not tag:
+                return None
+            ahead = out("rev-list", "--count", f"{tag}..HEAD")
+            date = out("log", "-1", "--format=%cs", tag)
+            return {"version": tag[1:], "date": date, "ahead": int(ahead or 0)}
+        headers = {"Accept": "application/vnd.github+json"}
+        if os.environ.get("GITHUB_TOKEN"):
+            headers["Authorization"] = f"Bearer {os.environ['GITHUB_TOKEN']}"
+        api = f"https://api.github.com/repos/drscaon/{repo}"
+        try:
+            tags = urllib.request.Request(f"{api}/tags?per_page=1", headers=headers)
+            with urllib.request.urlopen(tags, timeout=60) as r:
+                tag = json.load(r)[0]["name"]
+            with urllib.request.urlopen(
+                urllib.request.Request(f"{api}/compare/{tag}...main", headers=headers), timeout=60
+            ) as r:
+                compare = json.load(r)
+            date = compare["base_commit"]["commit"]["committer"]["date"][:10]
+            return {"version": tag.removeprefix("v"), "date": date, "ahead": int(compare["ahead_by"])}
+        except Exception:  # noqa: BLE001  (rate limit, network): say it without the version
+            return None
+
     def image(self, repo: str, name: str) -> Image.Image:
         if self.local is not None:
             return Image.open(self.local / repo / "docs" / "images" / name)
@@ -302,8 +339,36 @@ def demo_video(home: str, uploaded: str | None, section_id: str = "demo") -> dic
     }
 
 
-def wrap(layout: str, jsonld: str, where: str, title: str, description: str, content: str) -> str:
-    page = layout
+def day(date: str) -> str:
+    """2026-11-20 as 20 November 2026."""
+    y, m, d = map(int, date.split("-"))
+    months = "January February March April May June July August September October November December"
+    return f"{d} {months.split()[m - 1]} {y}"
+
+
+def channel(repo: str, release: dict | None) -> str:
+    """One line under the header: the site follows the repositories' main branches, which can be
+    ahead of what pip installs. On a generator's pages it names that generator, elsewhere Primvaria."""
+    name = repo.capitalize()
+    latest = f'<a href="{GITHUB}/{repo}">latest code on GitHub</a>'
+    if release is None:
+        text = f"This page describes {name}'s {latest}, which can be ahead of its release on PyPI."
+    elif release["ahead"] == 0:
+        text = f"This page describes {name} {release['version']}, its release of {day(release['date'])}."
+    else:
+        changes = f"{release['ahead']} commit{'s' if release['ahead'] > 1 else ''}"
+        text = (
+            f"This page describes {name}'s {latest}: {changes} after its release "
+            f"{release['version']} of {day(release['date'])}, which <code>pip install {repo}</code> gives. "
+            f'For the latest code: <code>pip install "{repo} @ git+{GITHUB}/{repo}"</code>.'
+        )
+    return f'<div class="channel"><div class="wrap">{text}</div></div>'
+
+
+def wrap(
+    layout: str, jsonld: str, where: str, title: str, description: str, content: str, note: str = ""
+) -> str:
+    page = layout.replace("</header>", "</header>\n" + note, 1) if note else layout
     for key, value in {
         "{title}": html.escape(title),
         "{description}": html.escape(description, quote=True),
@@ -357,6 +422,7 @@ def build(out: Path, source: Source) -> dict[str, str]:
     pages_of = {repo: doc_links(readmes[repo], repo) for repo in HEROES}
     docs = {repo: {p for p, _ in pages_of[repo]} for repo in HEROES}
     site: dict[str, str] = {}
+    notes = {repo: channel(repo, source.release(repo)) for repo in ("primvaria", *HEROES)}
     made_of: dict[str, list[tuple[str, str]]] = {
         "/": [("primvaria", "site/pages/index.html")],
         "/engines/": [("primvaria", "site/pages/engines.html")],
@@ -376,6 +442,7 @@ def build(out: Path, source: Source) -> dict[str, str]:
         "Open-source OpenUSD asset generators for robot simulation: grains, cloth, cables and hardware, "
         "every instance different, tested in Blender and MuJoCo.",
         home,
+        notes["primvaria"],
     ).replace(
         "</head>",
         "".join(
@@ -391,8 +458,9 @@ def build(out: Path, source: Source) -> dict[str, str]:
         "/engines/",
         "Engine matrix · Primvaria",
         "Where each Primvaria generator stands in each engine: OpenUSD validators, Blender, MuJoCo, "
-        "Isaac Sim.",
+        "Newton, Isaac Sim.",
         (HERE / "pages" / "engines.html").read_text(encoding="utf-8"),
+        notes["primvaria"],
     )
     for path, (name, title, description) in OWN.items():
         _, body = title_and_body(source.text("primvaria", path))
@@ -401,7 +469,9 @@ def build(out: Path, source: Source) -> dict[str, str]:
             + "\n"
             + prose(render(body, "primvaria", path, docs))
         )
-        site[f"/{name}/"] = wrap(layout, jsonld, f"/{name}/", f"{title} · Primvaria", description, content)
+        site[f"/{name}/"] = wrap(
+            layout, jsonld, f"/{name}/", f"{title} · Primvaria", description, content, notes["primvaria"]
+        )
         made_of[f"/{name}/"] = [("primvaria", path)]
 
     lede = cards(home)
@@ -432,7 +502,13 @@ def build(out: Path, source: Source) -> dict[str, str]:
         body = render(sections(readmes[repo]), repo, "README.md", docs)
         description = re.sub(r"<[^>]+>", "", lede[repo])
         site[f"/{repo}/"] = wrap(
-            layout, jsonld, f"/{repo}/", f"{name} · Primvaria", description, top + "\n" + prose(body)
+            layout,
+            jsonld,
+            f"/{repo}/",
+            f"{name} · Primvaria",
+            description,
+            top + "\n" + prose(body),
+            notes[repo],
         )
         made_of[f"/{repo}/"] = [(repo, "README.md")]
         for path, label in pages_of[repo]:
@@ -451,6 +527,7 @@ def build(out: Path, source: Source) -> dict[str, str]:
                 f"{title or label} · {name} · Primvaria",
                 f"{name}: {(title or label).lower()}.",
                 top + "\n" + prose(render(text, repo, path, docs)),
+                notes[repo],
             )
             made_of[where] = [(repo, path)]
 

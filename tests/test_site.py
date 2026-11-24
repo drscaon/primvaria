@@ -206,3 +206,24 @@ def test_quincaillerie_page_has_no_plate(built):
     page = (out / "quincaillerie" / "index.html").read_text(encoding="utf-8")
     assert 'class="plate"' not in page
     assert 'class="plate"' in (out / "filaire" / "index.html").read_text(encoding="utf-8")
+
+
+def test_every_page_says_which_code_it_describes(built):
+    """The site follows the main branches: each page says so, naming its own generator."""
+    out, _ = built
+    for page in out.rglob("index.html"):
+        where = page.relative_to(out).parts
+        repo = where[0] if where and where[0] in site_build.HEROES else "primvaria"
+        note = re.search(r'<div class="channel"><div class="wrap">(.*?)</div></div>', page.read_text("utf-8"))
+        assert note, page
+        assert f"describes {repo.capitalize()}" in note.group(1), page
+
+
+def test_the_note_names_the_release_and_how_far_main_is_past_it():
+    ahead = site_build.channel("filaire", {"version": "0.5.0b1", "date": "2026-11-20", "ahead": 3})
+    assert "3 commits after its release 0.5.0b1 of 20 November 2026" in ahead
+    assert "<code>pip install filaire</code>" in ahead and "git+https://github.com/drscaon/filaire" in ahead
+    same = site_build.channel("filaire", {"version": "0.5.0b1", "date": "2026-11-20", "ahead": 0})
+    assert "describes Filaire 0.5.0b1, its release of 20 November 2026" in same
+    unknown = site_build.channel("filaire", None)
+    assert "can be ahead of its release on PyPI" in unknown

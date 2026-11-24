@@ -105,3 +105,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .doc .scroll{margin:16px 0}
 .doc thead th{font:600 13px var(--f-body);color:var(--ink);letter-spacing:0}
 .doc hr{border:0;border-top:1px solid var(--line);margin:36px 0}
+
+.channel{background:var(--accent-soft);border-bottom:1px solid var(--line);font-size:.86rem;color:var(--muted);padding:.45rem 0}
+.channel code{font-size:.82rem}
+.channel a{color:inherit}
