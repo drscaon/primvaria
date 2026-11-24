@@ -24,6 +24,9 @@ pre-release versions.
 
 ### Changed
 
+- Newton check: the cable bend is measured at 5, 20 and 50 XPBD iterations; with Filaire's
+  armature (filaire#46) the cable holds its shape, its bend set by the iteration count (13.4,
+  5.1 and 3.4 mm; beam theory 13.8 mm). Engine matrix and trial report say so.
 - Newton check: two comparisons, reported in its summary and not failed on. A USB-C sample
   held flat at one end drops 7.9 times more under XPBD than beam theory says; a napkin's
   drape coefficient with Newton's VBD solver is 0.61 times MuJoCo's. Engine matrix: Filaire

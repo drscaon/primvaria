@@ -32,7 +32,7 @@
       "validators": {"status": "tested", "readme": "tested", "site": "every preset, with and without physics"},
       "blender": {"status": "tested", "readme": "tested: drop (add-on)", "site": "drop through the add-on, every preset"},
       "mujoco": {"status": "tested", "readme": "tested: drop, sag, coil, insertion, bayonet lock", "site": "drop, sag, coil, insertion, bayonet lock"},
-      "newton": {"status": "differs", "readme": "read, mass; under XPBD bends 7.9× more than beam theory", "site": "every preset read from its Newton layer, mass as the pack; but a USB-C sample held flat at one end drops 108.9 mm where beam theory gives 13.8 mm: under XPBD the joint drives act far softer than their stiffness (more iterations change nothing)"},
+      "newton": {"status": "differs", "readme": "read, mass; holds its shape, bend set by XPBD's iteration count", "site": "every preset read from its Newton layer, mass as the pack; a USB-C sample held flat at one end drops 13.4 / 5.1 / 3.4 mm at 5 / 20 / 50 XPBD iterations, beam theory 13.8 mm: Newton's XPBD does not carry its constraint multipliers across iterations, so a drive's stiffness grows with them"},
       "isaac": {"status": "not yet", "readme": "not yet", "site": "UsdPhysics joints, PhysX layer over each file"},
       "omniphysics": {"status": "n/a", "readme": "n/a", "site": ""}
     },

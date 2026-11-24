@@ -32,8 +32,9 @@ whether a file is right):
 
 - a cable's bend against beam theory: a straight USB-C sample, cut at both ends and long
   enough to sag about 10 % of its length, held flat at one end; its tip drop (averaged over the
-  second half of SAG_SECONDS, since it keeps swinging) against w L^4 / (8 E I), with w and E I
-  read back from the file as Filaire's own MuJoCo sag check reads them;
+  second half of SAG_SECONDS) against w L^4 / (8 E I), with w and E I read back from the file as
+  Filaire's own MuJoCo sag check reads them, at 5, 20 and 50 XPBD iterations (the bend depends
+  on them);
 - a cloth's drape against MuJoCo: Maillage's Cusick drape test (the piece laid on a round
   pedestal, the vertices over it held) on a 300-vertex napkin, its drape coefficient in Newton
   against the one Maillage's MuJoCo test measures on the same file. Newton's VBD solver, its
@@ -60,6 +61,7 @@ MASS = 1e-5  # relative
 BENT = 0.005  # m: a hung cable's lowest point below its support
 RAISE = 0.05  # m
 SAG_SECONDS = 3.0
+SAG_ITERATIONS = (5, 20, 50)
 DRAPE_SECONDS = 5.0  # as Maillage's MuJoCo drape test
 HANG = 5.0  # m: a hung cable is lifted so high that it cannot reach the ground
 
@@ -297,31 +299,37 @@ def _load(path: str):
 
 
 def sag(c: dict) -> dict:
-    """The tip drop of a cable held flat at one end, against beam theory."""
+    """The tip drop of a cable held flat at one end, against beam theory, at three XPBD iteration
+    counts: Newton's XPBD does not carry its constraint multipliers across iterations, so a
+    drive's effective stiffness grows with them."""
     import newton
     import numpy as np
     import warp as wp
 
-    b = _load(c["file"])
-    b.body_q = [wp.transform(wp.vec3(t.p[0], t.p[1], t.p[2] + 1.0), t.q) for t in b.body_q]
-    b.body_mass[0], b.body_inv_mass[0] = 0.0, 0.0
-    b.body_inertia[0], b.body_inv_inertia[0] = wp.mat33(0.0), wp.mat33(0.0)
-    model = b.finalize()
-    solver = newton.solvers.SolverXPBD(model, iterations=20)
-    state, other, control = model.state(), model.state(), model.control()
-    start = state.body_q.numpy()[-1, 2]
-    drops, steps = [], round(SAG_SECONDS / DT)
-    for k in range(steps):
-        state.clear_forces()
-        solver.step(state, other, control, None, DT)
-        state, other = other, state
-        if k >= steps // 2:
-            drops.append(start - state.body_q.numpy()[-1, 2])
-    newton_mm, beam_mm = float(np.mean(drops)) * 1e3, c["beam_m"] * 1e3
+    drops_mm = {}
+    for iterations in SAG_ITERATIONS:
+        b = _load(c["file"])
+        b.body_q = [wp.transform(wp.vec3(t.p[0], t.p[1], t.p[2] + 1.0), t.q) for t in b.body_q]
+        b.body_mass[0], b.body_inv_mass[0] = 0.0, 0.0
+        b.body_inertia[0], b.body_inv_inertia[0] = wp.mat33(0.0), wp.mat33(0.0)
+        model = b.finalize()
+        solver = newton.solvers.SolverXPBD(model, iterations=iterations)
+        state, other, control = model.state(), model.state(), model.control()
+        start = state.body_q.numpy()[-1, 2]
+        drops, steps = [], round(SAG_SECONDS / DT)
+        for k in range(steps):
+            state.clear_forces()
+            solver.step(state, other, control, None, DT)
+            state, other = other, state
+            if k >= steps // 2:
+                drops.append(start - state.body_q.numpy()[-1, 2])
+        drops_mm[iterations] = round(float(np.mean(drops)) * 1e3, 1)
+    beam_mm = c["beam_m"] * 1e3
+    shown = ", ".join(f"{v} mm at {k}" for k, v in drops_mm.items())
     return {"what": "cable bend, USB-C sample held flat at one end", "solver": "XPBD",
-            "newton": round(newton_mm, 1), "reference": round(beam_mm, 1), "unit": "mm tip drop",
-            "reference_is": "beam theory w L^4 / (8 E I)",
-            "ratio": round(newton_mm / beam_mm, 2)}  # fmt: skip
+            "newton": shown, "reference": round(beam_mm, 1), "unit": "XPBD iterations",
+            "reference_is": "mm, beam theory w L^4 / (8 E I)",
+            "ratio": ", ".join(f"{v / beam_mm:.2f}" for v in drops_mm.values())}  # fmt: skip
 
 
 def hull_area(xy) -> float:
