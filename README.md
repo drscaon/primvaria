@@ -127,7 +127,7 @@ command then checks the scene against the contract and exits 1 if it does not
 conform (`--no-check` skips it).
 
 [![Pebbles, screws, cells, cables, sockets and cloth from the four generators on one workbench](docs/images/bench.jpg)](https://primvaria.com/#bench)
-<sub>Assets of the four generators, laid out on a bench by Blender scripts made for this video, not part of Primvaria: `compose` only sets them side by side. [Watch the video](https://primvaria.com/#bench).</sub>
+<sub>Assets of the four generators, laid out on a bench by external Blender scripts made for this video, not part of Primvaria: `compose` only sets them side by side. [Watch the video](https://primvaria.com/#bench).</sub>
 
 `primvaria <generator> ...` runs that generator's own command line: it is the
 same as typing `granulaire ...`, `maillage ...`, which keep working. From
