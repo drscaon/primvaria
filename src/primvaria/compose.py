@@ -17,7 +17,7 @@ and y, so the assets stand in rows without touching. Two assets with the same na
 grains of two Granulaire packs are both g_0000) get the preset in front of their name, and the
 instance label follows the name, as the contract requires.
 
-What a composed stage does not carry: the engine layers (_physx, _omniphysics) of the files it
+What a composed stage does not carry: the engine layers (_physx, _omniphysics, _newton) of the files it
 references. They are written for the files' own prim paths; the composed stage is pure UsdPhysics.
 """
 
