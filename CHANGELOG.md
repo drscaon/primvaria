@@ -11,6 +11,10 @@ pre-release versions.
 
 - Site and README: a second video on the home page, the four generators on one workbench
   (`#bench`), with its own schema.org VideoObject and sitemap entry.
+- Newton on CPU in the engine matrix (PRV-30): `scripts/newton_check.py` and a CI job open
+  every preset of the four generators in Newton 1.8.0 (XPBD) and check mass against the pack,
+  then settling for grains and parts. What Newton does not read is recorded as on Newton's side:
+  free joint axes, joints outside an articulation, OmniPhysics deformable schemas.
 
 ### Changed
 
