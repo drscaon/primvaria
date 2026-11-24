@@ -5,10 +5,10 @@ name: Generator checks
 # oldest OpenUSD the package accepts, and the package build. Called from each generator's
 # CI workflow, so that the tool versions and the matrix are written once:
 #
-# macOS runs only on scheduled and manual runs and on release tags (the caller's
+# macOS does not run on pull requests, only after the commits reach main (the caller's
 # event): GitHub's hosted macOS runners are often not available, and a job that waits
-# for one blocks pull requests for nothing (24 November: cancelled after 22 minutes in
-# the queue, no step run).
+# for one blocks pull requests (24 November: cancelled after 22 minutes in the queue,
+# no step run).
 #
 #   jobs:
 #     checks:
@@ -92,7 +92,7 @@ jobs:
 
   macos:
     name: Tests (Python 3.12, macos-latest)
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
+    if: github.event_name != 'pull_request'
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v7

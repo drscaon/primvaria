@@ -3,11 +3,10 @@ name: CI
 on:
   push:
     branches: [main]
-    tags: ["v*"]  # the macOS tests on every release (job macos)
   pull_request:
   workflow_dispatch:
   schedule:
-    - cron: "17 5 * * *"  # daily: macOS tests; the shared-files guard also watches the generators' repositories
+    - cron: "17 5 * * 1"  # weekly: the shared-files guard also watches the generators' repositories
 
 permissions:
   contents: read
@@ -81,10 +80,10 @@ jobs:
           primvaria filaire generate --preset usb_c --count 1 --out ci-output
 
   macos:
-    # Only on scheduled and manual runs and on release tags: GitHub's hosted macOS runners
-    # are often not available, and a job waiting for one blocks pull requests for nothing.
+    # Not on pull requests, only after the commits reach main: GitHub's hosted macOS
+    # runners are often not available, and a job waiting for one blocks pull requests.
     name: Tests (Python 3.12, macos-latest)
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
+    if: github.event_name != 'pull_request'
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v7

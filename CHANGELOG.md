@@ -9,11 +9,10 @@ pre-release versions.
 
 ### Changed
 
-- CI: the macOS tests no longer run on pull requests and pushes to main, only on a
-  daily schedule, on manual runs and on release tags, here and in the generators'
-  shared checks (`generator-checks.yml`). GitHub's hosted macOS runners are often not
-  available, and the jobs waited in the queue until they were cancelled, without a
-  step run.
+- CI: the macOS tests no longer run on pull requests, only after the commits reach
+  main, here and in the generators' shared checks (`generator-checks.yml`). GitHub's
+  hosted macOS runners are often not available, and the jobs waited in the queue until
+  they were cancelled, without a step run. The package build does not wait for them.
 - The website is rebuilt when a release is published, so that the line under the
   header names the new release.
 
