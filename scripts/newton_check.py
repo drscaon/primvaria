@@ -8,7 +8,9 @@ Two steps, in two environments, because Newton pins its own usd-core and MuJoCo:
 
 `generate` writes a small pack of every preset of the four generators and lists, in
 packs/files.json, the Newton layer of each file (`<file>_newton.usda`, contract section 9) and
-the mass the pack's table gives for it.
+the mass the pack's table gives for it. On a commit CI runs a sample instead (FULL is not
+"true"): of each generator, the preset the composed scene uses and one picked from the commit's
+hash (GITHUB_SHA), the same pair each time the commit is run; every preset before a release.
 
 `run` opens each layer in Newton with its XPBD solver (not MuJoCo Warp: the generators are
 already checked with MuJoCo's algorithm) and Newton's own schema resolver only: what Newton
@@ -51,6 +53,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import os
 import subprocess
 import sys
 import time
@@ -79,8 +82,16 @@ def layer(file: Path) -> str:
     return str(file.with_name(f"{file.stem}_newton.usda"))
 
 
+def sample(names: list[str], keep: str) -> list[str]:
+    """Every name with FULL=true (CI before a release), else `keep` and one picked from the commit."""
+    if os.environ.get("FULL") == "true":
+        return names
+    picked = int(os.environ.get("GITHUB_SHA", "0")[:8] or "0", 16) % len(names)
+    return list(dict.fromkeys([keep, names[picked]]))
+
+
 def generate(out: Path) -> None:
-    """A small pack of every preset, and the list of what Newton opens."""
+    """A small pack of every preset (or of a sample, see `sample`), and the list of what Newton opens."""
     import filaire
     import granulaire.presets
     import maillage.presets
@@ -91,7 +102,7 @@ def generate(out: Path) -> None:
     def run(*args: str) -> None:
         subprocess.run([sys.executable, "-m", *args], check=True, stdout=subprocess.DEVNULL)
 
-    for preset in sorted(granulaire.presets.PRESETS):
+    for preset in sample(sorted(granulaire.presets.PRESETS), "crushed_gravel"):
         run("granulaire", "generate", "--preset", preset, "--shapes", "12", "--copies", "2",
             "--no-deformable", "--out", str(out / "granulaire"))  # fmt: skip
         folder = out / "granulaire" / preset
@@ -101,7 +112,7 @@ def generate(out: Path) -> None:
             "file": layer(folder / rows[0]["file"]),
             "mass_kg": sum(float(r["measured:mass_kg"]) for r in rows),
         })  # fmt: skip
-    for preset in sorted(maillage.presets.PRESETS):
+    for preset in sample(sorted(maillage.presets.PRESETS), "napkin"):
         run("maillage", "generate", "--preset", preset, "--count", "1", "--out", str(out / "maillage"))
         folder = out / "maillage" / preset
         rows = pack_rows(folder)
@@ -110,7 +121,7 @@ def generate(out: Path) -> None:
             "file": layer(folder / f"maillage_{preset}.usdc"),
             "mass_kg": sum(float(r["measured:mass_kg"]) for r in rows),
         })  # fmt: skip
-    for preset in sorted(filaire.PRESETS):
+    for preset in sample(sorted(filaire.PRESETS), "usb_c"):
         run("filaire", "generate", "--preset", preset, "--count", "1", "--out", str(out / "filaire"))
         folder = out / "filaire" / preset
         cables = [r for r in pack_rows(folder) if r["file"] == f"filaire_{preset}.usdc"]
@@ -122,7 +133,9 @@ def generate(out: Path) -> None:
     run("quincaillerie", "generate", "all", "--count", "1", "--collider", "simple", "--out",
         str(out / "quincaillerie"))  # fmt: skip
     folder = out / "quincaillerie" / "catalog"
-    for r in pack_rows(folder):  # each part on its own file, which has no ground
+    parts = {r["name"]: r for r in pack_rows(folder)}
+    for name in sample(list(parts), next(iter(parts))):  # each part on its own file, which has no ground
+        r = parts[name]
         files.append({
             "generator": "quincaillerie", "preset": r["name"].removesuffix("_000"), "kind": "rigid",
             "file": layer(folder / r["file"]), "mass_kg": float(r["measured:mass_kg"]), "ground": False,

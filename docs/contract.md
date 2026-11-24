@@ -321,7 +321,7 @@ A generator may write other files beside them (Granulaire's
 |---|---|
 | Every OpenUSD `UsdValidation` validator, on every file and every variant, in each generator's CI | in place |
 | The shared ground and physics scene (section 3), by `ground.py` | in place |
-| Sections 2, 4 (an asset whole on its own included), 5, 9 and the recording of section 6, by `python -m <generator>.conformance` on every preset in each generator's CI, and by `tests/test_contract.py` | in place |
+| Sections 2, 4 (an asset whole on its own included), 5, 9 and the recording of section 6, by `python -m <generator>.conformance` in each generator's CI (on every preset before a release, on a sample on each commit), and by `tests/test_contract.py` | in place |
 | Section 10: the same command checks every pack it finds, the table must say what the files say; `tests/test_pack.py` | in place |
 | The files the generators share are byte-identical: `ground.py`, `contract.py`, `conformance.py`, `pack.py`, `tests/test_contract.py`, `tests/test_pack.py` and `tests/test_golden.py`. `scripts/check_shared_files.py` in this repository fails when one differs, in CI and weekly | in place |
 | Section 6, rule 1 (same version, preset, seed and options, same values) on every Python and platform of the CI, by `tests/test_golden.py` against stored references | in place |

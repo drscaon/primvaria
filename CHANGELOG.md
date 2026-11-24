@@ -9,10 +9,14 @@ pre-release versions.
 
 ### Changed
 
-- CI: the macOS tests no longer run on pull requests, only after the commits reach
-  main, here and in the generators' shared checks (`generator-checks.yml`). GitHub's
-  hosted macOS runners are often not available, and the jobs waited in the queue until
-  they were cancelled, without a step run. The package build does not wait for them.
+- CI runs at two levels. On a commit (push to main, pull request): the tests on Ubuntu
+  and Python 3.12 only, and Newton on a sample of the presets (`scripts/newton_check.py`:
+  of each generator, the preset of the composed scene and one picked from the commit's
+  hash). Before a release (`release.yml` now runs `ci.yml` with `full: true` and
+  publishes nothing unless it passes) and with the "Run workflow" button: every
+  platform, Python and preset, as before. The generators' shared checks
+  (`generator-checks.yml`) take the same `full` input: without it, the tests not marked
+  `slow` on Ubuntu and Python 3.12, and no oldest-OpenUSD run.
 - The website is rebuilt when a release is published, so that the line under the
   header names the new release.
 

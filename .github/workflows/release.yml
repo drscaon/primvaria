@@ -1,6 +1,6 @@
 name: Release
 
-# Pushing a tag vX.Y.Z (or a pre-release tag such as v0.1.0b1) tests and builds
+# Pushing a tag vX.Y.Z (or a pre-release tag such as v0.1.0b1) runs CI's full checks, builds
 # the package, publishes it on PyPI through Trusted Publishing (no API token),
 # then creates the GitHub release with the packages attached. Pre-release
 # versions (a, b, rc) are marked as pre-releases.
@@ -23,7 +23,16 @@ permissions:
   contents: read
 
 jobs:
+  checks:
+    name: Every test, platform and preset
+    # CI's full level (ci.yml with full: true): nothing is published unless it passes.
+    # Commits only get the fast tests and a sample of the presets.
+    uses: ./.github/workflows/ci.yml
+    with:
+      full: true
+
   build:
+    needs: checks
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.version.outputs.version }}
@@ -42,16 +51,6 @@ jobs:
             echo "::error::tag $GITHUB_REF_NAME does not match version $VERSION in pyproject.toml"
             exit 1
           fi
-
-      - name: Test
-        run: |
-          pip install \
-            "granulaire @ git+https://github.com/drscaon/granulaire" \
-            "maillage @ git+https://github.com/drscaon/maillage" \
-            "filaire @ git+https://github.com/drscaon/filaire" \
-            "quincaillerie @ git+https://github.com/drscaon/quincaillerie"
-          pip install -e ".[dev]"
-          pytest
 
       - name: Build
         run: |

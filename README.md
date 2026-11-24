@@ -54,7 +54,8 @@ installs them together and gives them one command line.
 
 Where each generator stands in each engine (also on
 [primvaria.com](https://primvaria.com/#engines)). Tests run in each project's
-CI on every preset, from the OpenUSD file alone.
+CI on every preset before each release (on a sample of them on each commit), from the
+OpenUSD file alone.
 
 <!-- engines:start -->
 | | OpenUSD validators | Blender | MuJoCo | Newton · CPU | Isaac Sim · PhysX | OmniPhysics deformables |
