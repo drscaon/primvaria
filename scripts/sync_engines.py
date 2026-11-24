@@ -58,7 +58,9 @@ def readme_table(data: dict) -> str:
 
 
 def page_rows(data: dict) -> str:
-    rows = []
+    """The whole table body and its header, so that a new engine gets its column title too."""
+    titles = "".join(f"<th>{html.escape(e['title'])}</th>" for e in data["engines"])
+    rows = [f"    <thead><tr><th>Generator</th>{titles}</tr></thead>", "    <tbody>"]
     for name, cells in data["generators"].items():
         tds = []
         for e in data["engines"]:
@@ -68,6 +70,7 @@ def page_rows(data: dict) -> str:
                 f'        <td><span class="st {CSS[cell["status"]]}">{cell["status"]}</span>{note}</td>'
             )
         rows.append(f'      <tr><th scope="row">{name.capitalize()}</th>\n' + "\n".join(tds) + "</tr>")
+    rows.append("    </tbody>")
     return "\n".join(rows)
 
 
