@@ -27,6 +27,18 @@ sets nothing in their place. It checks:
 - cloth: every piece is raised 5 cm and, after 1 s, every particle is finite, at rest and not
   below the ground.
 
+Two comparisons are measured and reported, not failed on (they say how far Newton is, not
+whether a file is right):
+
+- a cable's bend against beam theory: a straight USB-C sample, cut at both ends and long
+  enough to sag about 10 % of its length, held flat at one end; its tip drop (averaged over the
+  second half of SAG_SECONDS, since it keeps swinging) against w L^4 / (8 E I), with w and E I
+  read back from the file as Filaire's own MuJoCo sag check reads them;
+- a cloth's drape against MuJoCo: Maillage's Cusick drape test (the piece laid on a round
+  pedestal, the vertices over it held) on a 300-vertex napkin, its drape coefficient in Newton
+  against the one Maillage's MuJoCo test measures on the same file. Newton's VBD solver, its
+  cloth solver, is used here: under XPBD the cloth stretches without bound.
+
 Exits 1 if a check fails. See docs/trials/newton-cpu.md.
 """
 
@@ -47,6 +59,8 @@ AT_REST = 0.05  # m/s
 MASS = 1e-5  # relative
 BENT = 0.005  # m: a hung cable's lowest point below its support
 RAISE = 0.05  # m
+SAG_SECONDS = 3.0
+DRAPE_SECONDS = 5.0  # as Maillage's MuJoCo drape test
 HANG = 5.0  # m: a hung cable is lifted so high that it cannot reach the ground
 
 
@@ -110,6 +124,51 @@ def generate(out: Path) -> None:
         })  # fmt: skip
     (out / "files.json").write_text(json.dumps(files, indent=1), encoding="utf-8")
     print(f"{len(files)} files listed in {out / 'files.json'}")
+    (out / "compare.json").write_text(json.dumps(compare_inputs(out), indent=1), encoding="utf-8")
+
+
+def compare_inputs(out: Path) -> dict:
+    """What the two comparisons need, read with the generators' own readers."""
+    from filaire.sim.checks import G
+    from filaire.sim.usd_reader import cable_paths, read_cable
+    from maillage.sim.mujoco_test import PEDESTAL_FRACTION, PEDESTAL_HEIGHT
+    from maillage.sim.mujoco_test import run as mujoco_drape
+    from maillage.sim.usd_reader import read_pieces
+    from pxr import Usd
+
+    def straight(length: float, folder: Path):
+        subprocess.run(
+            [sys.executable, "-m", "filaire", "generate", "--preset", "usb_c", "--count", "1", "--layout",
+             "straight", "--end-a", "cut", "--end-b", "cut", "--no-vary",
+             "length,layout,ends,color,stiffness,density,clearance", "--length", f"{length:.4f}",
+             "--out", str(folder)],
+            check=True, stdout=subprocess.DEVNULL,
+        )  # fmt: skip
+        stage = Usd.Stage.Open(str(folder / "usb_c" / "filaire_usb_c.usdc"))
+        cable = read_cable(stage, cable_paths(stage)[0])
+        seg = cable.segments[0]
+        piece = seg.capsule[1] if seg.capsule else seg.box[0]
+        w, ei = seg.mass / piece * G, cable.joints[0].stiffness["rotY"] * piece
+        length = sum(s.capsule[1] if s.capsule else s.box[0] for s in cable.segments)
+        return w, ei, length
+
+    w, ei, _ = straight(1.0, out / "compare" / "probe")
+    w, ei, length = straight((0.8 * ei / w) ** (1 / 3), out / "compare" / "sag")  # tip drop ≈ 10 %
+    subprocess.run(
+        [sys.executable, "-m", "maillage", "generate", "--preset", "napkin", "--count", "1",
+         "--vertices", "300", "--out", str(out / "compare")],
+        check=True, stdout=subprocess.DEVNULL,
+    )  # fmt: skip
+    napkin = out / "compare" / "napkin"
+    piece = read_pieces(napkin)[0]
+    drape = mujoco_drape(napkin, pieces=1, seconds=DRAPE_SECONDS)["pieces"][0]["drape_coefficient"]
+    return {
+        "sag": {"file": layer(out / "compare" / "sag" / "usb_c" / "filaire_usb_c.usdc"), "w_n_m": w,
+                "ei_nm2": ei, "length_m": length, "beam_m": w * length**4 / (8 * ei)},
+        "drape": {"file": layer(napkin / "maillage_napkin.usdc"), "area_m2": piece.area,
+                  "pedestal_height_m": PEDESTAL_HEIGHT, "pedestal_fraction": PEDESTAL_FRACTION,
+                  "mujoco": drape},
+    }  # fmt: skip
 
 
 def _centres(model, state):
@@ -217,6 +276,118 @@ def check(item: dict) -> dict:
     return r
 
 
+def _load(path: str):
+    """A file's Newton layer in a builder of its own, and the model builder holding it as world 0."""
+    import warp as wp
+
+    wp.config.quiet = True
+    import newton
+    import newton.usd
+
+    wp.set_device("cpu")
+    part = newton.ModelBuilder()
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        part.add_usd(
+            path, schema_resolvers=[newton.usd.SchemaResolverNewton()], return_deformable_results=True
+        )
+    builder = newton.ModelBuilder()
+    builder.add_world(part)
+    return builder
+
+
+def sag(c: dict) -> dict:
+    """The tip drop of a cable held flat at one end, against beam theory."""
+    import newton
+    import numpy as np
+    import warp as wp
+
+    b = _load(c["file"])
+    b.body_q = [wp.transform(wp.vec3(t.p[0], t.p[1], t.p[2] + 1.0), t.q) for t in b.body_q]
+    b.body_mass[0], b.body_inv_mass[0] = 0.0, 0.0
+    b.body_inertia[0], b.body_inv_inertia[0] = wp.mat33(0.0), wp.mat33(0.0)
+    model = b.finalize()
+    solver = newton.solvers.SolverXPBD(model, iterations=20)
+    state, other, control = model.state(), model.state(), model.control()
+    start = state.body_q.numpy()[-1, 2]
+    drops, steps = [], round(SAG_SECONDS / DT)
+    for k in range(steps):
+        state.clear_forces()
+        solver.step(state, other, control, None, DT)
+        state, other = other, state
+        if k >= steps // 2:
+            drops.append(start - state.body_q.numpy()[-1, 2])
+    newton_mm, beam_mm = float(np.mean(drops)) * 1e3, c["beam_m"] * 1e3
+    return {"what": "cable bend, USB-C sample held flat at one end", "solver": "XPBD",
+            "newton": round(newton_mm, 1), "reference": round(beam_mm, 1), "unit": "mm tip drop",
+            "reference_is": "beam theory w L^4 / (8 E I)",
+            "ratio": round(newton_mm / beam_mm, 2)}  # fmt: skip
+
+
+def hull_area(xy) -> float:
+    """Area of the convex hull of points in the plane: the same measure as Maillage's drape test
+    (maillage.sim.mujoco_test.hull_area), here because Maillage is not installed beside Newton."""
+    import numpy as np
+
+    pts = np.unique(np.round(xy, 9), axis=0)
+    if len(pts) < 3:
+        return 0.0
+    pts = pts[np.lexsort((pts[:, 1], pts[:, 0]))]
+
+    def half(ps):
+        h = []
+        for p in ps:
+            while (
+                len(h) >= 2
+                and (h[-1][0] - h[-2][0]) * (p[1] - h[-2][1]) - (h[-1][1] - h[-2][1]) * (p[0] - h[-2][0]) <= 0
+            ):
+                h.pop()
+            h.append(p)
+        return h
+
+    hull = np.array(half(pts)[:-1] + half(pts[::-1])[:-1])
+    x, y = hull[:, 0], hull[:, 1]
+    return 0.5 * abs(float(np.dot(x, np.roll(y, -1)) - np.dot(y, np.roll(x, -1))))
+
+
+def drape(c: dict) -> dict:
+    """Maillage's Cusick drape test in Newton, against its MuJoCo result on the same file."""
+    import newton
+    import numpy as np
+    import warp as wp
+
+    b = _load(c["file"])
+    q = np.array(b.particle_q, float)
+    lo, hi = q[:, :2].min(0), q[:, :2].max(0)
+    centre, radius = (lo + hi) / 2, c["pedestal_fraction"] * (hi - lo).min() / 2
+    h = c["pedestal_height_m"]
+    b.particle_q = [(x - centre[0], y - centre[1], z - q[:, 2].min() + h + 0.002) for x, y, z in q]
+    for i in np.flatnonzero(np.linalg.norm(q[:, :2] - centre, axis=1) <= radius):  # held, as in the tester
+        b.particle_mass[i] = 0.0
+    b.add_shape_cylinder(
+        -1, xform=wp.transform((0, 0, h / 2), wp.quat_identity()), radius=radius, half_height=h / 2
+    )
+    b.color()
+    model = b.finalize()
+    solver = newton.solvers.SolverVBD(model)
+    state, other, control = model.state(), model.state(), model.control()
+    pipeline = newton.CollisionPipeline(model)
+    contacts = pipeline.contacts()
+    for _ in range(round(DRAPE_SECONDS / DT)):
+        state.clear_forces()
+        pipeline.collide(state, contacts)
+        solver.step(state, other, control, contacts, DT)
+        state, other = other, state
+    p = state.particle_q.numpy()
+    disc = np.pi * radius**2
+    coefficient = (hull_area(p[:, :2]) - disc) / (c["area_m2"] - disc)
+    return {"what": "cloth drape, napkin on a Cusick pedestal", "solver": "VBD",
+            "newton": round(float(coefficient), 3), "reference": round(c["mujoco"], 3),
+            "unit": "drape coefficient",
+            "reference_is": "Maillage's MuJoCo drape test, same file",
+            "ratio": round(float(coefficient) / c["mujoco"], 2)}  # fmt: skip
+
+
 def run(folder: Path) -> int:
     import newton
 
@@ -231,7 +402,16 @@ def run(folder: Path) -> int:
         r = results[-1]
         outcome = "FAIL " + "; ".join(r["failed"]) if r["failed"] else r["read"]
         print(f"{r['generator']:14} {r['preset']:28} {outcome}", flush=True)
-    report = {"newton": newton.__version__, "solver": "XPBD", "device": "cpu", "results": results}
+    compared = []
+    inputs = json.loads((folder / "compare.json").read_text(encoding="utf-8"))
+    for name, measure in (("sag", sag), ("drape", drape)):
+        try:
+            compared.append(measure(inputs[name]))
+        except Exception as e:  # noqa: BLE001  (a measurement, not a check: report it and go on)
+            compared.append({"what": name, "error": f"{type(e).__name__}: {e}"})
+        print("compared:", json.dumps(compared[-1]), flush=True)
+    report = {"newton": newton.__version__, "solver": "XPBD", "device": "cpu", "results": results,
+              "compared": compared}  # fmt: skip
     (folder / "newton.json").write_text(json.dumps(report, indent=1), encoding="utf-8")
     lines = [
         f"Newton {newton.__version__}, XPBD on CPU, from each file's Newton layer.",
@@ -243,6 +423,13 @@ def run(folder: Path) -> int:
         mass = f"{r['mass_kg']:.6g} / {r['pack_mass_kg']:.6g}" if "mass_kg" in r else ""
         result = "FAIL: " + "; ".join(r["failed"]) if r["failed"] else "pass"
         lines.append(f"| {r['generator']} | {r['preset']} | {r.get('read', '')} | {mass} | {result} |")
+    lines += ["", "| Compared | Solver | Newton | Reference | Ratio |", "|---|---|---|---|---|"]
+    for c in compared:
+        if "error" in c:
+            lines.append(f"| {c['what']} | | {c['error']} | | |")
+        else:
+            lines.append(f"| {c['what']} | {c['solver']} | {c['newton']} {c['unit']} | {c['reference']} "
+                         f"({c['reference_is']}) | {c['ratio']} |")  # fmt: skip
     (folder / "newton.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     failed = [r for r in results if r["failed"]]
     print(f"{len(results) - len(failed)} of {len(results)} pass")

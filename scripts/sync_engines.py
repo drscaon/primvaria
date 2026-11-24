@@ -23,7 +23,7 @@ SOURCE = ROOT / "docs" / "engines.json"
 README = ROOT / "README.md"
 PAGE = ROOT / "site" / "pages" / "engines.html"  # the matrix
 HOME = ROOT / "site" / "pages" / "index.html"  # the generators' facts lines
-CSS = {"tested": "ok", "not yet": "warn", "exported": "warn", "n/a": "na"}
+CSS = {"tested": "ok", "differs": "warn", "not yet": "warn", "exported": "warn", "n/a": "na"}
 START, END = "<!-- engines:start -->", "<!-- engines:end -->"
 
 
