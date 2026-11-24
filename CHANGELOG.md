@@ -7,14 +7,7 @@ pre-release versions.
 
 ## [Unreleased]
 
-### Fixed
-
-- Site and README: the bench video's caption says the scene was made with Blender scripts
-  outside Primvaria, and that `primvaria compose` only sets the assets side by side; the README
-  says how compose places them (in rows, in input order, shifted along x and y only).
-- Site: the engine matrix's header row is written from `docs/engines.json` with the rows; it
-  was hand-written, so the Newton column had shifted every title after MuJoCo and left the
-  last column without one.
+## [0.5.0b1] - 2026-11-24 (beta)
 
 ### Added
 
@@ -49,6 +42,15 @@ pre-release versions.
   an addition.
 - Site: the Quincaillerie page no longer shows the plate under its header; it repeated the
   fasteners image that opens the README just after it.
+
+### Fixed
+
+- Site and README: the bench video's caption says the scene was made with Blender scripts
+  outside Primvaria, and that `primvaria compose` only sets the assets side by side; the README
+  says how compose places them (in rows, in input order, shifted along x and y only).
+- Site: the engine matrix's header row is written from `docs/engines.json` with the rows; it
+  was hand-written, so the Newton column had shifted every title after MuJoCo and left the
+  last column without one.
 
 ## [0.4.0b1] - 2026-11-20 (beta)
 
