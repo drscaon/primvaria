@@ -6,7 +6,9 @@ on CPU (2 cores, no GPU) from the file alone, with the XPBD solver. The MuJoCo
 Warp solver was left out on purpose: it is the algorithm the generators are
 already checked with. The script is `scripts/newton_trial.py`.
 
-This is a trial, not a check: nothing here runs in CI and no generator changed.
+This was a trial. Option 1 below was then taken (23 November 2026): Newton is
+now a column of the engine matrix, checked in CI on every preset; see
+[Outcome](#outcome-newton-in-ci) at the end.
 
 ## Answers
 
@@ -133,3 +135,32 @@ files say what the pack says. Joints are the exception (finding 2).
    Maillage the proposal's schema names, so that the files simulate in Newton
    with no option. This is a feature and a contract change.
 3. **Stop here**: the matrix says "Newton 1.8.0: tried on CPU, see the trial".
+
+## Outcome: Newton in CI
+
+23 November 2026, option 1. `scripts/newton_check.py` runs in Primvaria's CI
+(job "Newton on CPU, every preset"): it writes a small pack of every preset of
+the four generators, then opens each file in Newton 1.8.0 with XPBD on CPU, in
+its own environment (finding 4). About 3 minutes to write the packs and 6 to
+check them on two cores. What it checks:
+
+| Generator | Files | Checked |
+|---|---|---|
+| Granulaire | 25 presets, 24 grains each, deformables off | mass equals the pack's; after 2 s every pose finite, no centre of mass below the ground, every grain below 5 cm/s. Contact gap: a quarter of the smallest grain, at most 0.5 mm (finding 1) |
+| Quincaillerie | the 31 parts of the catalogue, each from its own PhysX layer | the same, after a 5 cm drop onto Newton's ground plane (an asset file has no ground) |
+| Filaire | 20 presets, one cable each | mass equals the pack's; joints and degrees of freedom recorded, no settling (finding 2) |
+| Maillage | 12 presets | what Newton reads, recorded (finding 3) |
+
+All pass. The run found one more gap on Newton's side:
+
+### 6. Newton refuses joints outside an articulation
+
+The 10 battery holders carry a clip or a spring joint between two of their
+bodies, with no `PhysicsArticulationRootAPI`: in UsdPhysics such a joint is
+simulated as a constraint. Newton 1.8.0 refuses it when the model is
+finalized ("joints not belonging to any articulation"). The check records the
+refusal for these files instead of failing.
+
+A check that passes says what is in the table above and no more: settling at
+rest is stability, not contact behaving as in MuJoCo, and nothing here is a
+cable or cloth test.

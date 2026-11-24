@@ -81,6 +81,41 @@ jobs:
           primvaria granulaire generate --preset crushed_gravel --shapes 5 --copies 2 --out ci-output
           primvaria filaire generate --preset usb_c --count 1 --out ci-output
 
+  newton:
+    name: Newton on CPU, every preset
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      # Newton pins its own usd-core and MuJoCo: the packs are written in one environment
+      # and read by Newton in another (scripts/newton_check.py).
+      - name: Install the generators from GitHub
+        run: >
+          pip install
+          "granulaire @ git+https://github.com/drscaon/granulaire"
+          "maillage @ git+https://github.com/drscaon/maillage"
+          "filaire @ git+https://github.com/drscaon/filaire"
+          "quincaillerie @ git+https://github.com/drscaon/quincaillerie"
+          -e .
+      - name: Write a pack of every preset
+        run: python scripts/newton_check.py generate packs
+      - name: Install Newton
+        run: |
+          python -m venv .newton
+          .newton/bin/pip install "newton[importers]==1.8.0"
+      - name: Check what Newton reads
+        run: .newton/bin/python scripts/newton_check.py run packs
+      - name: Report
+        if: always()
+        run: cat packs/newton.md >> "$GITHUB_STEP_SUMMARY" || true
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: newton-report
+          path: packs/newton.*
+
   build:
     name: Build and check the package
     runs-on: ubuntu-latest
