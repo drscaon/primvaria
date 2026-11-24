@@ -7,6 +7,16 @@ pre-release versions.
 
 ## [Unreleased]
 
+### Changed
+
+- CI: the macOS tests no longer run on pull requests and pushes to main, only on a
+  daily schedule, on manual runs and on release tags, here and in the generators'
+  shared checks (`generator-checks.yml`). GitHub's hosted macOS runners are often not
+  available, and the jobs waited in the queue until they were cancelled, without a
+  step run.
+- The website is rebuilt when a release is published, so that the line under the
+  header names the new release.
+
 ## [0.5.0b1] - 2026-11-24 (beta)
 
 Requires the generators' new releases: Granulaire 0.6.0b1, Maillage 0.5.0b1,

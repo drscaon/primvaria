@@ -11,6 +11,8 @@ on:
   push:
     branches: [main]
     paths: ["site/**", "docs/contract.md", "MISSION.md", ".github/workflows/pages.yml"]
+  release:
+    types: [published]  # the line under the header names the latest release
   schedule:
     - cron: "17 4 * * 1"  # weekly, to pick up new hero images
   workflow_dispatch:

@@ -5,6 +5,11 @@ name: Generator checks
 # oldest OpenUSD the package accepts, and the package build. Called from each generator's
 # CI workflow, so that the tool versions and the matrix are written once:
 #
+# macOS runs only on scheduled and manual runs and on release tags (the caller's
+# event): GitHub's hosted macOS runners are often not available, and a job that waits
+# for one blocks pull requests for nothing (24 November: cancelled after 22 minutes in
+# the queue, no step run).
+#
 #   jobs:
 #     checks:
 #       uses: drscaon/primvaria/.github/workflows/generator-checks.yml@main
@@ -33,7 +38,25 @@ on:
         required: false
         type: string
         default: ""
-      usd-floor:
+      macos:
+    name: Tests (Python 3.12, macos-latest)
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install
+        run: pip install -e ".[dev]"
+      - name: Test
+        run: pytest
+      - name: Command-line smoke test
+        run: ${{ inputs.smoke }}
+
+  usd-floor:
         description: The lowest usd-core version the package accepts
         required: false
         type: string
@@ -67,9 +90,7 @@ jobs:
         os: [ubuntu-latest]
         python-version: ["3.11", "3.12", "3.13"]
         include:
-          # one run on each other platform, on a recent Python
-          - os: macos-latest
-            python-version: "3.12"
+          # one run on Windows, on a recent Python (macOS: the job below)
           - os: windows-latest
             python-version: "3.12"
     steps:
