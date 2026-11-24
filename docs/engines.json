@@ -23,7 +23,7 @@
       "validators": {"status": "tested", "readme": "tested", "site": "every preset, OmniPhysics layer included"},
       "blender": {"status": "tested", "readme": "tested: drape", "site": "drape test, every preset"},
       "mujoco": {"status": "tested", "readme": "tested: flex drape", "site": "flex export, drape test, every preset"},
-      "newton": {"status": "tested", "readme": "tested: mass, drop", "site": "every preset, from its Newton layer (AOUSD proposal's cloth schemas): mass as the pack, at rest after a 5 cm drop (XPBD); no drape compared with MuJoCo yet"},
+      "newton": {"status": "differs", "readme": "read, mass, drop; drapes more than in MuJoCo", "site": "every preset read from its Newton layer, mass as the pack, at rest after a 5 cm drop; a napkin's Cusick drape coefficient is 0.27 with Newton's VBD cloth solver, 0.44 in MuJoCo (under XPBD the cloth stretches without bound)"},
       "isaac": {"status": "n/a", "readme": "n/a (cloth)", "site": "cloth: see OmniPhysics"},
       "omniphysics": {"status": "exported", "readme": "exported, structure checked, not run", "site": "surface deformables, structure checked; not run"}
     },
@@ -32,7 +32,7 @@
       "validators": {"status": "tested", "readme": "tested", "site": "every preset, with and without physics"},
       "blender": {"status": "tested", "readme": "tested: drop (add-on)", "site": "drop through the add-on, every preset"},
       "mujoco": {"status": "tested", "readme": "tested: drop, sag, coil, insertion, bayonet lock", "site": "drop, sag, coil, insertion, bayonet lock"},
-      "newton": {"status": "tested", "readme": "tested: mass, bends when hung", "site": "every preset, from its Newton layer: mass as the pack, hung from one end it bends under its weight (XPBD); not at rest, not compared with MuJoCo yet"},
+      "newton": {"status": "differs", "readme": "read, mass; under XPBD bends 7.9× more than beam theory", "site": "every preset read from its Newton layer, mass as the pack; but a USB-C sample held flat at one end drops 108.9 mm where beam theory gives 13.8 mm: under XPBD the joint drives act far softer than their stiffness (more iterations change nothing)"},
       "isaac": {"status": "not yet", "readme": "not yet", "site": "UsdPhysics joints, PhysX layer over each file"},
       "omniphysics": {"status": "n/a", "readme": "n/a", "site": ""}
     },

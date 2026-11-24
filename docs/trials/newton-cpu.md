@@ -192,5 +192,24 @@ resolver and sets nothing itself. 98 of 98 pass on CPU:
 
 What it does not say: a hung cable keeps swinging, because under XPBD the
 drives' damping has almost no effect (100 times the damping changed the swing
-speed by under 10 %); neither the cable's bend nor the cloth's drape is
-compared with MuJoCo or with beam theory yet.
+speed by under 10 %).
+
+### Compared (24 November 2026)
+
+The check now measures two things against a reference, and reports them in its
+summary without failing on them:
+
+| What | Newton | Reference | Ratio |
+|---|---|---|---|
+| USB-C sample, 13.8 cm, cut ends, held flat at one end: tip drop | 108.9 mm (XPBD) | 13.8 mm, beam theory w L⁴ / (8 E I), E I and w read from the file as Filaire's MuJoCo sag check reads them (MuJoCo: within 5 %) | 7.9 |
+| Napkin, 300 vertices, Maillage's Cusick drape test: drape coefficient | 0.27 (VBD) | 0.44, Maillage's MuJoCo drape test on the same file | 0.61 |
+
+Newton reads the cable's drive stiffness as written (converted from per degree
+to per radian), and 5 or 100 XPBD iterations give the same drop: under XPBD a
+Filaire cable is far softer than its own stiffness. Whether that is how XPBD
+treats a drive's stiffness (its compliance) or something the file could say
+differently is not settled. For cloth, XPBD is no measure at all: on the
+pedestal the napkin stretches until it reaches the floor; VBD, Newton's cloth
+solver, holds it, and it drapes more than in MuJoCo. Which of the two drapes
+like the real fabric is not known: neither is calibrated against a measured
+drape coefficient.

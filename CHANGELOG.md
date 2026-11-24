@@ -24,6 +24,10 @@ pre-release versions.
 
 ### Changed
 
+- Newton check: two comparisons, reported in its summary and not failed on. A USB-C sample
+  held flat at one end drops 7.9 times more under XPBD than beam theory says; a napkin's
+  drape coefficient with Newton's VBD solver is 0.61 times MuJoCo's. Engine matrix: Filaire
+  and Maillage *differ* in Newton (a new status), with the numbers.
 - Newton check (PRV-30): every file is opened from its Newton layer, `<file>_newton.usda`,
   which the four generators now write (contract section 9, a new engine layer), with Newton's
   own schema resolver; the script sets no contact gap of its own. Filaire's cables (hung from
