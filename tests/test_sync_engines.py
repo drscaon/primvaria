@@ -1,7 +1,9 @@
 """The engine matrix has one source, docs/engines.json; the README and the site follow it."""
 
+import html
 import importlib.util
 import json
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).parents[1]
@@ -36,3 +38,13 @@ def test_a_stale_table_is_rewritten():
         sync.between(stale, sync.readme_table(DATA), "README.md")
         == sync.render(DATA, sync.counts())[sync.README]
     )
+
+
+def test_the_site_table_has_a_title_for_every_column():
+    """The header comes from docs/engines.json like the rows: a new engine gets its title."""
+    page = sync.PAGE.read_text(encoding="utf-8")
+    header = re.search(r"<thead><tr>(.*?)</tr></thead>", page).group(1)
+    titles = re.findall(r"<th>(.*?)</th>", header)
+    assert titles == ["Generator"] + [html.escape(e["title"]) for e in DATA["engines"]]
+    for row in re.findall(r'<tr><th scope="row">.*?</tr>', page, re.S):
+        assert row.count("<td") == len(titles) - 1

@@ -7,6 +7,12 @@ pre-release versions.
 
 ## [Unreleased]
 
+### Fixed
+
+- Site: the engine matrix's header row is written from `docs/engines.json` with the rows; it
+  was hand-written, so the Newton column had shifted every title after MuJoCo and left the
+  last column without one.
+
 ### Added
 
 - Site and README: a second video on the home page, the four generators on one workbench
