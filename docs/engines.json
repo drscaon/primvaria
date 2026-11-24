@@ -1,5 +1,5 @@
 {
-  "updated": "23 November 2026",
+  "updated": "24 November 2026",
   "engines": [
     {"key": "validators", "title": "OpenUSD validators"},
     {"key": "blender", "title": "Blender"},
@@ -14,7 +14,7 @@
       "validators": {"status": "tested", "readme": "tested", "site": "every preset and moisture state"},
       "blender": {"status": "tested", "readme": "tested: pile", "site": "pile test, every preset"},
       "mujoco": {"status": "tested", "readme": "tested: pile", "site": "pile test, every preset"},
-      "newton": {"status": "tested", "readme": "tested: import, mass, settling", "site": "every preset: mass as the pack, at rest on the ground after 2 s (XPBD)"},
+      "newton": {"status": "tested", "readme": "tested: mass, settling", "site": "every preset, from its Newton layer: mass as the pack, at rest on the ground after 2 s (XPBD)"},
       "isaac": {"status": "not yet", "readme": "not yet", "site": "standard UsdPhysics rigid bodies"},
       "omniphysics": {"status": "exported", "readme": "exported, not run", "site": "peanuts, tomatoes: a layer over the file, structure checked; not run"}
     },
@@ -23,7 +23,7 @@
       "validators": {"status": "tested", "readme": "tested", "site": "every preset, OmniPhysics layer included"},
       "blender": {"status": "tested", "readme": "tested: drape", "site": "drape test, every preset"},
       "mujoco": {"status": "tested", "readme": "tested: flex drape", "site": "flex export, drape test, every preset"},
-      "newton": {"status": "not yet", "readme": "not read (Newton side)", "site": "Newton 1.8.0 reads the AOUSD proposal's deformable schemas, not the OmniPhysics ones: no cloth found"},
+      "newton": {"status": "tested", "readme": "tested: mass, drop", "site": "every preset, from its Newton layer (AOUSD proposal's cloth schemas): mass as the pack, at rest after a 5 cm drop (XPBD); no drape compared with MuJoCo yet"},
       "isaac": {"status": "n/a", "readme": "n/a (cloth)", "site": "cloth: see OmniPhysics"},
       "omniphysics": {"status": "exported", "readme": "exported, structure checked, not run", "site": "surface deformables, structure checked; not run"}
     },
@@ -32,7 +32,7 @@
       "validators": {"status": "tested", "readme": "tested", "site": "every preset, with and without physics"},
       "blender": {"status": "tested", "readme": "tested: drop (add-on)", "site": "drop through the add-on, every preset"},
       "mujoco": {"status": "tested", "readme": "tested: drop, sag, coil, insertion, bayonet lock", "site": "drop, sag, coil, insertion, bayonet lock"},
-      "newton": {"status": "not yet", "readme": "mass read; cable joints locked (Newton side)", "site": "mass as the pack; Newton 1.8.0 gives no freedom to a joint axis without a limit, so the cable is rigid: no cable test"},
+      "newton": {"status": "tested", "readme": "tested: mass, bends when hung", "site": "every preset, from its Newton layer: mass as the pack, hung from one end it bends under its weight (XPBD); not at rest, not compared with MuJoCo yet"},
       "isaac": {"status": "not yet", "readme": "not yet", "site": "UsdPhysics joints, PhysX layer over each file"},
       "omniphysics": {"status": "n/a", "readme": "n/a", "site": ""}
     },
@@ -41,7 +41,7 @@
       "validators": {"status": "tested", "readme": "tested", "site": "whole catalogue, varied instances"},
       "blender": {"status": "tested", "readme": "tested: drop, assemblies (add-on)", "site": "drop and assemblies through the add-on"},
       "mujoco": {"status": "tested", "readme": "tested: drop, screwing, jam, insertion", "site": "drop, screwing, jammed threads, insertion"},
-      "newton": {"status": "tested", "readme": "tested: import, mass, drop; holders refused (Newton side)", "site": "every part: mass as the pack, at rest after a 5 cm drop (XPBD); battery holders refused: Newton 1.8.0 wants joints in an articulation"},
+      "newton": {"status": "tested", "readme": "tested: mass, drop", "site": "every part and holder, from its Newton layer: mass as the pack, at rest after a 5 cm drop (XPBD)"},
       "isaac": {"status": "not yet", "readme": "not yet", "site": "UsdPhysics, PhysX layer over each file"},
       "omniphysics": {"status": "n/a", "readme": "n/a", "site": ""}
     }

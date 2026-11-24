@@ -59,17 +59,19 @@ CI on every preset, from the OpenUSD file alone.
 <!-- engines:start -->
 | | OpenUSD validators | Blender | MuJoCo | Newton · CPU | Isaac Sim · PhysX | OmniPhysics deformables |
 |---|---|---|---|---|---|---|
-| Granulaire | tested | tested: pile | tested: pile | tested: import, mass, settling | not yet | exported, not run |
-| Maillage | tested | tested: drape | tested: flex drape | not read (Newton side) | n/a (cloth) | exported, structure checked, not run |
-| Filaire | tested | tested: drop (add-on) | tested: drop, sag, coil, insertion, bayonet lock | mass read; cable joints locked (Newton side) | not yet | n/a |
-| Quincaillerie | tested | tested: drop, assemblies (add-on) | tested: drop, screwing, jam, insertion | tested: import, mass, drop; holders refused (Newton side) | not yet | n/a |
+| Granulaire | tested | tested: pile | tested: pile | tested: mass, settling | not yet | exported, not run |
+| Maillage | tested | tested: drape | tested: flex drape | tested: mass, drop | n/a (cloth) | exported, structure checked, not run |
+| Filaire | tested | tested: drop (add-on) | tested: drop, sag, coil, insertion, bayonet lock | tested: mass, bends when hung | not yet | n/a |
+| Quincaillerie | tested | tested: drop, assemblies (add-on) | tested: drop, screwing, jam, insertion | tested: mass, drop | not yet | n/a |
 <!-- engines:end -->
 
 Newton runs on CPU in this repository's CI (`scripts/newton_check.py`), every
-preset of the four generators, with Newton's XPBD solver: mass against the
-pack, then settling for grains and parts. Where a cell says "Newton side", the
-file follows `UsdPhysics` and Newton 1.8.0 does not read that part of it; the
-[trial report](docs/trials/newton-cpu.md) gives the details.
+preset of the four generators, with Newton's XPBD solver. Each file is opened
+from its Newton layer (`<file>_newton.usda`), which holds what Newton cannot
+guess from the standard `UsdPhysics` file: contact gaps, limits on the joint
+axes a cable leaves free, battery holders as articulations, cloth in the
+schemas Newton reads. The [trial report](docs/trials/newton-cpu.md) gives the
+details.
 
 Isaac Sim runs need an NVIDIA RTX GPU and have not been done yet: the files
 follow the standard `UsdPhysics` schemas, with the PhysX settings and the
@@ -117,7 +119,7 @@ is referenced from its own file (paths relative to the scene, so the scene
 moves with the outputs), set on its own spot of the shared ground, under one
 physics scene, in a scope per generator (`/World/Grains`, `Cloths`, `Cables`,
 `Parts`). Assets named alike take their preset's name, and their instance
-label follows. Engine layers (`*_physx`, `*_omniphysics`) are not carried:
+label follows. Engine layers (`*_physx`, `*_omniphysics`, `*_newton`) are not carried:
 open the asset's own files for those. `--limit N` takes at most N assets per
 file, `--gap` and `--width` set the spacing and row width in metres. The
 command then checks the scene against the contract and exits 1 if it does not

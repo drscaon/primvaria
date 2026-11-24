@@ -255,6 +255,7 @@ beside it:
 |---|---|---|
 | `*_physx` | PhysX solver iterations and contact offsets (`PhysxRigidBodyAPI`, `PhysxCollisionAPI`) | Filaire and Quincaillerie, for every file with physics; a scene's layer references the layers of its parts |
 | `*_omniphysics` | OmniPhysics deformable bodies: schemas, simulation mesh, deformable material | Maillage (surface deformables, every piece) and Granulaire (volume deformables, packing peanuts and cherry tomatoes: rigid bodies in the file) |
+| `*_newton` | what Newton cannot guess from the file: `newton:contactGap` on colliders, limits on joint axes the file leaves free, an articulation root over joints outside one, cloth in the AOUSD proposal's deformable schemas (`Physics*Deformable*`) | all four generators, for every file with physics; a scene's layer references the layers of its parts |
 
 MaterialX is not an engine layer: Quincaillerie's material library offers it
 beside `UsdPreviewSurface`, in the same file.
@@ -262,15 +263,20 @@ beside `UsdPreviewSurface`, in the same file.
 **In place**, rules:
 
 - a file holds no schema or attribute of an engine (`Physx*`, `OmniPhysics*`,
-  `physx*:`, `omniphysics:`);
+  `Newton*`, `physx*:`, `omniphysics:`, `newton:`), nor what one engine's layer
+  adds for it;
 - a file is valid and passes its generator's checks without its layers;
 - a generator says in its own namespace what an engine must know and cannot
   guess (for example `quincaillerie:contactOffset`, the distance from which a
   threaded part needs contacts), and the engine layer copies it.
 
 Each generator checks the structure of its layers (`python -m
-<generator>.physx`, `python -m <generator>.omniphysics`). No layer has been
-simulated: both engines need Isaac Sim and an NVIDIA RTX GPU.
+<generator>.physx`, `python -m <generator>.omniphysics`, `python -m
+<generator>.newton`), and `generate --engines` chooses which it writes
+(`physx`, `omniphysics`, `newton`, comma-separated, or `none`; by default all).
+The PhysX and OmniPhysics layers have not been simulated: both engines need
+Isaac Sim and an NVIDIA RTX GPU. The Newton layers are opened in Newton on CPU
+in Primvaria's CI (`scripts/newton_check.py`).
 
 ## 10. Pack files
 

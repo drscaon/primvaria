@@ -164,3 +164,33 @@ refusal for these files instead of failing.
 A check that passes says what is in the table above and no more: settling at
 rest is stability, not contact behaving as in MuJoCo, and nothing here is a
 cable or cloth test.
+
+## Newton layers (24 November 2026)
+
+The gaps above were on Newton's side, but every one of them can be met by the
+file without breaking it. Each generator now writes a Newton layer beside each
+file with physics, `<file>_newton.usda` (contract section 9, a new engine layer:
+no new contract version, the files and the other layers unchanged), and
+`generate --engines` chooses which layers are written:
+
+| Finding | What the Newton layer adds |
+|---|---|
+| 1. contact gap | `newton:contactGap` on every collider: the asset's contact offset (Quincaillerie, Filaire), a quarter of the grain (Granulaire) |
+| 2. free joint axes locked | a ±170° limit on each rotation between two cable segments, never reached |
+| 3. OmniPhysics deformables not read | Maillage's cloth in the AOUSD proposal's schemas (`PhysicsSurfaceDeformableSimAPI` and the rest), the same values |
+| 6. joints outside an articulation refused | `PhysicsArticulationRootAPI` on each battery holder |
+
+`scripts/newton_check.py` now opens the Newton layers with Newton's own schema
+resolver and sets nothing itself. 98 of 98 pass on CPU:
+
+| Generator | Checked |
+|---|---|
+| Granulaire, 25 presets | mass as the pack; at rest on the ground after 2 s |
+| Quincaillerie, 41 assets, holders included | mass as the pack; at rest after a 5 cm drop |
+| Filaire, 20 presets | mass as the pack; hung from its first segment, the cable bends under its weight (a rigid one would not move) |
+| Maillage, 12 presets | read as cloth, mass as the pack; raised 5 cm, at rest on the ground after 1 s |
+
+What it does not say: a hung cable keeps swinging, because under XPBD the
+drives' damping has almost no effect (100 times the damping changed the swing
+speed by under 10 %); neither the cable's bend nor the cloth's drape is
+compared with MuJoCo or with beam theory yet.

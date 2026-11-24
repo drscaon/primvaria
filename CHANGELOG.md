@@ -18,6 +18,14 @@ pre-release versions.
 
 ### Changed
 
+- Newton check (PRV-30): every file is opened from its Newton layer, `<file>_newton.usda`,
+  which the four generators now write (contract section 9, a new engine layer), with Newton's
+  own schema resolver; the script sets no contact gap of its own. Filaire's cables (hung from
+  one end, they bend), Maillage's cloth (raised 5 cm, at rest) and Quincaillerie's battery
+  holders are now checked too: 98 of 98 pass. Engine matrix: Newton *tested* for all four.
+- Contract section 9: the `*_newton` layer, `Newton*` and `newton:` as engine data, and
+  `generate --engines` to choose the layers. No new contract version: a new engine layer is
+  an addition.
 - Site: the Quincaillerie page no longer shows the plate under its header; it repeated the
   fasteners image that opens the README just after it.
 
