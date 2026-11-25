@@ -1,7 +1,9 @@
 """Fail when a file the four generators share has drifted between them.
 
 The Primvaria contract (docs/contract.md) relies on a few files being byte-identical in
-Granulaire, Maillage, Filaire and Quincaillerie. This compares them::
+Granulaire, Maillage, Filaire and Quincaillerie: the modules that bind primvaria-contract
+(the contract's code, in contract/ of this repository) to each generator, and the tests of
+each generator's files. This compares them::
 
     python scripts/check_shared_files.py              # the main branches on GitHub
     python scripts/check_shared_files.py --local ..   # sibling clones of the four repositories

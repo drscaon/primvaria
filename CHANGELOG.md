@@ -7,7 +7,19 @@ pre-release versions.
 
 ## [Unreleased]
 
+### Added
+
+- primvaria-contract, a second package published from this repository (folder `contract/`,
+  workflow `release-contract.yml`, tags `contract-vX.Y.Z`): the code of the contract that the
+  four generators copied (`contract.py`, `pack.py`, `ground.py`, `conformance.py`), written
+  once. The generators depend on it and keep their modules as thin layers that fill in their
+  name and version, so nothing changes for their users. Its tests are the contract tests on
+  stages written by hand, moved from the generators' shared `tests/test_contract.py`.
+
 ### Changed
+
+- `primvaria compose` and `--engines` use primvaria-contract directly instead of Granulaire's
+  copy of the contract; primvaria requires primvaria-contract.
 
 - CI runs at two levels. On a commit (push to main, pull request): the tests on Ubuntu
   and Python 3.12 only, and Newton on a sample of the presets (`scripts/newton_check.py`:

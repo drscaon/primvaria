@@ -43,8 +43,8 @@ this repository. See [MISSION.md](../MISSION.md).
 
 ## 3. Shared ground and physics scene
 
-In place in all four generators, written and checked by `ground.py` (the same
-file in each repository).
+In place in all four generators, written and checked by `primvaria_contract.ground`
+(package `primvaria-contract`, which each generator gives as `<generator>.ground`).
 
 | Prim | Content |
 |---|---|
@@ -286,7 +286,7 @@ in Primvaria's CI (`scripts/newton_check.py`).
 ## 10. Pack files
 
 **In place.** Every pack has the same two files, written by the same module
-(`pack.py`) in the four generators.
+(`primvaria_contract.pack`, as `<generator>.pack`) in the four generators.
 
 `instances.csv` has one row per asset, read back from the OpenUSD files, so
 the table and the files cannot disagree. An asset is listed from the file
@@ -320,10 +320,10 @@ A generator may write other files beside them (Granulaire's
 | Check | Status |
 |---|---|
 | Every OpenUSD `UsdValidation` validator, on every file and every variant, in each generator's CI | in place |
-| The shared ground and physics scene (section 3), by `ground.py` | in place |
-| Sections 2, 4 (an asset whole on its own included), 5, 9 and the recording of section 6, by `python -m <generator>.conformance` in each generator's CI (on every preset before a release, on a sample on each commit), and by `tests/test_contract.py` | in place |
+| The shared ground and physics scene (section 3), by `primvaria_contract.ground` | in place |
+| Sections 2, 4 (an asset whole on its own included), 5, 9 and the recording of section 6, by `python -m <generator>.conformance` in each generator's CI (on every preset before a release, on a sample on each commit), by `tests/test_contract.py` on each generator's files, and by primvaria-contract's own tests on stages written by hand | in place |
 | Section 10: the same command checks every pack it finds, the table must say what the files say; `tests/test_pack.py` | in place |
-| The files the generators share are byte-identical: `ground.py`, `contract.py`, `conformance.py`, `pack.py`, `tests/test_contract.py`, `tests/test_pack.py` and `tests/test_golden.py`. `scripts/check_shared_files.py` in this repository fails when one differs, in CI and weekly | in place |
+| The code of the contract is written once, in the package `primvaria-contract` (folder `contract/` of this repository), on which the four generators depend; their `contract.py`, `pack.py`, `ground.py` and `conformance.py` only bind it to the generator's name and version. Those short modules and `tests/test_contract.py`, `tests/test_pack.py` and `tests/test_golden.py` are byte-identical in the four: `scripts/check_shared_files.py` in this repository fails when one differs, in CI and weekly | in place |
 | Section 6, rule 1 (same version, preset, seed and options, same values) on every Python and platform of the CI, by `tests/test_golden.py` against stored references | in place |
 | Section 6, rules 2 and 3, by each generator's own variation tests | in place |
 | Composition: a grain, a cloth piece, a cable and a screw with its nut, each referenced alone from its generator's file onto one shared ground, conform, pass the validators, keep their materials and labels, rest on the ground without starting in it (section 3; Quincaillerie's own `tests/test_usd.py` for every part), and the rigid ones settle in MuJoCo with their own friction; by `tests/test_composition.py` in this repository, against the generators' main branches. The cable and the cloth are not given to MuJoCo there: no converter reads both from one stage yet | in place |
