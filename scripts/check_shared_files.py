@@ -25,7 +25,6 @@ SHARED = (
     "src/{name}/contract.py",
     "src/{name}/conformance.py",
     "src/{name}/pack.py",
-    "src/{name}/validate.py",
     "tests/test_contract.py",
     "tests/test_pack.py",
     "tests/test_golden.py",
