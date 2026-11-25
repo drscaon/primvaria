@@ -43,7 +43,9 @@ whether a file is right):
 - a cloth's drape against MuJoCo: Maillage's Cusick drape test (the piece laid on a round
   pedestal, the vertices over it held) on a 300-vertex napkin, its drape coefficient in Newton
   against the one Maillage's MuJoCo test measures on the same file. Newton's VBD solver, its
-  cloth solver, is used here: under XPBD the cloth stretches without bound.
+  cloth solver, is used here: under XPBD the cloth stretches without bound. At Newton's default
+  10 iterations: VBD's drape is not converged (it moves with the iteration count and the time
+  step), so this figure watches Newton releases, it does not measure the file.
 
 Exits 1 if a check fails. See docs/trials/newton-cpu.md.
 """

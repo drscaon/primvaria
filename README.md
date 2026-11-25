@@ -61,7 +61,7 @@ OpenUSD file alone.
 | | OpenUSD validators | Blender | MuJoCo | Newton · CPU | Isaac Sim · PhysX | OmniPhysics deformables |
 |---|---|---|---|---|---|---|
 | Granulaire | tested | tested: pile | tested: pile | tested: mass, settling | not yet | exported, not run |
-| Maillage | tested | tested: drape | tested: flex drape | read, mass, drop; drapes more than in MuJoCo | n/a (cloth) | exported, structure checked, not run |
+| Maillage | tested | tested: drape | tested: flex drape | read, mass, drop; drape not converged in Newton | n/a (cloth) | exported, structure checked, not run |
 | Filaire | tested | tested: drop (add-on) | tested: drop, sag, coil, insertion, bayonet lock | read, mass; holds its shape, bend set by XPBD's iteration count | not yet | n/a |
 | Quincaillerie | tested | tested: drop, assemblies (add-on) | tested: drop, screwing, jam, insertion | tested: mass, drop | not yet | n/a |
 <!-- engines:end -->

@@ -212,7 +212,8 @@ differently is not settled. For cloth, XPBD is no measure at all: on the
 pedestal the napkin stretches until it reaches the floor; VBD, Newton's cloth
 solver, holds it, and it drapes more than in MuJoCo. Which of the two drapes
 like the real fabric is not known: neither is calibrated against a measured
-drape coefficient.
+drape coefficient. The VBD figure turned out not to be a measurement at all:
+see "Why the cloth drapes differently" below.
 
 ### Why the cable was soft (24 November 2026)
 
@@ -232,3 +233,44 @@ iteration's multipliers from zero (`lambda_in = 0` in its joint kernel):
 
 A file cannot set the iteration count, so a cable's stiffness in Newton's XPBD
 is the solver's choice as much as the file's.
+
+### Why the cloth drapes differently (25 November 2026)
+
+The napkin of the comparison (300 vertices, MuJoCo 0.44) was opened from its
+Newton layer and the VBD drape run again, changing only the solver.
+
+What Newton reads from the file is what the file says: the mass, Young's
+modulus, Poisson's ratio and thickness exactly; the membrane stiffness as
+E t / (1 − ν²) and the bending stiffness as E t³ / (12 (1 − ν²)), which is the
+fabric's bending rigidity B exactly (1.5e-5 N m for the napkin). VBD then uses
+that value as the stiffness of each edge's hinge per unit of edge length
+(energy ½ k L (θ − θ₀)²), so a plate of rigidity B bends in VBD about as one
+of rigidity B times the mesh spacing would: about 50 times softer on this mesh,
+and softer still on a finer one. That is how Newton's importer converts the
+AOUSD proposal's stiffness, not something the file could say differently
+without writing a value that is wrong for every other reader.
+
+It is not what makes the drape differ, though. The result depends mostly on how
+far VBD is let converge:
+
+| VBD iterations | time step | drape coefficient |
+|---|---|---|
+| 10 (Newton's default, the check's) | 1 ms | 0.27 |
+| 20 | 1 ms | 0.29 |
+| 50 | 1 ms | 0.43 |
+| 100 | 1 ms | 0.56 |
+| 50 | 0.5 ms | 0.63 |
+
+Bending 1000 times stiffer, at 10 iterations, gives 0.37. In every run the
+cloth stretches by under 2.5 % and still moves at about 0.1 m/s after the
+test's 5 s, so none of these is a draped state at rest. The 0.43 at 50
+iterations is close to MuJoCo by chance.
+
+So Newton's VBD drape coefficient is not a measure of the file, and the engine
+matrix no longer gives it as one. The check still reports it, at Newton's
+default settings, to show if a Newton release changes it. A layer could set
+the iteration count (`newton:maxSolverIterations` on the physics scene, which
+`SolverVBD` applies when its custom attributes are registered before the
+import), but no count gives a stable answer here, so the Newton layer does not
+set one. What would: Newton converging the drape to rest on CPU in a time CI
+can afford, or a bending stiffness that does not depend on the mesh.

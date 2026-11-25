@@ -1,7 +1,7 @@
 <section class="hero page"><div class="wrap">
   <p class="eyebrow"><a href="/">Primvaria</a> · engines</p>
   <h1>Engine matrix</h1>
-  <p class="lede">Where each generator stands in each engine, on 24 November 2026. Tests run in each project's CI on every preset, from the OpenUSD file alone; Newton runs in Primvaria's CI.</p>
+  <p class="lede">Where each generator stands in each engine, on 25 November 2026. Tests run in each project's CI on every preset, from the OpenUSD file alone; Newton runs in Primvaria's CI.</p>
   <div class="scroll"><table>
     <!-- engines:start -->
     <thead><tr><th>Generator</th><th>OpenUSD validators</th><th>Blender</th><th>MuJoCo</th><th>Newton · CPU</th><th>Isaac Sim · PhysX</th><th>OmniPhysics deformables</th></tr></thead>
@@ -17,7 +17,7 @@
         <td><span class="st ok">tested</span><small>every preset, OmniPhysics layer included</small></td>
         <td><span class="st ok">tested</span><small>drape test, every preset</small></td>
         <td><span class="st ok">tested</span><small>flex export, drape test, every preset</small></td>
-        <td><span class="st warn">differs</span><small>every preset read from its Newton layer, mass as the pack, at rest after a 5 cm drop; a napkin&#x27;s Cusick drape coefficient is 0.27 with Newton&#x27;s VBD cloth solver, 0.44 in MuJoCo (under XPBD the cloth stretches without bound)</small></td>
+        <td><span class="st warn">differs</span><small>every preset read from its Newton layer, mass as the pack, at rest after a 5 cm drop. Drape not measured: with Newton&#x27;s VBD cloth solver a napkin&#x27;s Cusick drape coefficient goes from 0.27 to 0.63 with the iteration count and the time step alone, the cloth still moving after 5 s (0.44 in MuJoCo); a limit of the solver, not of the file. Under XPBD the cloth stretches without bound</small></td>
         <td><span class="st na">n/a</span><small>cloth: see OmniPhysics</small></td>
         <td><span class="st warn">exported</span><small>surface deformables, structure checked; not run</small></td></tr>
       <tr><th scope="row">Filaire</th>
