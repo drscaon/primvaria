@@ -6,6 +6,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the projec
 
 ## [Unreleased]
 
+## [0.2.0b1]
+
+### Added
+
+- `validate`: the OpenUSD validators shipped with OpenUSD (the UsdValidation registry), run on each file once per variant of every variant set, as the generators' `validate.py` did; also `python -m primvaria_contract.validate` for files of any generator. A path that does not exist is reported (`not found`) and fails the command, as Filaire's copy already did.
+
 ## [0.1.0b1]
 
 ### Added

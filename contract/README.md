@@ -18,6 +18,7 @@ under its own name (`granulaire.contract`, `granulaire.pack`, `granulaire.ground
 | `primvaria_contract.pack` | the pack files, `instances.csv` and `manifest.json` (`write_pack`, `check_pack`) |
 | `primvaria_contract.ground` | the shared ground and physics scene |
 | `primvaria_contract.conformance` | the command line of the check |
+| `primvaria_contract.validate` | the OpenUSD validators shipped with OpenUSD, on every variant of every variant set |
 
 Check files of any generator of the suite:
 

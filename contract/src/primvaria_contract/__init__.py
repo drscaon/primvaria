@@ -8,9 +8,10 @@ they share for it, which each generator binds to its own name and version:
   the checks of the contract (``conformance``, ``check``), engine layers;
 * ``primvaria_contract.pack``: the pack of a generator (``instances.csv``, ``manifest.json``);
 * ``primvaria_contract.ground``: the shared ground and physics scene;
-* ``primvaria_contract.conformance``: the command line of the check.
+* ``primvaria_contract.conformance``: the command line of the check;
+* ``primvaria_contract.validate``: the OpenUSD validators shipped with OpenUSD.
 
-Use it through a generator (``granulaire.contract``, ``granulaire.pack`` ...), which fills in
+Use it through a generator (``granulaire.contract``, ``granulaire.validate`` ...), which fills in
 the generator's name and version, or directly to check files of any generator::
 
     python -m primvaria_contract.conformance output/
