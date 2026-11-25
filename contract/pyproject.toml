@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "primvaria-contract"
+version = "0.1.0b1"
+description = "The Primvaria OpenUSD contract: the code the Granulaire, Maillage, Filaire and Quincaillerie generators share to write and check their files (identity, variation, packs, ground, engine layers)."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.11"
+authors = [{ name = "Daniel Régis Sarmento Caon" }]
+keywords = ["openusd", "physical-ai", "robot-learning", "simulation", "synthetic-data"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Multimedia :: Graphics :: 3D Modeling",
+]
+dependencies = ["usd-core>=26.5"]
+
+[project.optional-dependencies]
+dev = ["pytest>=7", "ruff>=0.5"]
+
+[project.urls]
+Homepage = "https://primvaria.com"
+Source = "https://github.com/drscaon/primvaria/tree/main/contract"
+Contract = "https://github.com/drscaon/primvaria/blob/main/docs/contract.md"
+Changelog = "https://github.com/drscaon/primvaria/blob/main/contract/CHANGELOG.md"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 110
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["primvaria_contract"]

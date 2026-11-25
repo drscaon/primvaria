@@ -36,6 +36,7 @@ classifiers = [
 # A plain `pip install primvaria` installs the whole suite.
 # Install a single generator on its own with `pip install granulaire` (etc.).
 dependencies = [
+    "primvaria-contract>=0.1.0b1",  # contract/: the contract code the generators share (compose uses it)
     "granulaire>=0.6.0b1",
     "maillage>=0.5.0b1",
     "filaire>=0.6.0b1",
@@ -81,3 +82,6 @@ target-version = "py311"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "UP", "B"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["primvaria", "primvaria_contract"]

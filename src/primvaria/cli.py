@@ -44,7 +44,7 @@ def _list() -> int:
 def _compose(args: list[str]) -> int:
     import argparse
 
-    from granulaire.contract import engine_list
+    from primvaria_contract.contract import engine_list
 
     from .compose import ENGINES, check, compose, layer_path
 

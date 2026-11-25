@@ -6,7 +6,7 @@ referencing each asset root alone, side by side, on the shared ground and under 
 scene, with no copy of geometry:
 
     /World                      kind assembly, the default prim
-      /PhysicsScene             gravity along -Z (the suite's ground.py)
+      /PhysicsScene             gravity along -Z (primvaria_contract.ground)
       /Ground, /GroundMaterial  the shared floor, sized to what is on it
       /Grains, /Cloths, ...     one scope per kind of asset, kind group
         /place_0007             an Xform that places one asset (kind group)
@@ -32,9 +32,9 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
-# the shared files, identical in the four generators (guarded by the suite's CI)
-from granulaire import contract, ground
 from pxr import Gf, Sdf, Usd, UsdGeom, UsdPhysics, UsdSemantics
+
+from primvaria_contract import contract, ground  # the contract code the four generators share
 
 SCOPES = {"granulaire": "Grains", "maillage": "Cloths", "filaire": "Cables", "quincaillerie": "Parts"}
 SKIP = ("materials",)  # folders of a generator's output that hold no assets
@@ -218,4 +218,4 @@ def engine_layer(out, assets: list[Asset], engine: str) -> Path | None:
 
 def check(stage) -> list[str]:
     """What the composed stage gets wrong: the contract (assets from any generator) and the ground."""
-    return contract.conformance(stage, own=False) + ground.conformance(stage)
+    return contract.conformance(stage) + ground.conformance(stage)

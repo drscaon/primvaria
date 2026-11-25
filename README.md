@@ -188,7 +188,9 @@ is the OpenUSD contract the four generators share: stage conventions, the
 ground and physics scene, asset identity, semantic labels (the classes
 renderers turn into segmentation masks), variant sets, MateFrames, the engine
 layers that keep PhysX and OmniPhysics data out of the files, and the pack
-files.
+files. Its code is written once, in the package
+[primvaria-contract](https://github.com/drscaon/primvaria/tree/main/contract)
+(folder `contract/`), on which the four generators depend.
 
 ## Development
 
@@ -208,6 +210,11 @@ Releasing: on a `chore/release-X.Y.Z` branch, bump `version` in
 the new version; merge, then tag `vX.Y.Z` on `main`. The release workflow
 tests, builds, creates the GitHub release and publishes the package on PyPI
 through Trusted Publishing.
+
+primvaria-contract (`contract/`) is released on its own, before the generators
+that need its new version: bump `version` in `contract/pyproject.toml`, move
+the `Unreleased` entries of `contract/CHANGELOG.md`, merge, then tag
+`contract-vX.Y.Z` on `main` (workflow `release-contract.yml`).
 
 ## License
 
