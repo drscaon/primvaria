@@ -32,8 +32,9 @@ pre-release versions.
   platform, Python and preset, as before. The generators' shared checks
   (`generator-checks.yml`) take the same `full` input: without it, the tests not marked
   `slow` on Ubuntu and Python 3.12, and no oldest-OpenUSD run.
-- The website is rebuilt when a release is published, so that the line under the
-  header names the new release.
+- The website is rebuilt after a Primvaria release (`release.yml` starts the Website
+  workflow on main), so that the line under the header names the new release. Not on
+  primvaria-contract releases, whose tags GitHub Pages refuses to deploy.
 
 ## [0.5.0b1] - 2026-11-24 (beta)
 
