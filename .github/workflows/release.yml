@@ -133,3 +133,17 @@ jobs:
             gh release create "$GITHUB_REF_NAME" dist/* $PRERELEASE \
               --title "Primvaria $VERSION" --notes-file release-notes.md --verify-tag
           fi
+
+  website:
+    # The site names the release it describes in the line under its header. It is built
+    # from main: the github-pages environment deploys main only, so a run started by the
+    # tag (or by the release) would be refused.
+    needs: github-release
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - name: Rebuild the website from main
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run pages.yml --ref main --repo "$GITHUB_REPOSITORY"
