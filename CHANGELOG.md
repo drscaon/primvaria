@@ -15,6 +15,9 @@ pre-release versions.
   once. The generators depend on it and keep their modules as thin layers that fill in their
   name and version, so nothing changes for their users. Its tests are the contract tests on
   stages written by hand, moved from the generators' shared `tests/test_contract.py`.
+- primvaria-contract 0.2.0b1: `validate`, the OpenUSD validators the generators ran from
+  their own `validate.py` (nearly the same in the four: Filaire's only reported missing
+  paths, which the shared one now does for all).
 
 ### Changed
 
