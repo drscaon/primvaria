@@ -38,6 +38,11 @@ assets have been tested so far. Everything can run on CPU.
 The name comes from *primvar*, OpenUSD's primitive variable, and *varia*,
 Latin for "diverse things".
 
+> [!TIP]
+> If Primvaria is useful to you, please ⭐ star this repository and the
+> generators you use. Stars show me what people actually need, so I can
+> decide which features to develop next.
+
 ## The generators
 
 | | Generator | Assets | Physics |
