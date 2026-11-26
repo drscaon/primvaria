@@ -1,5 +1,5 @@
 {
-  "updated": "24 November 2026",
+  "updated": "25 November 2026",
   "engines": [
     {"key": "validators", "title": "OpenUSD validators"},
     {"key": "blender", "title": "Blender"},
@@ -23,7 +23,7 @@
       "validators": {"status": "tested", "readme": "tested", "site": "every preset, OmniPhysics layer included"},
       "blender": {"status": "tested", "readme": "tested: drape", "site": "drape test, every preset"},
       "mujoco": {"status": "tested", "readme": "tested: flex drape", "site": "flex export, drape test, every preset"},
-      "newton": {"status": "differs", "readme": "read, mass, drop; drapes more than in MuJoCo", "site": "every preset read from its Newton layer, mass as the pack, at rest after a 5 cm drop; a napkin's Cusick drape coefficient is 0.27 with Newton's VBD cloth solver, 0.44 in MuJoCo (under XPBD the cloth stretches without bound)"},
+      "newton": {"status": "differs", "readme": "read, mass, drop; drape not converged in Newton", "site": "every preset read from its Newton layer, mass as the pack, at rest after a 5 cm drop. Drape not measured: with Newton's VBD cloth solver a napkin's Cusick drape coefficient goes from 0.27 to 0.63 with the iteration count and the time step alone, the cloth still moving after 5 s (0.44 in MuJoCo); a limit of the solver, not of the file. Under XPBD the cloth stretches without bound"},
       "isaac": {"status": "n/a", "readme": "n/a (cloth)", "site": "cloth: see OmniPhysics"},
       "omniphysics": {"status": "exported", "readme": "exported, structure checked, not run", "site": "surface deformables, structure checked; not run"}
     },

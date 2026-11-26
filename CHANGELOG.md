@@ -35,6 +35,10 @@ pre-release versions.
 - The website is rebuilt after a Primvaria release (`release.yml` starts the Website
   workflow on main), so that the line under the header names the new release. Not on
   primvaria-contract releases, whose tags GitHub Pages refuses to deploy.
+- Engine matrix, Maillage in Newton: the drape is now given as not converged instead of
+  "drapes more than in MuJoCo". Newton's VBD drape coefficient of the napkin goes from 0.27
+  to 0.63 with the iteration count and the time step alone; Newton reads the cloth's
+  stiffness as written (docs/trials/newton-cpu.md, "Why the cloth drapes differently").
 
 ## [0.5.0b1] - 2026-11-24 (beta)
 
