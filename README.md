@@ -168,7 +168,7 @@ generators' renders, with `python scripts/make_social_preview.py`.
 | Page | Source |
 |---|---|
 | home, engine matrix | written by hand: `site/pages/` |
-| `/contract/`, `/mission/` | `docs/contract.md`, `MISSION.md` |
+| `/contract/`, `/mission/`, `/standards/` | `docs/contract.md`, `MISSION.md`, `docs/standards.md` |
 | `/<generator>/` | the generator's `README.md` |
 | `/<generator>/<page>/` | each page of the generator's `docs/` that its README links to |
 
@@ -188,6 +188,9 @@ python -m http.server -d _site
 [MISSION.md](https://github.com/drscaon/primvaria/blob/main/MISSION.md) states
 what the suite is for, the three verbs every change is checked against (vary,
 measure, prove) and what it does not do.
+[docs/standards.md](https://github.com/drscaon/primvaria/blob/main/docs/standards.md)
+says how the generators use published standards (ISO, IEC, EN, JIS): numbers
+with a public source, never a standard's text, printed tables or figures.
 [docs/contract.md](https://github.com/drscaon/primvaria/blob/main/docs/contract.md)
 is the OpenUSD contract the four generators share: stage conventions, the
 ground and physics scene, asset identity, semantic labels (the classes

@@ -61,7 +61,7 @@ def built(tmp_path_factory):
 
 def test_one_page_per_subject(built):
     out, site = built
-    expected = {"/", "/engines/", "/contract/", "/stability/", "/mission/"}
+    expected = {"/", "/engines/", "/contract/", "/stability/", "/mission/", "/standards/"}
     for repo in site_build.HEROES:
         expected |= {f"/{repo}/", f"/{repo}/usage/", f"/{repo}/limits/"}
     assert set(site) == expected
