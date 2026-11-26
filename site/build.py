@@ -76,6 +76,11 @@ OWN = {
         "Stability and 1.0",
         "What the suite promises today, what 1.0 will promise, and what must hold before it.",
     ),
+    "docs/standards.md": (
+        "standards",
+        "Standards",
+        "How the suite uses published standards: numbers with a public source, never their text.",
+    ),
     "MISSION.md": (
         "mission",
         "Mission",

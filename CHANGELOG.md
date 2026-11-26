@@ -7,6 +7,11 @@ pre-release versions.
 
 ## [Unreleased]
 
+### Documentation
+
+- `docs/standards.md` (site page `/standards/`): how the suite uses published standards. The repositories hold their numbers only, each with a public source, written about in our own words; never a standard's text, printed tables or figures, nor a copy or a link to one.
+- The pull request checklist of the five repositories gains a line for it.
+
 ### Added
 
 - primvaria-contract, a second package published from this repository (folder `contract/`,
