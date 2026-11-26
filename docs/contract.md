@@ -366,3 +366,50 @@ same generator version, preset, seed and options give the same file. Before
 preset and seed lists them in its changelog under *Changed values*. From 1.0
 on, such a change is a breaking change of that generator and raises its major
 version; see [docs/stability.md](stability.md).
+
+## 13. OpenUSD Core Specification
+
+The Alliance for OpenUSD ratified the OpenUSD Core Specification 1.0 in
+December 2025 ([official page](https://aousd.org/usd-core-specification)).
+It fixes the base that every OpenUSD reader must handle the same way: the
+text grammar and data types, how layers, specs, paths and metadata are
+organised, composition, how a stage is populated and its values resolved,
+the `.usda`, `.usdc` and `.usdz` formats, and a rubric for checking an
+implementation. It is written for tools that read and write OpenUSD, not for
+files: no file is certified against it. This section says what a Primvaria
+file asks of a reader at that level, and what it asks beyond it.
+
+**From the core, the files use:**
+
+| Feature | Where |
+|---|---|
+| `.usdc` for the main files and the OmniPhysics layers, `.usda` for the other engine layers and Quincaillerie's standalone assets | every pack |
+| Layer metadata: `metersPerUnit`, `upAxis`, `kilogramsPerUnit`, `defaultPrim` | section 2 |
+| Sublayers: an engine layer has the file it extends as its only sublayer | section 9 |
+| References: assemblies and scenes that place parts written once | Filaire, Quincaillerie, `primvaria compose` |
+| Variant sets, with a default selection | section 7 |
+| Prim metadata: `kind`, `assetInfo`, `customData`, and the list of applied API schemas | section 4 |
+| Attributes and relationships with a single default value | everywhere |
+
+**They do not use** payloads, inherits, specializes, value clips, time
+samples, animation splines, relocates or variable expressions. A reader that
+implements the core with sublayers, references and variant sets reads every
+file. A future rule that needs one of these is a contract change (section 12).
+
+**Beyond the core.** Core Spec 1.0 says how a stage is built, not what its
+prims mean: that is left to domain specifications, of which physics and
+materials are still being written by the Alliance. Until they are, the
+meaning comes from the schemas that ship with OpenUSD itself:
+
+- in every file: `UsdGeom` (meshes, simple shapes, transforms, subsets),
+  `UsdShade` with `UsdPreviewSurface`, `UsdPhysics` (scene, rigid bodies,
+  colliders, masses, materials, joints, drives, limits, articulations) and
+  `UsdSemantics` (`LabelsAPI`, section 5);
+- the `primvaria:` attributes and each generator's own are plain attributes
+  that need no schema (section 5);
+- engine-specific schemas and attributes (PhysX, Newton, OmniPhysics) only in
+  the engine layers beside a file, never in the file (section 9).
+
+Every file and variant passes OpenUSD's own validators (section 11). The
+Alliance's sample implementations and compliance tests check tools, so they
+are not run here.

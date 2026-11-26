@@ -11,6 +11,7 @@ pre-release versions.
 
 - `docs/standards.md` (site page `/standards/`): how the suite uses published standards. The repositories hold their numbers only, each with a public source, written about in our own words; never a standard's text, printed tables or figures, nor a copy or a link to one.
 - The pull request checklist of the five repositories gains a line for it.
+- Contract, section 13: what the files use of the OpenUSD Core Specification 1.0 (sublayers, references, variant sets, metadata; no payloads, inherits, specializes, clips, time samples, splines, relocates or expressions) and which schemas give them their meaning beyond it. A clarification: no file changes.
 
 ### Added
 
