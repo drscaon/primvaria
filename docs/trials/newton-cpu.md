@@ -244,11 +244,21 @@ modulus, Poisson's ratio and thickness exactly; the membrane stiffness as
 E t / (1 − ν²) and the bending stiffness as E t³ / (12 (1 − ν²)), which is the
 fabric's bending rigidity B exactly (1.5e-5 N m for the napkin). VBD then uses
 that value as the stiffness of each edge's hinge per unit of edge length
-(energy ½ k L (θ − θ₀)²), so a plate of rigidity B bends in VBD about as one
-of rigidity B times the mesh spacing would: about 50 times softer on this mesh,
-and softer still on a finer one. That is how Newton's importer converts the
-AOUSD proposal's stiffness, not something the file could say differently
-without writing a value that is wrong for every other reader.
+(energy ½ k L (θ − θ₀)²), so the plate it simulates is softer than the one the
+file describes, and softer the finer the mesh. Measured on a strip clamped at
+one end (10 cm × 4 cm, 0.2 kg/m², B = 4.9e-3 N m, VBD with 500 iterations, 2 s),
+whose tip drop is 5.0 mm by plate theory:
+
+| Mesh | edge_ke = B (as imported) | edge_ke = 100 B |
+|---|---|---|
+| 2 cm cells | 61 mm | 8 mm |
+| 1 cm cells | 91 mm | 49 mm |
+
+With edge_ke = B the strip is still creeping after 2 s, so those drops are lower
+bounds. That is how Newton's importer converts the AOUSD proposal's stiffness,
+not something the file could say differently without writing a value that is
+wrong for every other reader. Reported to Newton:
+[newton#5638](https://github.com/newton-physics/newton/issues/5638).
 
 It is not what makes the drape differ, though. The result depends mostly on how
 far VBD is let converge:
