@@ -6,6 +6,13 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the projec
 
 ## [Unreleased]
 
+## [0.4.0b1]
+
+### Added
+
+- Material labels (contract, section 5): `contract.write_material_label(material, label)` writes `semantics:labels:material`, one word for what a Material is made of; `contract.label_materials(stage, label)` gives one label to every Material the edit target defines that has none (class prims included, not the copies that reference them); `contract.unlabelled_materials(stage)` lists those without one. Optional in contract 0, so not a conformance problem; `testing.contract` requires it of the generators' own files.
+- The shared ground (`ground.ground`) is rendered with its own material: `/World/GroundMaterial` gains a grey UsdPreviewSurface (`GROUND_ROUGHNESS` 0.9) and is bound to the ground for every purpose as well as for physics; the material carries the material label `concrete` (`GROUND_MATERIAL_LABEL`) and the ground the class label `ground` (`GROUND_LABEL`). Its physics is unchanged.
+
 ## [0.3.0b1]
 
 ### Added

@@ -180,3 +180,11 @@ def test_generated_variant_sets_follow_section_7(generator, contract_files):
                     name,
                 )
                 assert vset.GetVariantSelection() in vset.GetVariantNames(), (f.name, name)
+
+
+def test_every_material_says_what_it_is_made_of(generator, contract_files):
+    """Contract, section 5: each Material carries semantics:labels:material (optional in
+    contract 0, required of the suite's own files)."""
+    for f in contract_files:
+        stage = Usd.Stage.Open(str(f))
+        assert generator.contract.unlabelled_materials(stage) == [], f.name
