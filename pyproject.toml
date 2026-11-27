@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "primvaria"
-version = "0.5.0b1"
+version = "0.6.0b1"
 description = "Physics-ready variability for Physical AI, in OpenUSD: one install for the Granulaire, Maillage, Filaire and Quincaillerie asset generators, with a single command line."
 readme = "README.md"
 license = "MIT"
@@ -36,11 +36,11 @@ classifiers = [
 # A plain `pip install primvaria` installs the whole suite.
 # Install a single generator on its own with `pip install granulaire` (etc.).
 dependencies = [
-    "primvaria-contract>=0.1.0b1",  # contract/: the contract code the generators share (compose uses it)
-    "granulaire>=0.6.0b1",
-    "maillage>=0.5.0b1",
-    "filaire>=0.6.0b1",
-    "quincaillerie>=0.5.0b1",
+    "primvaria-contract>=0.5.0b1",  # contract/: the contract code the generators share (compose uses it)
+    "granulaire>=0.7.0b1",
+    "maillage>=0.6.0b1",
+    "filaire>=0.7.0b1",
+    "quincaillerie>=0.6.0b1",
 ]
 
 [project.optional-dependencies]
