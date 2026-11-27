@@ -1,12 +1,13 @@
 {
-  "updated": "25 November 2026",
+  "updated": "27 November 2026",
   "engines": [
     {"key": "validators", "title": "OpenUSD validators"},
     {"key": "blender", "title": "Blender"},
     {"key": "mujoco", "title": "MuJoCo"},
     {"key": "newton", "title": "Newton · CPU"},
     {"key": "isaac", "title": "Isaac Sim · PhysX"},
-    {"key": "omniphysics", "title": "OmniPhysics deformables"}
+    {"key": "omniphysics", "title": "OmniPhysics deformables"},
+    {"key": "simready", "title": "SimReady · Robotics-Prop"}
   ],
   "generators": {
     "granulaire": {
@@ -16,7 +17,8 @@
       "mujoco": {"status": "tested", "readme": "tested: pile", "site": "pile test, every preset"},
       "newton": {"status": "tested", "readme": "tested: mass, settling", "site": "every preset, from its Newton layer: mass as the pack, at rest on the ground after 2 s (XPBD)"},
       "isaac": {"status": "not yet", "readme": "not yet", "site": "standard UsdPhysics rigid bodies"},
-      "omniphysics": {"status": "exported", "readme": "exported, not run", "site": "peanuts, tomatoes: a layer over the file, structure checked; not run"}
+      "omniphysics": {"status": "exported", "readme": "exported, not run", "site": "peanuts, tomatoes: a layer over the file, structure checked; not run"},
+      "simready": {"status": "not met", "readme": "checked: packaging not met", "site": "checked on CPU with NVIDIA's validator: labels, materials, ground and UsdPhysics pass; a pack is a scene with its engine layers beside it, not one prop per folder with a thumbnail and metadata (docs/simready.md)"}
     },
     "maillage": {
       "facts": "{presets} presets · {fabrics} fabrics",
@@ -25,7 +27,8 @@
       "mujoco": {"status": "tested", "readme": "tested: flex drape", "site": "flex export, drape test, every preset"},
       "newton": {"status": "differs", "readme": "read, mass, drop; drape not converged in Newton", "site": "every preset read from its Newton layer, mass as the pack, at rest after a 5 cm drop. Drape not measured: with Newton's VBD cloth solver a napkin's Cusick drape coefficient goes from 0.27 to 0.63 with the iteration count and the time step alone, the cloth still moving after 5 s (0.44 in MuJoCo); a limit of the solver, not of the file. Under XPBD the cloth stretches without bound"},
       "isaac": {"status": "n/a", "readme": "n/a (cloth)", "site": "cloth: see OmniPhysics"},
-      "omniphysics": {"status": "exported", "readme": "exported, structure checked, not run", "site": "surface deformables, structure checked; not run"}
+      "omniphysics": {"status": "exported", "readme": "exported, structure checked, not run", "site": "surface deformables, structure checked; not run"},
+      "simready": {"status": "n/a", "readme": "n/a (cloth)", "site": "cloth is not a rigid prop: no SimReady profile covers deformables yet"}
     },
     "filaire": {
       "facts": "{presets} presets · {connectors} connector families",
@@ -34,7 +37,8 @@
       "mujoco": {"status": "tested", "readme": "tested: drop, sag, coil, insertion, bayonet lock", "site": "drop, sag, coil, insertion, bayonet lock"},
       "newton": {"status": "differs", "readme": "read, mass; holds its shape, bend set by XPBD's iteration count", "site": "every preset read from its Newton layer, mass as the pack; a USB-C sample held flat at one end drops 13.4 / 5.1 / 3.4 mm at 5 / 20 / 50 XPBD iterations, beam theory 13.8 mm: Newton's XPBD does not carry its constraint multipliers across iterations, so a drive's stiffness grows with them"},
       "isaac": {"status": "not yet", "readme": "not yet", "site": "UsdPhysics joints, PhysX layer over each file"},
-      "omniphysics": {"status": "n/a", "readme": "n/a", "site": ""}
+      "omniphysics": {"status": "n/a", "readme": "n/a", "site": ""},
+      "simready": {"status": "not met", "readme": "checked: packaging not met", "site": "checked on CPU with NVIDIA's validator: labels, materials, ground and UsdPhysics pass; a pack is a scene with its engine layers beside it, not one prop per folder with a thumbnail and metadata (docs/simready.md)"}
     },
     "quincaillerie": {
       "facts": "M3–M12 · {assets} catalogue assets",
@@ -43,7 +47,8 @@
       "mujoco": {"status": "tested", "readme": "tested: drop, screwing, jam, insertion", "site": "drop, screwing, jammed threads, insertion"},
       "newton": {"status": "tested", "readme": "tested: mass, drop", "site": "every part and holder, from its Newton layer: mass as the pack, at rest after a 5 cm drop (XPBD)"},
       "isaac": {"status": "not yet", "readme": "not yet", "site": "UsdPhysics, PhysX layer over each file"},
-      "omniphysics": {"status": "n/a", "readme": "n/a", "site": ""}
+      "omniphysics": {"status": "n/a", "readme": "n/a", "site": ""},
+      "simready": {"status": "not met", "readme": "checked: packaging not met", "site": "checked on CPU with NVIDIA's validator: labels, materials, ground and UsdPhysics pass; each part is a file of its own, but shares a material library one folder up and carries no thumbnail, metadata or forward direction (docs/simready.md)"}
     }
   }
 }

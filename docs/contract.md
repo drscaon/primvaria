@@ -49,8 +49,8 @@ In place in all four generators, written and checked by `primvaria_contract.grou
 | Prim | Content |
 |---|---|
 | `/World/PhysicsScene` | gravity 9.81 m/s² along −Z |
-| `/World/Ground` | a 2 cm collision box whose top face is z = 0 |
-| `/World/GroundMaterial` | physics material: static friction 0.6, dynamic friction 0.5, restitution 0.1 |
+| `/World/Ground` | a 2 cm collision box whose top face is z = 0, class label `ground` |
+| `/World/GroundMaterial` | physics material: static friction 0.6, dynamic friction 0.5, restitution 0.1; a grey UsdPreviewSurface for rendering; material label `concrete` |
 
 An asset rests on z = 0. A standalone asset file (Quincaillerie's
 `assets/*.usdc`) carries no ground: its underside is at z = 0 of the asset.
@@ -143,6 +143,19 @@ An asset that references another (a Granulaire grain and its prototype, a
 part placed in a Quincaillerie scene) takes its classes from it and states
 its own instance label. Labels are inherited down the hierarchy, so every
 mesh of an asset carries them.
+
+Every `Material` also says what it is made of, in a third taxonomy:
+`semantics:labels:material`, one single word (`steel`, `cotton`, `pvc`, the
+grains' preset). Optional in version 0 of the contract, so a file without it
+still conforms; the four generators write it on every material, and their
+tests require it. What each writes:
+
+| Generator | Material labels |
+|---|---|
+| Granulaire | the preset (`rice`) |
+| Maillage | the fabric (`linen`) |
+| Filaire | the jacket's compound (`pvc`) for its physics material, `plastic`, `clear_plastic` or `metal` for the looks of plugs and sockets |
+| Quincaillerie | the library material's substance (`steel`, `stainless_steel`, `brass`, `nickel`, `abs`, `pet`) |
 
 ## 6. Variation model
 

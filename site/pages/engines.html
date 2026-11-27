@@ -1,10 +1,10 @@
 <section class="hero page"><div class="wrap">
   <p class="eyebrow"><a href="/">Primvaria</a> · engines</p>
   <h1>Engine matrix</h1>
-  <p class="lede">Where each generator stands in each engine, on 25 November 2026. Tests run in each project's CI on every preset, from the OpenUSD file alone; Newton runs in Primvaria's CI.</p>
+  <p class="lede">Where each generator stands in each engine, on 27 November 2026. Tests run in each project's CI on every preset, from the OpenUSD file alone; Newton runs in Primvaria's CI.</p>
   <div class="scroll"><table>
     <!-- engines:start -->
-    <thead><tr><th>Generator</th><th>OpenUSD validators</th><th>Blender</th><th>MuJoCo</th><th>Newton · CPU</th><th>Isaac Sim · PhysX</th><th>OmniPhysics deformables</th></tr></thead>
+    <thead><tr><th>Generator</th><th>OpenUSD validators</th><th>Blender</th><th>MuJoCo</th><th>Newton · CPU</th><th>Isaac Sim · PhysX</th><th>OmniPhysics deformables</th><th>SimReady · Robotics-Prop</th></tr></thead>
     <tbody>
       <tr><th scope="row">Granulaire</th>
         <td><span class="st ok">tested</span><small>every preset and moisture state</small></td>
@@ -12,28 +12,32 @@
         <td><span class="st ok">tested</span><small>pile test, every preset</small></td>
         <td><span class="st ok">tested</span><small>every preset, from its Newton layer: mass as the pack, at rest on the ground after 2 s (XPBD)</small></td>
         <td><span class="st warn">not yet</span><small>standard UsdPhysics rigid bodies</small></td>
-        <td><span class="st warn">exported</span><small>peanuts, tomatoes: a layer over the file, structure checked; not run</small></td></tr>
+        <td><span class="st warn">exported</span><small>peanuts, tomatoes: a layer over the file, structure checked; not run</small></td>
+        <td><span class="st warn">not met</span><small>checked on CPU with NVIDIA&#x27;s validator: labels, materials, ground and UsdPhysics pass; a pack is a scene with its engine layers beside it, not one prop per folder with a thumbnail and metadata (docs/simready.md)</small></td></tr>
       <tr><th scope="row">Maillage</th>
         <td><span class="st ok">tested</span><small>every preset, OmniPhysics layer included</small></td>
         <td><span class="st ok">tested</span><small>drape test, every preset</small></td>
         <td><span class="st ok">tested</span><small>flex export, drape test, every preset</small></td>
         <td><span class="st warn">differs</span><small>every preset read from its Newton layer, mass as the pack, at rest after a 5 cm drop. Drape not measured: with Newton&#x27;s VBD cloth solver a napkin&#x27;s Cusick drape coefficient goes from 0.27 to 0.63 with the iteration count and the time step alone, the cloth still moving after 5 s (0.44 in MuJoCo); a limit of the solver, not of the file. Under XPBD the cloth stretches without bound</small></td>
         <td><span class="st na">n/a</span><small>cloth: see OmniPhysics</small></td>
-        <td><span class="st warn">exported</span><small>surface deformables, structure checked; not run</small></td></tr>
+        <td><span class="st warn">exported</span><small>surface deformables, structure checked; not run</small></td>
+        <td><span class="st na">n/a</span><small>cloth is not a rigid prop: no SimReady profile covers deformables yet</small></td></tr>
       <tr><th scope="row">Filaire</th>
         <td><span class="st ok">tested</span><small>every preset, with and without physics</small></td>
         <td><span class="st ok">tested</span><small>drop through the add-on, every preset</small></td>
         <td><span class="st ok">tested</span><small>drop, sag, coil, insertion, bayonet lock</small></td>
         <td><span class="st warn">differs</span><small>every preset read from its Newton layer, mass as the pack; a USB-C sample held flat at one end drops 13.4 / 5.1 / 3.4 mm at 5 / 20 / 50 XPBD iterations, beam theory 13.8 mm: Newton&#x27;s XPBD does not carry its constraint multipliers across iterations, so a drive&#x27;s stiffness grows with them</small></td>
         <td><span class="st warn">not yet</span><small>UsdPhysics joints, PhysX layer over each file</small></td>
-        <td><span class="st na">n/a</span></td></tr>
+        <td><span class="st na">n/a</span></td>
+        <td><span class="st warn">not met</span><small>checked on CPU with NVIDIA&#x27;s validator: labels, materials, ground and UsdPhysics pass; a pack is a scene with its engine layers beside it, not one prop per folder with a thumbnail and metadata (docs/simready.md)</small></td></tr>
       <tr><th scope="row">Quincaillerie</th>
         <td><span class="st ok">tested</span><small>whole catalogue, varied instances</small></td>
         <td><span class="st ok">tested</span><small>drop and assemblies through the add-on</small></td>
         <td><span class="st ok">tested</span><small>drop, screwing, jammed threads, insertion</small></td>
         <td><span class="st ok">tested</span><small>every part and holder, from its Newton layer: mass as the pack, at rest after a 5 cm drop (XPBD)</small></td>
         <td><span class="st warn">not yet</span><small>UsdPhysics, PhysX layer over each file</small></td>
-        <td><span class="st na">n/a</span></td></tr>
+        <td><span class="st na">n/a</span></td>
+        <td><span class="st warn">not met</span><small>checked on CPU with NVIDIA&#x27;s validator: labels, materials, ground and UsdPhysics pass; each part is a file of its own, but shares a material library one folder up and carries no thumbnail, metadata or forward direction (docs/simready.md)</small></td></tr>
     </tbody>
     <!-- engines:end -->
   </table></div>
