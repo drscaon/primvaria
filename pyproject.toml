@@ -40,7 +40,7 @@ dependencies = [
     "granulaire>=0.7.0b1",
     "maillage>=0.6.0b1",
     "filaire>=0.7.0b1",
-    "quincaillerie>=0.6.0b1",
+    "quincaillerie>=0.6.0b2",
 ]
 
 [project.optional-dependencies]

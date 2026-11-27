@@ -10,7 +10,7 @@ pre-release versions.
 ## [0.6.0b1] - 2026-11-27 (beta)
 
 Requires the generators' new releases: Granulaire 0.7.0b1, Maillage 0.6.0b1,
-Filaire 0.7.0b1 and Quincaillerie 0.6.0b1, and primvaria-contract 0.5.0b1. No
+Filaire 0.7.0b1 and Quincaillerie 0.6.0b2, and primvaria-contract 0.5.0b1. No
 breaking change: material labels and `.usdz` packages are additions, optional
 in contract 0.
 
