@@ -296,6 +296,14 @@ The PhysX and OmniPhysics layers have not been simulated: both engines need
 Isaac Sim and an NVIDIA RTX GPU. The Newton layers are opened in Newton on CPU
 in Primvaria's CI (`scripts/newton_check.py`).
 
+**Packages.** On request (`generate --usdz`), a generator also writes each file
+at the top of its pack as one `.usdz` (`primvaria_contract.usdz`): the file as
+the package's root layer, what it references inside, and its engine layers at
+the same place, each still holding the file as its only sublayer
+(`<file>.usdz[<file>_newton.usda]`). A package is a copy of what is already
+in the pack: the pack's tables (section 10) list the OpenUSD files, not their
+packages.
+
 ## 10. Pack files
 
 **In place.** Every pack has the same two files, written by the same module
