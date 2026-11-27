@@ -41,7 +41,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from pxr import Kind, Sdf, Usd, UsdGeom, UsdPhysics, UsdSemantics
+from pxr import Kind, Sdf, Usd, UsdGeom, UsdPhysics, UsdSemantics, UsdShade
 
 __all__ = [  # what <generator>.contract gives, as before
     "CONTRACT",
@@ -65,6 +65,10 @@ __all__ = [  # what <generator>.contract gives, as before
     "set_group",
     "write_identity",
     "write_labels",
+    "write_material_label",
+    "label_materials",
+    "unlabelled_materials",
+    "MATERIAL_LABEL",
     "labels",
     "write_variation",
     "write_measured",
@@ -100,6 +104,7 @@ IDENTITY = {
 }
 ASSET_INFO = ("name", "identifier", "version")
 LABELS = ("class", "instance")  # taxonomies of the semantic labels (semantics:labels:<taxonomy>)
+MATERIAL_LABEL = "material"  # taxonomy of the label every Material carries: what it is made of
 LABEL = re.compile(r"[A-Za-z0-9_.-]+")  # one word: a table lists the labels of an asset in one cell
 VARIATION = f"{NAMESPACE}:variation"
 ASPECTS = f"{VARIATION}:aspects"
@@ -161,6 +166,41 @@ def labels(prim, taxonomy: str = "class") -> list[str]:
     on what it references."""
     attr = prim.GetAttribute(f"semantics:labels:{taxonomy}")
     return [str(v) for v in (attr.Get() or [])] if attr else []
+
+
+def write_material_label(material, label: str) -> None:
+    """Write ``semantics:labels:material`` on a Material prim (UsdShade.Material or its prim):
+    one word for what it is made of ("steel", "cotton", "pvc", "basmati_rice")."""
+    prim = material.GetPrim() if hasattr(material, "GetPrim") else material
+    if not LABEL.fullmatch(str(label)):
+        raise ValueError(f"a material label must be one name without spaces: {label!r}")
+    UsdSemantics.LabelsAPI.Apply(prim, MATERIAL_LABEL).CreateLabelsAttr([str(label)])
+
+
+def label_materials(stage, label: str) -> int:
+    """Give ``label`` to every Material that the stage's edit target defines and that has no
+    material label yet (a generator whose materials are all of one kind, such as the grains of a
+    preset): class prims included, the copies that reference them left alone. The count labelled."""
+    layer = stage.GetEditTarget().GetLayer()
+    found = []
+    for prim in Usd.PrimRange.Stage(stage, Usd.PrimAllPrimsPredicate):
+        spec = layer.GetPrimAtPath(prim.GetPath())
+        defined = spec is not None and spec.specifier in (Sdf.SpecifierDef, Sdf.SpecifierClass)
+        if defined and prim.IsA(UsdShade.Material) and not labels(prim, MATERIAL_LABEL):
+            found.append(prim)
+    for prim in found:
+        write_material_label(prim, label)
+    return len(found)
+
+
+def unlabelled_materials(stage) -> list[str]:
+    """Paths of the Materials with no material label (section 5). Optional in contract 0, so not
+    a conformance problem: the generators' own tests require it of their files."""
+    return [
+        str(prim.GetPath())
+        for prim in stage.Traverse()
+        if prim.IsA(UsdShade.Material) and not labels(prim, MATERIAL_LABEL)
+    ]
 
 
 def _label_problems(prim) -> list[str]:

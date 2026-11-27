@@ -7,7 +7,7 @@ generator's files.
 import json
 
 import pytest
-from pxr import Sdf, Usd, UsdGeom
+from pxr import Sdf, Usd, UsdGeom, UsdShade
 
 from primvaria_contract import conformance as cli
 from primvaria_contract import contract, ground, pack
@@ -218,3 +218,23 @@ def test_the_ground_follows_the_contract(tmp_path):
     stage = Usd.Stage.Open(str(folder / "part.usda"))
     assert ground.conformance(stage) == []
     assert ground.read_ground(stage)["top"] == pytest.approx(0.0, abs=1e-6)
+    g = stage.GetPrimAtPath(ground.GROUND_PATH)
+    assert contract.labels(g) == [ground.GROUND_LABEL]
+    look, _ = UsdShade.MaterialBindingAPI(g).ComputeBoundMaterial()
+    assert str(look.GetPath()) == ground.GROUND_MATERIAL_PATH and look.GetSurfaceOutput().HasConnectedSource()
+    assert contract.labels(look.GetPrim(), contract.MATERIAL_LABEL) == [ground.GROUND_MATERIAL_LABEL]
+
+
+def test_every_material_says_what_it_is_made_of():
+    """Section 5: a Material carries semantics:labels:material, one word."""
+    from pxr import UsdShade
+
+    stage, prim = _one_asset()
+    mat = UsdShade.Material.Define(stage, "/World/Part/Looks/steel")
+    assert contract.unlabelled_materials(stage) == ["/World/Part/Looks/steel"]
+    assert contract.conformance(stage) == []  # optional in contract 0
+    contract.write_material_label(mat, "steel")
+    assert contract.unlabelled_materials(stage) == []
+    assert contract.labels(mat.GetPrim(), contract.MATERIAL_LABEL) == ["steel"]
+    with pytest.raises(ValueError, match="material label"):
+        contract.write_material_label(mat, "zinc plated steel")

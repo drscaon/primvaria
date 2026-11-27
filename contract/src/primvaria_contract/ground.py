@@ -10,7 +10,8 @@ generators can share one scene and every engine gets the same floor:
                             PhysX attributes (engines derive their contact offsets)
     /World/GroundMaterial   UsdShade.Material with UsdPhysics.MaterialAPI: static friction 0.6,
                             dynamic friction 0.5, restitution 0.1 (a wooden or concrete floor),
-                            bound to the ground for the physics purpose
+                            and a grey UsdPreviewSurface, bound to the ground for every purpose;
+                            material label "concrete", and the ground's class label "ground"
 
 The stage itself is in metres, Z up, kilograms. ``read_ground`` gives the tests the ground as
 the file has it.
@@ -18,7 +19,7 @@ the file has it.
 
 from __future__ import annotations
 
-from pxr import Gf, Usd, UsdGeom, UsdPhysics, UsdShade
+from pxr import Gf, Sdf, Usd, UsdGeom, UsdPhysics, UsdSemantics, UsdShade
 
 __all__ = [  # what <generator>.ground gives, as before
     "GRAVITY",
@@ -28,6 +29,9 @@ __all__ = [  # what <generator>.ground gives, as before
     "GROUND_DYNAMIC_FRICTION",
     "GROUND_RESTITUTION",
     "GROUND_COLOR",
+    "GROUND_ROUGHNESS",
+    "GROUND_LABEL",
+    "GROUND_MATERIAL_LABEL",
     "SCENE_PATH",
     "GROUND_PATH",
     "GROUND_MATERIAL_PATH",
@@ -45,6 +49,9 @@ GROUND_STATIC_FRICTION = 0.6
 GROUND_DYNAMIC_FRICTION = 0.5
 GROUND_RESTITUTION = 0.1
 GROUND_COLOR = (0.5, 0.5, 0.5)
+GROUND_ROUGHNESS = 0.9
+GROUND_LABEL = "ground"  # class label of the ground
+GROUND_MATERIAL_LABEL = "concrete"  # material label of its material
 
 SCENE_PATH = "/World/PhysicsScene"
 GROUND_PATH = "/World/Ground"
@@ -76,7 +83,16 @@ def ground(stage, lo=(0.0, 0.0), hi=(0.0, 0.0)) -> UsdGeom.Cube:
     api.CreateStaticFrictionAttr(GROUND_STATIC_FRICTION)
     api.CreateDynamicFrictionAttr(GROUND_DYNAMIC_FRICTION)
     api.CreateRestitutionAttr(GROUND_RESTITUTION)
-    UsdShade.MaterialBindingAPI.Apply(g.GetPrim()).Bind(mat, UsdShade.Tokens.weakerThanDescendants, "physics")
+    shader = UsdShade.Shader.Define(stage, f"{GROUND_MATERIAL_PATH}/Surface")
+    shader.CreateIdAttr("UsdPreviewSurface")
+    shader.CreateInput("diffuseColor", Sdf.ValueTypeNames.Color3f).Set(Gf.Vec3f(*GROUND_COLOR))
+    shader.CreateInput("roughness", Sdf.ValueTypeNames.Float).Set(GROUND_ROUGHNESS)
+    mat.CreateSurfaceOutput().ConnectToSource(shader.ConnectableAPI(), "surface")
+    UsdSemantics.LabelsAPI.Apply(mat.GetPrim(), "material").CreateLabelsAttr([GROUND_MATERIAL_LABEL])
+    UsdSemantics.LabelsAPI.Apply(g.GetPrim(), "class").CreateLabelsAttr([GROUND_LABEL])
+    binding = UsdShade.MaterialBindingAPI.Apply(g.GetPrim())
+    binding.Bind(mat, UsdShade.Tokens.weakerThanDescendants, "physics")
+    binding.Bind(mat, UsdShade.Tokens.weakerThanDescendants)  # rendering: every purpose
     return g
 
 
