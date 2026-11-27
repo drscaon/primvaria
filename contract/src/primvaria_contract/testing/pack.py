@@ -91,3 +91,15 @@ def test_command_line_checks_packs(generator, pack_folder, copy, capsys):
     assert "1 packs checked" in capsys.readouterr().out
     (copy / generator.pack.TABLE).write_text("name\n", encoding="utf-8")
     assert generator.conformance.main([str(copy)]) == 1
+
+
+@pytest.mark.slow
+def test_the_pack_goes_into_usdz_packages(generator, copy):
+    """--usdz: each file at the top of the pack as one .usdz, which passes OpenUSD's validators
+    with their packaging rules."""
+    from primvaria_contract import usdz
+
+    packages = usdz.package_pack(copy)
+    assert packages
+    for package in packages:
+        assert usdz.check(package) == [], package.name

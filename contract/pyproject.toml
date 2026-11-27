@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "primvaria-contract"
-version = "0.4.0b1"
+version = "0.5.0b1"
 description = "The Primvaria OpenUSD contract: the code the Granulaire, Maillage, Filaire and Quincaillerie generators share to write and check their files (identity, variation, packs, ground, engine layers, OpenUSD validators)."
 readme = "README.md"
 license = "MIT"
