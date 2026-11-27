@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "primvaria-contract"
-version = "0.2.0b1"
+version = "0.3.0b1"
 description = "The Primvaria OpenUSD contract: the code the Granulaire, Maillage, Filaire and Quincaillerie generators share to write and check their files (identity, variation, packs, ground, engine layers, OpenUSD validators)."
 readme = "README.md"
 license = "MIT"
@@ -50,3 +50,7 @@ select = ["E", "F", "W", "I", "UP", "B"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["primvaria_contract"]
+
+[tool.ruff.lint.per-file-ignores]
+# tests take the fixtures they import by name (pytest), which ruff reads as a redefinition
+"src/primvaria_contract/testing/*.py" = ["F811"]

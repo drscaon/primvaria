@@ -15,6 +15,8 @@ pre-release versions.
 
 ### Added
 
+- primvaria-contract 0.3.0b1: `primvaria_contract.testing`, the tests of each generator's files, packs and reproducibility, which the four generators kept as copies; their test files now import them.
+
 - primvaria-contract, a second package published from this repository (folder `contract/`,
   workflow `release-contract.yml`, tags `contract-vX.Y.Z`): the code of the contract that the
   four generators copied (`contract.py`, `pack.py`, `ground.py`, `conformance.py`), written
@@ -26,6 +28,8 @@ pre-release versions.
   paths, which the shared one now does for all).
 
 ### Changed
+
+- `scripts/check_shared_files.py` watches the five modules that bind primvaria-contract to each generator (`validate.py` added) and no longer the three test files, which are now one import each.
 
 - `primvaria compose` and `--engines` use primvaria-contract directly instead of Granulaire's
   copy of the contract; primvaria requires primvaria-contract.
