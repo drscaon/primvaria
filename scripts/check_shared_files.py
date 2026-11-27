@@ -2,8 +2,9 @@
 
 The Primvaria contract (docs/contract.md) relies on a few files being byte-identical in
 Granulaire, Maillage, Filaire and Quincaillerie: the modules that bind primvaria-contract
-(the contract's code, in contract/ of this repository) to each generator, and the tests of
-each generator's files. This compares them::
+(the contract's code, in contract/ of this repository) to each generator. The tests of each
+generator's files are in primvaria-contract too (primvaria_contract.testing), which the
+generators' test files only import. This compares the modules::
 
     python scripts/check_shared_files.py              # the main branches on GitHub
     python scripts/check_shared_files.py --local ..   # sibling clones of the four repositories
@@ -25,9 +26,7 @@ SHARED = (
     "src/{name}/contract.py",
     "src/{name}/conformance.py",
     "src/{name}/pack.py",
-    "tests/test_contract.py",
-    "tests/test_pack.py",
-    "tests/test_golden.py",
+    "src/{name}/validate.py",
 )
 RAW = "https://raw.githubusercontent.com/drscaon/{name}/{ref}/{path}"
 

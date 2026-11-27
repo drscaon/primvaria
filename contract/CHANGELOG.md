@@ -6,6 +6,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the projec
 
 ## [Unreleased]
 
+## [0.3.0b1]
+
+### Added
+
+- `testing`: the tests the four generators kept as byte-identical copies, written once. `testing.contract` (the generated files follow the contract), `testing.pack` (the pack says what the files say) and `testing.golden` (the same values as the stored references, one test per case of the generator's `tests/golden/cases.json`). A generator's `tests/test_contract.py`, `test_pack.py` and `test_golden.py` are each one import of them; they take its files from its fixtures (`contract_files`, `pack_folder`) and find the generator as before, the package under `src/` with a `contract.py`. The tests are the same as before, one for one. They need pytest, which stays out of the package's dependencies.
+
 ## [0.2.0b1]
 
 ### Added
