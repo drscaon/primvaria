@@ -137,6 +137,38 @@ jobs:
           name: newton-report
           path: packs/newton.*
 
+  simready:
+    name: SimReady profile on CPU (a report, not a gate)
+    runs-on: ubuntu-latest
+    continue-on-error: true  # docs/simready.md says what does not pass, and why
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Install primvaria-contract from this repository
+        run: pip install -e ./contract
+      - name: Install the generators from GitHub
+        run: >
+          pip install
+          "granulaire @ git+https://github.com/drscaon/granulaire"
+          "maillage[sim] @ git+https://github.com/drscaon/maillage"
+          "filaire[sim] @ git+https://github.com/drscaon/filaire"
+          "quincaillerie @ git+https://github.com/drscaon/quincaillerie"
+          -e .
+      - name: Write a pack of the presets (a sample on a commit)
+        run: python scripts/newton_check.py generate packs
+      # NVIDIA's validator and the profiles, in their own environment: no Omniverse, Kit or GPU
+      - name: Install simready-validate
+        run: |
+          python -m venv .simready
+          .simready/bin/pip install usd-core simready-validate simready-foundation-tier-core
+      - name: Check the packs against Robotics-Prop
+        run: python scripts/simready_check.py packs --validator .simready/bin/simready-validate
+      - name: Report
+        if: always()
+        run: cat packs/simready.md >> "$GITHUB_STEP_SUMMARY" || true
+
   build:
     name: Build and check the packages
     runs-on: ubuntu-latest

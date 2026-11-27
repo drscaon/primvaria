@@ -15,6 +15,9 @@ pre-release versions.
 
 ### Added
 
+- `docs/simready.md` and `scripts/simready_check.py`: the files against NVIDIA's SimReady profile for props (Robotics-Prop 5.0.0), checked on CPU with `simready-validate`; what is met, what is not and why. A CI job writes the report on each commit without blocking it. The engine matrix gains a SimReady column.
+- Contract, section 5: material labels (`semantics:labels:material`), optional in version 0 and written by the four generators; section 3: the ground's class label and render material.
+
 - primvaria-contract 0.3.0b1: `primvaria_contract.testing`, the tests of each generator's files, packs and reproducibility, which the four generators kept as copies; their test files now import them.
 
 - primvaria-contract, a second package published from this repository (folder `contract/`,

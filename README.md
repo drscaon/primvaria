@@ -63,12 +63,12 @@ CI on every preset before each release (on a sample of them on each commit), fro
 OpenUSD file alone.
 
 <!-- engines:start -->
-| | OpenUSD validators | Blender | MuJoCo | Newton · CPU | Isaac Sim · PhysX | OmniPhysics deformables |
-|---|---|---|---|---|---|---|
-| Granulaire | tested | tested: pile | tested: pile | tested: mass, settling | not yet | exported, not run |
-| Maillage | tested | tested: drape | tested: flex drape | read, mass, drop; drape not converged in Newton | n/a (cloth) | exported, structure checked, not run |
-| Filaire | tested | tested: drop (add-on) | tested: drop, sag, coil, insertion, bayonet lock | read, mass; holds its shape, bend set by XPBD's iteration count | not yet | n/a |
-| Quincaillerie | tested | tested: drop, assemblies (add-on) | tested: drop, screwing, jam, insertion | tested: mass, drop | not yet | n/a |
+| | OpenUSD validators | Blender | MuJoCo | Newton · CPU | Isaac Sim · PhysX | OmniPhysics deformables | SimReady · Robotics-Prop |
+|---|---|---|---|---|---|---|---|
+| Granulaire | tested | tested: pile | tested: pile | tested: mass, settling | not yet | exported, not run | checked: packaging not met |
+| Maillage | tested | tested: drape | tested: flex drape | read, mass, drop; drape not converged in Newton | n/a (cloth) | exported, structure checked, not run | n/a (cloth) |
+| Filaire | tested | tested: drop (add-on) | tested: drop, sag, coil, insertion, bayonet lock | read, mass; holds its shape, bend set by XPBD's iteration count | not yet | n/a | checked: packaging not met |
+| Quincaillerie | tested | tested: drop, assemblies (add-on) | tested: drop, screwing, jam, insertion | tested: mass, drop | not yet | n/a | checked: packaging not met |
 <!-- engines:end -->
 
 Newton runs on CPU in this repository's CI (`scripts/newton_check.py`), every
