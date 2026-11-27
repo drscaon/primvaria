@@ -19,6 +19,7 @@ under its own name (`granulaire.contract`, `granulaire.pack`, `granulaire.ground
 | `primvaria_contract.ground` | the shared ground and physics scene |
 | `primvaria_contract.conformance` | the command line of the check |
 | `primvaria_contract.validate` | the OpenUSD validators shipped with OpenUSD, on every variant of every variant set |
+| `primvaria_contract.usdz` | a file as one `.usdz` package, with its dependencies and engine layers, and its check |
 | `primvaria_contract.testing` | the tests each generator runs on its own files and packs, and its reproducibility tests; a generator's test file imports them (needs pytest) |
 
 Check files of any generator of the suite:

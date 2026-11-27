@@ -6,6 +6,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the projec
 
 ## [Unreleased]
 
+## [0.5.0b1]
+
+### Added
+
+- `usdz`: a generated file as one `.usdz` package. `usdz.package(file)` writes `<stem>.usdz` beside the file: the file as the package's root layer, what it depends on (textures, material libraries, referenced assets) copied in by OpenUSD's asset localization, and its engine layers (`_physx`, `_newton`, `_omniphysics`) at the same place, with the engine layers of the assets they point at; one opens as `<stem>.usdz[<stem>_physx.usda]`. `usdz.check(package)` runs every validator of the UsdValidation registry, the packaging rules included. Also `python -m primvaria_contract.usdz FILES...`. The generators call it on request (`--usdz`); a pack's tables do not list packages.
+
 ## [0.4.0b1]
 
 ### Added
