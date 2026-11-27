@@ -7,6 +7,13 @@ pre-release versions.
 
 ## [Unreleased]
 
+## [0.6.0b1] - 2026-11-27 (beta)
+
+Requires the generators' new releases: Granulaire 0.7.0b1, Maillage 0.6.0b1,
+Filaire 0.7.0b1 and Quincaillerie 0.6.0b1, and primvaria-contract 0.5.0b1. No
+breaking change: material labels and `.usdz` packages are additions, optional
+in contract 0.
+
 ### Documentation
 
 - `docs/standards.md` (site page `/standards/`): how the suite uses published standards. The repositories hold their numbers only, each with a public source, written about in our own words; never a standard's text, printed tables or figures, nor a copy or a link to one.
